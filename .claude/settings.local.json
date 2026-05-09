@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm --version)",
-      "Bash(npx *)"
+      "Bash(npx *)",
+      "Read(//private/tmp/**)"
     ]
   }
 }
