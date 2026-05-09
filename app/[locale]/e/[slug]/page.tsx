@@ -27,84 +27,96 @@ export default async function ExperienceDetail({
   const isBundle = listing.kind === "bundle";
 
   return (
-    <main className="mx-auto max-w-[430px] pb-12">
-      <div
-        className={`relative flex h-[220px] items-center justify-center bg-gradient-to-br ${listing.background}`}
-      >
-        <span className="text-[88px]">{listing.emoji}</span>
-        <Link
-          href={`/${locale}`}
-          aria-label="Back"
-          className="absolute left-3.5 top-3.5 flex h-9 w-9 items-center justify-center rounded-full bg-night/55 text-base text-paper backdrop-blur-sm"
-        >
-          ‹
-        </Link>
-      </div>
-
-      <article className="px-5 pt-5">
-        <p className="mb-1.5 text-[9px] font-medium uppercase tracking-[0.25em] text-loop">
-          {isBundle ? `Bundle · ${listing.duration}` : `${listing.category} · ${listing.duration}`}
-        </p>
-        <h1 className="mb-3 font-serif text-[26px] font-semibold leading-[1.1] text-ink">
-          {listing.title}
-        </h1>
-
-        <div className="mb-3.5 flex flex-wrap items-center gap-1.5">
-          <span className="font-serif text-xl font-semibold text-loop">
-            {listing.priceLabel}
-          </span>
-          {isBundle ? (
-            <span className="text-xs text-muted line-through">
-              ฿{listing.priceOriginal.toLocaleString()}
+    <main className="mx-auto max-w-[430px] pb-12 md:max-w-[1100px] md:pb-20 lg:max-w-[1280px] lg:pb-28">
+      <div className="md:grid md:grid-cols-[1.05fr_1fr] md:gap-10 md:px-12 md:pt-12 lg:gap-16 lg:px-16 lg:pt-16">
+        {/* Visual hero */}
+        <div className="md:sticky md:top-12 md:self-start">
+          <div
+            className={`relative flex h-[220px] items-center justify-center bg-gradient-to-br ${listing.background} md:h-[480px] md:rounded-card lg:h-[560px]`}
+          >
+            <span className="text-[88px] md:text-[180px] lg:text-[240px]">
+              {listing.emoji}
             </span>
-          ) : null}
-          <span className="rounded-pill border border-border bg-warm px-2.5 py-1 text-[10px] text-muted">
-            {listing.duration}
-          </span>
-          <span className="rounded-pill border border-border bg-warm px-2.5 py-1 text-[10px] text-muted">
-            {listing.distance}
-          </span>
-          {!isBundle && listing.rating ? (
-            <span className="rounded-pill border border-border bg-warm px-2.5 py-1 text-[10px] text-muted">
-              {listing.rating}
-            </span>
-          ) : null}
-        </div>
-
-        <div className="mb-3.5 flex items-start gap-2 rounded-btn bg-warm px-3 py-2.5">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sand text-[15px]">
-            {contributor.avatar}
-          </span>
-          <p className="text-[11.5px] leading-[1.5] text-muted">
-            Looped by{" "}
-            <strong className="font-medium text-ink">{contributor.name}</strong> ·{" "}
-            {contributor.role}
-            <br />
-            <em>&ldquo;{listing.contributorQuote}&rdquo;</em>
-          </p>
-        </div>
-
-        <p className="mb-4 text-[13.5px] leading-[1.7] text-muted">
-          {listing.description}
-        </p>
-
-        <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.25em] text-muted">
-          {isBundle ? "What's in the bundle" : "What's included"}
-        </p>
-        <ul className="mb-5 flex flex-col gap-1.5">
-          {listing.inclusions.map((item) => (
-            <li
-              key={item}
-              className="flex items-start gap-2 text-[13px] leading-[1.5] text-ink"
+            <Link
+              href={`/${locale}`}
+              aria-label="Back"
+              className="absolute left-3.5 top-3.5 flex h-9 w-9 items-center justify-center rounded-full bg-night/55 text-base text-paper backdrop-blur-sm md:left-5 md:top-5 md:h-11 md:w-11 md:text-lg"
             >
-              <span className="mt-0.5 shrink-0 text-jade">✓</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+              ‹
+            </Link>
+          </div>
+        </div>
 
-        <BookCTA booking={listing.booking} />
-      </article>
+        {/* Text content */}
+        <article className="px-5 pt-5 md:px-0 md:pt-0">
+          <p className="mb-1.5 text-[9px] font-medium uppercase tracking-[0.25em] text-loop md:mb-3 md:text-xs lg:text-sm">
+            {isBundle
+              ? `Bundle · ${listing.duration}`
+              : `${listing.category} · ${listing.duration}`}
+          </p>
+          <h1 className="mb-3 font-serif text-[26px] font-semibold leading-[1.1] text-ink md:mb-5 md:text-4xl lg:text-5xl">
+            {listing.title}
+          </h1>
+
+          <div className="mb-3.5 flex flex-wrap items-center gap-1.5 md:mb-6 md:gap-2.5">
+            <span className="font-serif text-xl font-semibold text-loop md:text-3xl lg:text-4xl">
+              {listing.priceLabel}
+            </span>
+            {isBundle ? (
+              <span className="text-xs text-muted line-through md:text-sm lg:text-base">
+                ฿{listing.priceOriginal.toLocaleString()}
+              </span>
+            ) : null}
+            <span className="rounded-pill border border-border bg-warm px-2.5 py-1 text-[10px] text-muted md:px-3.5 md:py-1.5 md:text-xs">
+              {listing.duration}
+            </span>
+            <span className="rounded-pill border border-border bg-warm px-2.5 py-1 text-[10px] text-muted md:px-3.5 md:py-1.5 md:text-xs">
+              {listing.distance}
+            </span>
+            {!isBundle && listing.rating ? (
+              <span className="rounded-pill border border-border bg-warm px-2.5 py-1 text-[10px] text-muted md:px-3.5 md:py-1.5 md:text-xs">
+                {listing.rating}
+              </span>
+            ) : null}
+          </div>
+
+          <div className="mb-3.5 flex items-start gap-2 rounded-btn bg-warm px-3 py-2.5 md:mb-6 md:gap-3 md:px-5 md:py-4">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sand text-[15px] md:h-10 md:w-10 md:text-xl">
+              {contributor.avatar}
+            </span>
+            <p className="text-[11.5px] leading-[1.5] text-muted md:text-sm md:leading-relaxed lg:text-base">
+              Looped by{" "}
+              <strong className="font-medium text-ink">
+                {contributor.name}
+              </strong>{" "}
+              · {contributor.role}
+              <br />
+              <em>&ldquo;{listing.contributorQuote}&rdquo;</em>
+            </p>
+          </div>
+
+          <p className="mb-4 text-[13.5px] leading-[1.7] text-muted md:mb-6 md:text-base md:leading-relaxed lg:text-lg">
+            {listing.description}
+          </p>
+
+          <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.25em] text-muted md:mb-3 md:text-xs lg:text-sm">
+            {isBundle ? "What's in the bundle" : "What's included"}
+          </p>
+          <ul className="mb-5 flex flex-col gap-1.5 md:mb-8 md:gap-2.5">
+            {listing.inclusions.map((item) => (
+              <li
+                key={item}
+                className="flex items-start gap-2 text-[13px] leading-[1.5] text-ink md:gap-3 md:text-base lg:text-lg"
+              >
+                <span className="mt-0.5 shrink-0 text-jade md:text-xl">✓</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+
+          <BookCTA booking={listing.booking} />
+        </article>
+      </div>
     </main>
   );
 }

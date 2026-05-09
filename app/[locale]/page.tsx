@@ -28,25 +28,31 @@ export default async function Home({
   const list = rest.slice(4);
 
   return (
-    <main className="mx-auto max-w-[430px]">
+    <main className="mx-auto max-w-[430px] md:max-w-[760px] lg:max-w-[1280px]">
       <Hero />
       <CommunityStrip />
       <BundleScroll locale={locale} />
 
-      <SectionHeader title="Explore" paddingClassName="px-[18px] pt-7 pb-2" />
+      <SectionHeader
+        title="Explore"
+        paddingClassName="px-[18px] pt-7 pb-2 md:px-12 md:pt-12 lg:px-16 lg:pt-16"
+      />
       <CategoryTabs />
 
       <SectionHeader
         label="Community top pick"
         title="Most looped this week"
-        paddingClassName="px-[18px] pt-7 pb-2.5"
+        paddingClassName="px-[18px] pt-7 pb-2.5 md:px-12 md:pt-12 lg:px-16 lg:pt-16"
       />
       <FeaturedCard experience={featured} locale={locale} />
 
       <SectionHeader title="Around the loop" />
       <ListingGrid experiences={grid} locale={locale} />
 
-      <SectionHeader title="More loops" paddingClassName="px-[18px] pt-7 pb-3.5 mt-3" />
+      <SectionHeader
+        title="More loops"
+        paddingClassName="px-[18px] pt-7 pb-3.5 mt-3 md:px-12 md:pt-12 lg:px-16 lg:pt-16"
+      />
       <ListingList experiences={list} locale={locale} />
 
       <Manifesto />

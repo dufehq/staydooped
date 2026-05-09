@@ -9,45 +9,45 @@ type Props = {
 
 export function FeaturedCard({ experience: e, locale }: Props) {
   return (
-    <div className="px-[18px]">
+    <div className="px-[18px] md:px-12 lg:px-16">
       <Link
         href={`/${locale}/e/${e.slug}`}
-        className="block overflow-hidden rounded-card shadow-card transition-transform active:scale-[0.98]"
+        className="block overflow-hidden rounded-card shadow-card transition-transform hover:shadow-card-hover active:scale-[0.98] md:grid md:grid-cols-[1fr_1.1fr]"
       >
         <div
-          className={`relative flex h-[190px] items-center justify-center bg-gradient-to-br ${e.background} text-[80px]`}
+          className={`relative flex h-[190px] items-center justify-center bg-gradient-to-br ${e.background} text-[80px] md:h-auto md:min-h-[320px] md:text-[140px] lg:text-[180px]`}
         >
           {e.emoji}
           <div
             aria-hidden
-            className="absolute inset-0 bg-[linear-gradient(transparent_40%,rgba(14,11,7,0.92))]"
+            className="absolute inset-0 bg-[linear-gradient(transparent_40%,rgba(14,11,7,0.92))] md:bg-[linear-gradient(to_right,transparent_60%,rgba(14,11,7,0.6))]"
           />
           {e.loops ? (
-            <span className="absolute right-3 top-3 rounded-pill bg-loop px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.15em] text-night">
+            <span className="absolute right-3 top-3 rounded-pill bg-loop px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.15em] text-night md:right-4 md:top-4 md:px-3 md:py-1.5 md:text-[10px]">
               🔥 {e.loops} loops
             </span>
           ) : null}
         </div>
-        <div className="bg-night px-4 pt-3.5 pb-4">
-          <p className="mb-1.5 text-[8px] font-medium uppercase tracking-[0.25em] text-loop-2">
+        <div className="bg-night px-4 pt-3.5 pb-4 md:flex md:flex-col md:justify-center md:px-8 md:py-8 lg:px-12 lg:py-12">
+          <p className="mb-1.5 text-[8px] font-medium uppercase tracking-[0.25em] text-loop-2 md:mb-3 md:text-[10px] lg:text-xs">
             {e.category} · {e.duration}
           </p>
-          <h3 className="mb-2.5 font-serif text-[21px] font-semibold leading-[1.15] text-paper">
+          <h3 className="mb-2.5 font-serif text-[21px] font-semibold leading-[1.15] text-paper md:mb-5 md:text-3xl lg:text-5xl">
             {e.title}
           </h3>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <p className="text-[15px] font-medium text-loop-2">
+          <div className="flex flex-wrap items-center gap-2.5 md:gap-3">
+            <p className="text-[15px] font-medium text-loop-2 md:text-xl lg:text-2xl">
               ฿{e.price.toLocaleString()}{" "}
-              <span className="text-[10px] font-light text-paper/40">
+              <span className="text-[10px] font-light text-paper/40 md:text-sm">
                 / person
               </span>
             </p>
             {e.rating ? (
-              <span className="rounded-pill bg-paper/10 px-2 py-0.5 text-[9px] text-paper/55">
+              <span className="rounded-pill bg-paper/10 px-2 py-0.5 text-[9px] text-paper/55 md:px-3 md:py-1 md:text-xs">
                 {e.rating.split(" · ")[0]}
               </span>
             ) : null}
-            <span className="rounded-pill bg-paper/10 px-2 py-0.5 text-[9px] text-paper/55">
+            <span className="rounded-pill bg-paper/10 px-2 py-0.5 text-[9px] text-paper/55 md:px-3 md:py-1 md:text-xs">
               ⏱ {e.duration}
             </span>
           </div>
