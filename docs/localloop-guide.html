@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LocalLoop — Chiang Mai</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,600&family=DM+Sans:wght@300;400;500&family=Noto+Serif+Thai:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --night:   #0E0B07;
+  --ink:     #1C1710;
+  --paper:   #F9F5EE;
+  --warm:    #F2EAD6;
+  --sand:    #E5D9C0;
+  --border:  #DDD0B4;
+  --muted:   #8C7D65;
+  --loop:    #E07B2A;
+  --loop2:   #F5A94E;
+  --jade:    #2E6B50;
+  --jade2:   #4A9970;
+  --rose:    #C0433A;
+  --sky:     #3D6B8C;
+  --white:   #FFFDF8;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  max-width: 430px;
+  margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── GRAIN ─── */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:999;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.6;
+}
+
+/* ─── HERO ─── */
+.hero {
+  background: var(--night);
+  min-height: 300px;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
+.hero-rings {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 15% 85%, rgba(224,123,42,.4) 0%, transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(46,107,80,.35) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(14,11,7,.6) 0%, transparent 70%);
+}
+.hero-lines {
+  position:absolute; inset:0; opacity:.06;
+  background: repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(255,255,255,.6) 28px, rgba(255,255,255,.6) 29px);
+}
+.hero-content {
+  position: relative; z-index: 2;
+  padding: 52px 22px 36px;
+}
+.hero-kicker {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--loop2); margin-bottom: 14px;
+  animation: fadeUp .5s ease both .1s;
+}
+.hero-kicker-line { width: 20px; height: 1px; background: var(--loop); }
+.hero-wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px; line-height: .92; letter-spacing: 1px;
+  color: var(--paper); margin-bottom: 2px;
+  animation: fadeUp .5s ease both .2s;
+}
+.hero-wordmark span { color: var(--loop); }
+.hero-thai {
+  font-family: 'Noto Serif Thai', serif;
+  font-size: 12px; color: rgba(249,245,238,.35);
+  letter-spacing: 2px; margin-bottom: 16px;
+  animation: fadeUp .5s ease both .3s;
+}
+.hero-tagline {
+  font-family: 'Fraunces', serif;
+  font-size: 16px; font-weight: 300; font-style: italic;
+  color: rgba(249,245,238,.7); line-height: 1.5; max-width: 260px;
+  animation: fadeUp .5s ease both .4s;
+}
+.hero-tagline strong { color: var(--paper); font-weight: 600; font-style: normal; }
+.hero-pills {
+  display: flex; gap: 6px; margin-top: 18px; flex-wrap: wrap;
+  animation: fadeUp .5s ease both .5s;
+}
+.hero-pill {
+  font-size: 9px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid rgba(249,245,238,.2); color: rgba(249,245,238,.6);
+}
+.hero-pill.active { background: var(--loop); border-color: var(--loop); color: var(--night); }
+
+/* ─── COMMUNITY STRIP ─── */
+.community-strip {
+  background: var(--loop);
+  padding: 12px 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.cs-avatars { display: flex; }
+.cs-av {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid var(--loop);
+  background: var(--night);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; margin-right: -6px; flex-shrink: 0;
+}
+.cs-text { margin-left: 14px; flex: 1; }
+.cs-title { font-size: 11px; font-weight: 500; color: var(--night); line-height: 1.3; }
+.cs-sub { font-size: 9.5px; color: rgba(14,11,7,.6); margin-top: 1px; }
+.cs-count {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; color: var(--night); letter-spacing: 1px; line-height: 1;
+}
+.cs-count-lbl { font-size: 8px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: rgba(14,11,7,.55); }
+
+/* ─── SECTION HEADER ─── */
+.sec { padding: 28px 18px 14px; }
+.sec-top { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 4px; }
+.sec-label {
+  font-size: 8px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--loop); margin-bottom: 4px;
+}
+.sec-title {
+  font-family: 'Fraunces', serif;
+  font-size: 26px; font-weight: 600; letter-spacing: -.3px; color: var(--ink);
+  line-height: 1.1;
+}
+.sec-more {
+  font-size: 9px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--loop); text-decoration: none; padding-bottom: 2px;
+  border-bottom: 1px solid var(--loop);
+}
+
+/* ─── BUNDLES ─── */
+.bundles-scroll {
+  display: flex; gap: 10px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  padding: 0 18px 20px; scrollbar-width: none;
+}
+.bundles-scroll::-webkit-scrollbar { display: none; }
+
+.bundle {
+  flex-shrink: 0; width: 240px;
+  border-radius: 14px; overflow: hidden;
+  cursor: pointer; position: relative;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .18s;
+  box-shadow: 0 6px 24px rgba(14,11,7,.14);
+}
+.bundle:active { transform: scale(.97); }
+
+.bundle-bg {
+  height: 130px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.bundle-emojis {
+  display: flex; gap: -4px; font-size: 36px; position: relative; z-index: 1;
+}
+.bundle-emojis span { margin: 0 2px; }
+.bundle-plus {
+  position: absolute; font-size: 18px; color: rgba(255,255,255,.6);
+  z-index: 2; font-weight: 700; font-family: 'DM Sans', sans-serif;
+}
+.bundle-badge {
+  position: absolute; top: 10px; left: 10px; z-index: 3;
+  background: rgba(14,11,7,.55); backdrop-filter: blur(4px);
+  color: var(--paper); font-size: 8px; font-weight: 500;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 20px;
+}
+.bundle-save {
+  position: absolute; top: 10px; right: 10px; z-index: 3;
+  background: var(--loop); color: var(--night);
+  font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 20px;
+}
+.bundle-body {
+  background: var(--white); padding: 12px 14px 14px;
+}
+.bundle-name {
+  font-family: 'Fraunces', serif;
+  font-size: 17px; font-weight: 600; color: var(--ink);
+  line-height: 1.2; margin-bottom: 4px;
+}
+.bundle-tagline {
+  font-size: 11px; color: var(--muted); line-height: 1.4; margin-bottom: 8px;
+}
+.bundle-items { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
+.bundle-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--ink);
+}
+.bundle-item-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--loop); flex-shrink: 0; }
+.bundle-footer { display: flex; align-items: center; justify-content: space-between; }
+.bundle-price { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: var(--loop); }
+.bundle-price-orig { font-size: 11px; color: var(--muted); text-decoration: line-through; margin-left: 4px; }
+.bundle-cta {
+  background: var(--ink); color: var(--paper);
+  font-size: 9px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+  padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.bundle-looped {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10px; color: var(--muted); margin-top: 8px;
+  padding-top: 8px; border-top: 1px solid var(--border);
+}
+.looped-av {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--warm); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; font-size: 10px;
+}
+.looped-text { font-size: 9.5px; color: var(--muted); }
+.looped-text strong { color: var(--ink); font-weight: 500; }
+
+/* ─── CATEGORY TABS ─── */
+.cats {
+  display: flex; gap: 7px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  padding: 0 18px 14px; scrollbar-width: none;
+}
+.cats::-webkit-scrollbar { display: none; }
+.cat {
+  flex-shrink: 0; display: flex; align-items: center; gap: 5px;
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 7px 12px;
+  cursor: pointer; transition: all .18s;
+  -webkit-tap-highlight-color: transparent;
+}
+.cat.active { background: var(--night); border-color: var(--night); }
+.cat-icon { font-size: 15px; }
+.cat-name {
+  font-size: 10px; font-weight: 500; letter-spacing: .5px;
+  color: var(--muted); white-space: nowrap;
+}
+.cat.active .cat-name { color: var(--paper); }
+
+/* ─── FEATURED (full-width dark card) ─── */
+.feat-wrap { padding: 0 18px; }
+.feat-card {
+  border-radius: 14px; overflow: hidden;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform .18s;
+  box-shadow: 0 6px 24px rgba(14,11,7,.12);
+}
+.feat-card:active { transform: scale(.98); }
+.feat-img {
+  height: 190px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 80px;
+}
+.feat-grad {
+  position: absolute; inset: 0;
+  background: linear-gradient(transparent 40%, rgba(14,11,7,.92));
+}
+.feat-host-pick {
+  position: absolute; top: 12px; right: 12px;
+  background: var(--loop); color: var(--night);
+  font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 20px;
+}
+.feat-body { background: var(--night); padding: 14px 16px 16px; }
+.feat-cat {
+  font-size: 8px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--loop2); margin-bottom: 5px;
+}
+.feat-title {
+  font-family: 'Fraunces', serif;
+  font-size: 21px; font-weight: 600; color: var(--paper);
+  line-height: 1.15; margin-bottom: 10px;
+}
+.feat-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.feat-price { font-size: 15px; font-weight: 500; color: var(--loop2); }
+.feat-price span { font-size: 10px; color: rgba(249,245,238,.4); font-weight: 300; }
+.feat-pill {
+  font-size: 9px; padding: 2px 8px; border-radius: 20px;
+  background: rgba(249,245,238,.1); color: rgba(249,245,238,.55);
+}
+.feat-looped {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid rgba(249,245,238,.1);
+  font-size: 10px; color: rgba(249,245,238,.45);
+}
+.feat-looped-av {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(249,245,238,.1); display: flex; align-items: center; justify-content: center; font-size: 11px;
+}
+
+/* ─── 2-COL GRID ─── */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 18px; }
+.g-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform .15s;
+}
+.g-card:active { transform: scale(.97); }
+.g-img {
+  height: 90px; display: flex; align-items: center; justify-content: center; font-size: 36px;
+  position: relative;
+}
+.g-body { padding: 10px 10px 12px; }
+.g-cat { font-size: 8px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.g-title { font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.2; margin-bottom: 5px; }
+.g-price { font-size: 12px; font-weight: 500; color: var(--loop); }
+.g-price span { font-size: 10px; color: var(--muted); font-weight: 300; }
+.g-looped { font-size: 9.5px; color: var(--muted); margin-top: 4px; }
+
+/* ─── LIST CARDS ─── */
+.list-wrap { padding: 0 18px; display: flex; flex-direction: column; gap: 8px; }
+.l-card {
+  display: flex; gap: 12px; align-items: center;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; padding: 11px 13px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform .15s;
+}
+.l-card:active { transform: scale(.98); }
+.l-icon {
+  width: 48px; height: 48px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.l-body { flex: 1; min-width: 0; }
+.l-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.2; margin-bottom: 2px; }
+.l-looped { font-size: 9.5px; color: var(--muted); margin-bottom: 4px; }
+.l-meta { display: flex; gap: 8px; align-items: center; }
+.l-price { font-size: 12px; font-weight: 500; color: var(--loop); }
+.l-pill { font-size: 9.5px; color: var(--muted); }
+.l-arrow { color: var(--border); font-size: 18px; flex-shrink: 0; }
+
+/* bg tints */
+.bg-o { background: linear-gradient(135deg,#FFF0D4,#FBCF80); }
+.bg-g { background: linear-gradient(135deg,#D4EDDF,#9ED4B5); }
+.bg-r { background: linear-gradient(135deg,#F5DCDA,#E8A09B); }
+.bg-b { background: linear-gradient(135deg,#D4E5F5,#9EC0E0); }
+.bg-n { background: linear-gradient(135deg,#1a3a25,#2E6B50); }
+.bg-d { background: linear-gradient(135deg,#1a1710,#3d3520); }
+
+/* ─── COMMUNITY MANIFESTO ─── */
+.manifesto {
+  margin: 28px 18px;
+  background: var(--night);
+  border-radius: 14px;
+  padding: 24px 20px;
+  position: relative; overflow: hidden;
+}
+.manifesto::before {
+  content: '∞'; font-family: 'Bebas Neue', sans-serif;
+  font-size: 160px; color: rgba(224,123,42,.07);
+  position: absolute; right: -20px; bottom: -30px; line-height: 1;
+  pointer-events: none;
+}
+.manifesto-label {
+  font-size: 8px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--loop); margin-bottom: 10px;
+}
+.manifesto-title {
+  font-family: 'Fraunces', serif;
+  font-size: 24px; font-weight: 600; color: var(--paper);
+  line-height: 1.2; margin-bottom: 14px;
+}
+.manifesto-title em { color: var(--loop2); font-style: italic; }
+.manifesto-body { font-size: 13px; color: rgba(249,245,238,.6); line-height: 1.7; margin-bottom: 18px; }
+.manifesto-body strong { color: var(--paper); font-weight: 500; }
+.contributor-row { display: flex; flex-direction: column; gap: 10px; }
+.contributor {
+  display: flex; align-items: center; gap: 10px;
+}
+.contrib-av {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(249,245,238,.08);
+  border: 1px solid rgba(249,245,238,.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.contrib-name { font-size: 13px; font-weight: 500; color: var(--paper); }
+.contrib-role { font-size: 10px; color: rgba(249,245,238,.4); margin-top: 1px; }
+.join-btn {
+  display: block; width: 100%; margin-top: 18px;
+  background: transparent; border: 1px solid rgba(249,245,238,.2);
+  color: rgba(249,245,238,.6); border-radius: 8px; padding: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+  letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all .2s;
+}
+.join-btn:active { background: rgba(249,245,238,.08); }
+
+/* ─── FOOTER ─── */
+.footer { background: var(--warm); border-top: 1px solid var(--border); padding: 28px 20px 48px; }
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px; letter-spacing: 1px; color: var(--ink);
+  margin-bottom: 2px;
+}
+.footer-logo span { color: var(--loop); }
+.footer-tagline { font-family: 'Fraunces', serif; font-style: italic; font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+.footer-links { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.footer-link { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.footer-note { font-size: 11px; color: var(--muted); line-height: 1.6; }
+
+/* ─── MODAL ─── */
+.overlay {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(14,11,7,.7); backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px); align-items: flex-end;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: 20px 20px 0 0;
+  width: 100%; max-height: 88vh; overflow-y: auto;
+  animation: slideUp .3s cubic-bezier(.16,1,.3,1);
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-drag { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 14px auto 0; }
+.modal-hero {
+  height: 170px; display: flex; align-items: center; justify-content: center;
+  font-size: 80px; position: relative;
+}
+.modal-x {
+  position: absolute; top: 14px; right: 14px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(14,11,7,.45); color: var(--paper);
+  border: none; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-body { padding: 18px 20px 36px; }
+.modal-cat { font-size: 9px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--loop); margin-bottom: 6px; }
+.modal-title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; line-height: 1.1; color: var(--ink); margin-bottom: 12px; }
+.modal-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.m-pill { font-size: 10px; padding: 4px 10px; border-radius: 20px; background: var(--warm); border: 1px solid var(--border); color: var(--muted); }
+.m-price { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; color: var(--loop); }
+.modal-looped {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--warm); border-radius: 8px; padding: 10px 12px;
+  margin-bottom: 14px;
+}
+.ml-av { width: 28px; height: 28px; border-radius: 50%; background: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.ml-text { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+.ml-text strong { color: var(--ink); font-weight: 500; }
+.modal-desc { font-size: 13.5px; color: var(--muted); line-height: 1.72; margin-bottom: 16px; }
+.modal-inc-title { font-size: 9px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.inc-row { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--ink); margin-bottom: 6px; }
+.inc-check { color: var(--jade); font-size: 13px; margin-top: 1px; flex-shrink: 0; }
+.book-btn {
+  width: 100%; padding: 16px; margin-top: 18px;
+  background: var(--loop); color: var(--night); border: none;
+  border-radius: 10px; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .2s;
+}
+.book-btn:active { background: var(--loop2); }
+.book-note { text-align: center; font-size: 10px; color: var(--muted); margin-top: 8px; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-rings"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-content">
+    <div class="hero-kicker"><div class="hero-kicker-line"></div>Chiang Mai · Community Guide</div>
+    <div class="hero-wordmark">LOCAL<span>LOOP</span></div>
+    <div class="hero-thai">คู่มือท้องถิ่น — เชียงใหม่</div>
+    <div class="hero-tagline"><strong>Recommended by people who actually live here.</strong> Not algorithms. Not ads.</div>
+    <div class="hero-pills">
+      <div class="hero-pill active">📍 Old City</div>
+      <div class="hero-pill">🎨 Nimman</div>
+      <div class="hero-pill">🌿 Nimmanhaemin</div>
+      <div class="hero-pill">🏔 Doi Suthep</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMMUNITY STRIP -->
+<div class="community-strip">
+  <div class="cs-avatars">
+    <div class="cs-av">🏠</div>
+    <div class="cs-av">🧘</div>
+    <div class="cs-av">🍜</div>
+    <div class="cs-av">🗺️</div>
+  </div>
+  <div class="cs-text">
+    <div class="cs-title">Curated by 24 locals & hosts</div>
+    <div class="cs-sub">Hosts, guides, chefs, expats — all loop contributors</div>
+  </div>
+  <div style="text-align:right;flex-shrink:0">
+    <div class="cs-count">148</div>
+    <div class="cs-count-lbl">Loops</div>
+  </div>
+</div>
+
+<!-- BUNDLES -->
+<div class="sec">
+  <div class="sec-label">New on LocalLoop</div>
+  <div class="sec-top">
+    <div class="sec-title">Ready-made afternoons</div>
+    <a href="#" class="sec-more">All</a>
+  </div>
+  <div style="font-size:12px;color:var(--muted);font-family:'Fraunces',serif;font-style:italic;margin-bottom:6px">Everything sorted. One price. Zero planning stress.</div>
+</div>
+
+<div class="bundles-scroll">
+
+  <!-- Bundle 1 -->
+  <div class="bundle" onclick="openModal('b_unwind')">
+    <div class="bundle-bg bg-n">
+      <div class="bundle-badge">2 hrs · any afternoon</div>
+      <div class="bundle-save">Save ฿150</div>
+      <div class="bundle-emojis"><span>🧘</span><span>🛺</span></div>
+    </div>
+    <div class="bundle-body">
+      <div class="bundle-name">The Unwind Afternoon</div>
+      <div class="bundle-tagline">Your relaxed afternoon, door to door</div>
+      <div class="bundle-items">
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Traditional Thai massage · 90 min</div>
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Grab ride both ways included</div>
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Pre-booked time slot</div>
+      </div>
+      <div class="bundle-footer">
+        <div>
+          <span class="bundle-price">฿750</span>
+          <span class="bundle-price-orig">฿900</span>
+        </div>
+        <button class="bundle-cta">Loop it →</button>
+      </div>
+      <div class="bundle-looped">
+        <div class="looped-av">🧘</div>
+        <div class="looped-text">Looped by <strong>Khun Noi</strong> · wellness guide, 8 yrs CM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bundle 2 -->
+  <div class="bundle" onclick="openModal('b_golden')">
+    <div class="bundle-bg bg-d">
+      <div class="bundle-badge">Evening · 3 hrs</div>
+      <div class="bundle-save">Save ฿200</div>
+      <div class="bundle-emojis"><span>🛕</span><span>🍢</span><span>🛺</span></div>
+    </div>
+    <div class="bundle-body">
+      <div class="bundle-name">The Golden Hour</div>
+      <div class="bundle-tagline">The CM evening everyone remembers</div>
+      <div class="bundle-items">
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Temple walk at golden hour</div>
+        <div class="bundle-item"><div class="bundle-item-dot"></div>4 street food tastings</div>
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Tuk-tuk home included</div>
+      </div>
+      <div class="bundle-footer">
+        <div>
+          <span class="bundle-price">฿1,100</span>
+          <span class="bundle-price-orig">฿1,300</span>
+        </div>
+        <button class="bundle-cta">Loop it →</button>
+      </div>
+      <div class="bundle-looped">
+        <div class="looped-av">🗺️</div>
+        <div class="looped-text">Looped by <strong>Jake</strong> · expat guide, lived CM 4 yrs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bundle 3 -->
+  <div class="bundle" onclick="openModal('b_bigday')">
+    <div class="bundle-bg bg-g">
+      <div class="bundle-badge">Full day · departs 7am</div>
+      <div class="bundle-save">Save ฿350</div>
+      <div class="bundle-emojis"><span>🐘</span><span>🥣</span></div>
+    </div>
+    <div class="bundle-body">
+      <div class="bundle-name">The Big Day Out</div>
+      <div class="bundle-tagline">Everything sorted before you wake up</div>
+      <div class="bundle-items">
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Ethical elephant sanctuary</div>
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Breakfast box from your door</div>
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Return transport included</div>
+      </div>
+      <div class="bundle-footer">
+        <div>
+          <span class="bundle-price">฿3,100</span>
+          <span class="bundle-price-orig">฿3,450</span>
+        </div>
+        <button class="bundle-cta">Loop it →</button>
+      </div>
+      <div class="bundle-looped">
+        <div class="looped-av">🌿</div>
+        <div class="looped-text">Looped by <strong>Pom</strong> · your host, Thapae Soi 4</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bundle 4 -->
+  <div class="bundle" onclick="openModal('b_lunch')">
+    <div class="bundle-bg bg-o">
+      <div class="bundle-badge">Lunch · 2 hrs</div>
+      <div class="bundle-save">Save ฿100</div>
+      <div class="bundle-emojis"><span>🍜</span><span>🛺</span></div>
+    </div>
+    <div class="bundle-body">
+      <div class="bundle-name">The Local Lunch Run</div>
+      <div class="bundle-tagline">Eat where locals eat. Zero navigation stress.</div>
+      <div class="bundle-items">
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Lunch at Khao Soi Khun Yai</div>
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Songthaew ride both ways</div>
+        <div class="bundle-item"><div class="bundle-item-dot"></div>Table pre-reserved</div>
+      </div>
+      <div class="bundle-footer">
+        <div>
+          <span class="bundle-price">฿480</span>
+          <span class="bundle-price-orig">฿580</span>
+        </div>
+        <button class="bundle-cta">Loop it →</button>
+      </div>
+      <div class="bundle-looped">
+        <div class="looped-av">🍜</div>
+        <div class="looped-text">Looped by <strong>Khun Malee</strong> · food blogger, CM born</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="sec" style="padding-bottom:8px">
+  <div class="sec-title">Explore</div>
+</div>
+<div class="cats">
+  <div class="cat active" onclick="setcat(this)"><span class="cat-icon">✨</span><span class="cat-name">All</span></div>
+  <div class="cat" onclick="setcat(this)"><span class="cat-icon">🍜</span><span class="cat-name">Food</span></div>
+  <div class="cat" onclick="setcat(this)"><span class="cat-icon">🛕</span><span class="cat-name">Culture</span></div>
+  <div class="cat" onclick="setcat(this)"><span class="cat-icon">🐘</span><span class="cat-name">Nature</span></div>
+  <div class="cat" onclick="setcat(this)"><span class="cat-icon">🧘</span><span class="cat-name">Wellness</span></div>
+  <div class="cat" onclick="setcat(this)"><span class="cat-icon">⚡</span><span class="cat-name">Adventure</span></div>
+  <div class="cat" onclick="setcat(this)"><span class="cat-icon">🎨</span><span class="cat-name">Nimman</span></div>
+</div>
+
+<!-- FEATURED -->
+<div class="sec" style="padding-bottom:10px">
+  <div class="sec-label">Community top pick</div>
+  <div class="sec-title">Most looped this week</div>
+</div>
+<div class="feat-wrap">
+  <div class="feat-card" onclick="openModal('elephant')">
+    <div class="feat-img bg-n">
+      🐘
+      <div class="feat-grad"></div>
+      <div class="feat-host-pick">🔥 48 loops</div>
+    </div>
+    <div class="feat-body">
+      <div class="feat-cat">Nature · Ethical · Half Day</div>
+      <div class="feat-title">Morning with Rescued Elephants</div>
+      <div class="feat-row">
+        <div class="feat-price">฿2,800 <span>/ person</span></div>
+        <div class="feat-pill">⭐ 4.9</div>
+        <div class="feat-pill">⏱ 4 hrs</div>
+      </div>
+      <div class="feat-looped">
+        <div class="feat-looped-av">🌿</div>
+        Looped by <strong style="color:rgba(249,245,238,.7);font-weight:500;margin-left:3px">Pom</strong> &nbsp;·&nbsp; your host at No.51 & No.55
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="sec">
+  <div class="sec-title">Around the loop</div>
+</div>
+<div class="grid">
+  <div class="g-card" onclick="openModal('cooking')">
+    <div class="g-img bg-o">🍳</div>
+    <div class="g-body">
+      <div class="g-cat">Food</div>
+      <div class="g-title">Thai Cooking Class</div>
+      <div class="g-price">฿1,200 <span>/person</span></div>
+      <div class="g-looped">By Khun Malee 🍜</div>
+    </div>
+  </div>
+  <div class="g-card" onclick="openModal('temple')">
+    <div class="g-img bg-r">🛕</div>
+    <div class="g-body">
+      <div class="g-cat">Culture</div>
+      <div class="g-title">Old City Temple Walk</div>
+      <div class="g-price">฿650 <span>/person</span></div>
+      <div class="g-looped">By Jake 🗺️</div>
+    </div>
+  </div>
+  <div class="g-card" onclick="openModal('massage')">
+    <div class="g-img bg-b">🧘</div>
+    <div class="g-body">
+      <div class="g-cat">Wellness</div>
+      <div class="g-title">Thai Massage 90 min</div>
+      <div class="g-price">฿450 <span>/person</span></div>
+      <div class="g-looped">By Khun Noi 🧘</div>
+    </div>
+  </div>
+  <div class="g-card" onclick="openModal('nimman')">
+    <div class="g-img" style="background:linear-gradient(135deg,#e8d4f0,#c49ed4)">☕</div>
+    <div class="g-body">
+      <div class="g-cat">Nimman</div>
+      <div class="g-title">Nimman Coffee Crawl</div>
+      <div class="g-price">฿320 <span>/person</span></div>
+      <div class="g-looped">By Sara ☕</div>
+    </div>
+  </div>
+</div>
+
+<!-- LIST -->
+<div class="sec" style="margin-top:12px">
+  <div class="sec-title">More loops</div>
+</div>
+<div class="list-wrap">
+  <div class="l-card" onclick="openModal('doi')">
+    <div class="l-icon bg-b">🏔️</div>
+    <div class="l-body">
+      <div class="l-title">Doi Suthep Temple Day</div>
+      <div class="l-looped">Looped by Jake · "Don't leave CM without this"</div>
+      <div class="l-meta"><div class="l-price">฿950/person</div><div class="l-pill">⭐ 4.8 · Full day</div></div>
+    </div>
+    <div class="l-arrow">›</div>
+  </div>
+  <div class="l-card" onclick="openModal('market')">
+    <div class="l-icon bg-o">🛍️</div>
+    <div class="l-body">
+      <div class="l-title">Sunday Night Market</div>
+      <div class="l-looped">Looped by Pom · "Start at 5pm, go early"</div>
+      <div class="l-meta"><div class="l-price">฿550/person</div><div class="l-pill">⭐ 4.9 · 3 hrs</div></div>
+    </div>
+    <div class="l-arrow">›</div>
+  </div>
+  <div class="l-card" onclick="openModal('zipline')">
+    <div class="l-icon bg-g">🌿</div>
+    <div class="l-body">
+      <div class="l-title">Jungle Zip-line Adventure</div>
+      <div class="l-looped">Looped by Tom · "Perfect for groups"</div>
+      <div class="l-meta"><div class="l-price">฿2,200/person</div><div class="l-pill">⭐ 4.8 · 6 hrs</div></div>
+    </div>
+    <div class="l-arrow">›</div>
+  </div>
+</div>
+
+<!-- MANIFESTO -->
+<div class="manifesto">
+  <div class="manifesto-label">What is LocalLoop?</div>
+  <div class="manifesto-title">Built by locals.<br>For <em>every</em> visitor.</div>
+  <div class="manifesto-body">
+    LocalLoop isn't one person's opinion. It's a living guide built by the people who <strong>actually live here</strong> — hosts, long-term expats, local chefs, guides, and residents. Every recommendation is a "Loop" — a real endorsement from a real person with their name on it.
+    <br><br>
+    No algorithms. No paid placements. No fake reviews.
+  </div>
+  <div class="contributor-row">
+    <div class="contributor">
+      <div class="contrib-av">🏠</div>
+      <div><div class="contrib-name">Khun Pom</div><div class="contrib-role">Airbnb host · Thapae Soi 4 · 24 loops</div></div>
+    </div>
+    <div class="contributor">
+      <div class="contrib-av">🍜</div>
+      <div><div class="contrib-name">Khun Malee</div><div class="contrib-role">Food blogger · CM born & raised · 31 loops</div></div>
+    </div>
+    <div class="contributor">
+      <div class="contrib-av">🗺️</div>
+      <div><div class="contrib-name">Jake</div><div class="contrib-role">Expat guide · lived in CM 4 yrs · 19 loops</div></div>
+    </div>
+  </div>
+  <button class="join-btn" onclick="alert('In the live version: hosts and locals can apply to become Loop contributors')">+ Become a Loop contributor</button>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-logo">LOCAL<span>LOOP</span></div>
+  <div class="footer-tagline">Recommended by people who actually live here.</div>
+  <div class="footer-links">
+    <span class="footer-link">About</span>
+    <span class="footer-link">List a business</span>
+    <span class="footer-link">Become a contributor</span>
+  </div>
+  <div class="footer-note">Small commissions on bookings keep this guide free and independent. We only loop things we'd genuinely recommend to a friend.</div>
+</div>
+
+<!-- MODAL OVERLAY -->
+<div class="overlay" id="ov" onclick="maybeClose(event)">
+  <div class="modal" id="modal">
+    <div class="modal-drag"></div>
+    <div class="modal-hero" id="mHero"></div>
+    <div class="modal-body">
+      <div class="modal-cat" id="mCat"></div>
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-pills" id="mPills"></div>
+      <div class="modal-looped" id="mLooped"></div>
+      <div class="modal-desc" id="mDesc"></div>
+      <div class="modal-inc-title" id="mIncTitle"></div>
+      <div id="mInc"></div>
+      <button class="book-btn" onclick="bookNow()">Book this loop →</button>
+      <div class="book-note">Instant confirmation · Free cancellation 24h before</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = {
+  elephant: {
+    emoji:'🐘', bg:'linear-gradient(135deg,#1a3a1a,#2E6B50)',
+    cat:'Nature · Ethical Tourism',
+    title:'Morning with Rescued Elephants',
+    price:'฿2,800/person', duration:'4 hours', distance:'45 min drive', rating:'⭐ 4.9 · 312 loops',
+    looper:'🌿', looperName:'Pom', looperRole:'your host at No.51 & No.55',
+    looperQuote:'"This is the one thing I recommend to every single guest. Go early."',
+    desc:'Spend a morning with rescued elephants at a certified ethical sanctuary. No riding — just feeding, bathing, and walking alongside them in their natural habitat. One of the most genuinely moving experiences in Thailand.',
+    inc:['Round-trip transport from your door','Elephant feeding & bathing session','Vegetarian lunch at the sanctuary','English-speaking guide throughout','Souvenir photo package']
+  },
+  cooking: {
+    emoji:'🍳', bg:'linear-gradient(135deg,#7a3a0a,#E07B2A)',
+    cat:'Food · Morning or Afternoon',
+    title:'Thai Cooking Class',
+    price:'฿1,200/person', duration:'3 hours', distance:'3 min walk', rating:'⭐ 4.8 · 247 loops',
+    looper:'🍜', looperName:'Khun Malee', looperRole:'food blogger, CM born & raised',
+    looperQuote:'"Took me 10 years to find a class this good. Right around the corner from the soi."',
+    desc:'Cook 4 classic Thai dishes — pad thai, tom kha, green curry, mango sticky rice — with a local chef whose family has run this school for two decades. You eat everything. Recipes go home with you.',
+    inc:['Morning market visit to pick fresh ingredients','All cooking ingredients & equipment','Full recipe booklet to take home','Your cooked dishes as lunch','Small group — max 8 people']
+  },
+  temple: {
+    emoji:'🛕', bg:'linear-gradient(135deg,#4a0a0a,#8B1A1A)',
+    cat:'Culture · Morning',
+    title:'Old City Temple Walk',
+    price:'฿650/person', duration:'2.5 hours', distance:'Starts at your door', rating:'⭐ 4.7 · 189 loops',
+    looper:'🗺️', looperName:'Jake', looperRole:'expat guide, CM 4 years',
+    looperQuote:'"I\'ve done this walk 50 times. I learn something new every time."',
+    desc:'Walk through the Ancient Old City with a monk-trained guide. Five temples including Wat Chedi Luang and Wat Phra Singh. Learn the real stories behind the symbols and history that most tourists walk right past.',
+    inc:['Small group — max 8 people','Local expert guide','All temple entry fees','Traditional merit-making ceremony']
+  },
+  massage: {
+    emoji:'🧘', bg:'linear-gradient(135deg,#2a1a4a,#5a3a8a)',
+    cat:'Wellness · Any Time',
+    title:'Traditional Thai Massage',
+    price:'฿450/person', duration:'90 minutes', distance:'5 min walk', rating:'⭐ 4.9 · 428 loops',
+    looper:'🧘', looperName:'Khun Noi', looperRole:'wellness guide, 8 years CM',
+    looperQuote:'"I send every visitor here. Best hands in the Old City, no question."',
+    desc:'The best Thai massage in the Old City, full stop. Trained therapists, clean private rooms, no pressure upselling. Book in advance — they fill up by 3pm most days. The perfect end to a temple walk.',
+    inc:['90-min traditional Thai massage','Private room','Ginger tea before & after','Shower facilities available']
+  },
+  nimman: {
+    emoji:'☕', bg:'linear-gradient(135deg,#2a1a3a,#6a3a8a)',
+    cat:'Nimman · Morning or Afternoon',
+    title:'Nimman Coffee Crawl',
+    price:'฿320/person', duration:'2 hours', distance:'15 min by Grab', rating:'⭐ 4.8 · 94 loops',
+    looper:'☕', looperName:'Sara', looperRole:'digital nomad, CM 2 years',
+    looperQuote:'"Nimman is CM\'s creative neighbourhood. These 3 cafés are the real ones, not the tourist traps."',
+    desc:'Hit three of Nimman\'s best independent specialty coffee shops with a guide who knows the owners. Learn the coffee sourcing stories, try single-origin Thai beans, and soak in the neighbourhood\'s creative energy.',
+    inc:['Guide who knows the neighbourhood','3 specialty coffee tastings included','Intro to Thai single-origin beans','Best spots for photos & co-working tips']
+  },
+  doi: {
+    emoji:'🏔️', bg:'linear-gradient(135deg,#0a1a3a,#3D6B8C)',
+    cat:'Culture · Full Day',
+    title:'Doi Suthep Temple Day',
+    price:'฿950/person', duration:'Full day', distance:'30 min drive', rating:'⭐ 4.8 · 501 loops',
+    looper:'🗺️', looperName:'Jake', looperRole:'expat guide, CM 4 years',
+    looperQuote:'"Don\'t leave Chiang Mai without doing this. The view from the top changes you."',
+    desc:'Visit the sacred Doi Suthep temple perched 1,080m above Chiang Mai with panoramic city views. Continue to the royal Bhubing Palace garden and a hilltribe village. The essential Chiang Mai day.',
+    inc:['Shared minivan (pick up from your door)','Temple entry fee included','Local guide all day','Lunch at hilltribe village']
+  },
+  market: {
+    emoji:'🛍️', bg:'linear-gradient(135deg,#3a2000,#E07B2A)',
+    cat:'Food & Culture · Sunday Evening',
+    title:'Sunday Night Market Tour',
+    price:'฿550/person', duration:'3 hours', distance:'2 min walk', rating:'⭐ 4.9 · 203 loops',
+    looper:'🏠', looperName:'Pom', looperRole:'your host, Thapae Soi 4',
+    looperQuote:'"It starts right at your door at 5pm. Go early for the best food stalls."',
+    desc:'Navigate the famous Sunday Walking Street like a local. Your guide knows every stall, hidden craft vendor, and best photo spot. Includes 4 street food tastings — mango sticky rice, grilled skewers, coconut ice cream, and more.',
+    inc:['Local food guide through the market','4 street food tastings included','Hidden vendor access','Shopping & price negotiation tips']
+  },
+  zipline: {
+    emoji:'🌿', bg:'linear-gradient(135deg,#0a2a15,#2E6B50)',
+    cat:'Adventure · Full Day',
+    title:'Jungle Zip-line Adventure',
+    price:'฿2,200/person', duration:'6 hours', distance:'40 min drive', rating:'⭐ 4.8 · 156 loops',
+    looper:'🧗', looperName:'Tom', looperRole:'adventure guide, CM 3 years',
+    looperQuote:'"28 lines, rope bridges, free-fall drop. Perfect for groups who want a proper adrenaline day."',
+    desc:'Fly through the jungle canopy on one of Thailand\'s most thrilling courses. 28 lines, rope bridges, and a 30-meter free-fall drop. All safety gear included. Great for groups of friends — everyone leaves buzzing.',
+    inc:['Return transport from Thapae Gate','All safety equipment & training','Experienced bilingual guides','Lunch at the jungle camp','GoPro video package']
+  },
+  // BUNDLES
+  b_unwind: {
+    emoji:'🧘', bg:'linear-gradient(135deg,#1a1a3a,#2a2a5a)',
+    cat:'Bundle · Afternoon · 2 hrs',
+    title:'The Unwind Afternoon',
+    price:'฿750/person', duration:'2 hours', distance:'Grab included', rating:'⭐ Bundle · Save ฿150',
+    looper:'🧘', looperName:'Khun Noi', looperRole:'wellness guide, 8 years in CM',
+    looperQuote:'"I created this because guests kept asking me how to get to the massage place without the hassle. Now it\'s sorted in one tap."',
+    desc:'Everything for a perfect relaxed afternoon — without having to figure out transport, find the right place, or worry about getting home. Pre-booked time slot, Grab rides both ways, and the best massage therapist in Old City. Arrive. Relax. Be collected.',
+    inc:['90-min traditional Thai massage at Khun Noi\'s recommended parlour','Grab ride to the massage place','Grab ride back to your door','Pre-booked time slot (no waiting)','Ginger tea on arrival']
+  },
+  b_golden: {
+    emoji:'🛕', bg:'linear-gradient(135deg,#1a1000,#3a2800)',
+    cat:'Bundle · Evening · 3 hrs',
+    title:'The Golden Hour',
+    price:'฿1,100/person', duration:'3 hours', distance:'Starts at your door', rating:'⭐ Bundle · Save ฿200',
+    looper:'🗺️', looperName:'Jake', looperRole:'expat guide, CM 4 years',
+    looperQuote:'"This is the evening I give every friend who visits me. Temple at sunset, street food, tuk-tuk home. It\'s the real Chiang Mai."',
+    desc:'The Chiang Mai evening that everyone remembers. Walk the ancient temples as golden hour light hits the stupas. Then your guide takes you through the best street food stalls — 4 tastings included. End the night in a private tuk-tuk back to your door.',
+    inc:['Old City temple walk at sunset (1.5 hrs)','Local guide throughout','4 street food tastings along the route','Private tuk-tuk ride home to your door','No extra transport costs']
+  },
+  b_bigday: {
+    emoji:'🐘', bg:'linear-gradient(135deg,#0a2a10,#1a4a20)',
+    cat:'Bundle · Full Day · Departs 7am',
+    title:'The Big Day Out',
+    price:'฿3,100/person', duration:'Full day', distance:'Pickup from your door', rating:'⭐ Bundle · Save ฿350',
+    looper:'🏠', looperName:'Pom', looperRole:'your host at No.51 & No.55',
+    looperQuote:'"I built this for guests who want a big day without having to think about anything. Just wake up and it\'s all there."',
+    desc:'Wake up, grab your breakfast box left at the door, and get picked up for the most iconic Chiang Mai experience. The elephant sanctuary, full transport, and lunch all sorted before you even checked your phone. The ultimate low-effort, high-memory day.',
+    inc:['Breakfast box delivered to your door at 6:45am','Pickup from No.51 or No.55 at 7am','Half-day ethical elephant sanctuary experience','Vegetarian lunch at the sanctuary','Return transport to your door']
+  },
+  b_lunch: {
+    emoji:'🍜', bg:'linear-gradient(135deg,#3a1500,#7a3a0a)',
+    cat:'Bundle · Lunch · 2 hrs',
+    title:'The Local Lunch Run',
+    price:'฿480/person', duration:'2 hours', distance:'Songthaew from door', rating:'⭐ Bundle · Save ฿100',
+    looper:'🍜', looperName:'Khun Malee', looperRole:'food blogger, CM born & raised',
+    looperQuote:'"Khao Soi Khun Yai is the best khao soi in Chiang Mai. They sell out by 1pm. I\'ve reserved a table for LocalLoop guests."',
+    desc:'Eat the best khao soi in Chiang Mai without any of the navigation stress. Your songthaew picks you up, takes you to Khun Yai\'s before it sells out, and brings you back. Table is pre-reserved. All you do is show up hungry.',
+    inc:['Songthaew ride both ways from your door','Pre-reserved table at Khao Soi Khun Yai','Guide to order like a local','Khao soi + side dish included in price']
+  }
+};
+
+function openModal(id) {
+  const d = DATA[id]; if (!d) return;
+  const isBundle = id.startsWith('b_');
+  document.getElementById('mHero').style.background = d.bg;
+  document.getElementById('mHero').innerHTML = `<span style="font-size:72px">${d.emoji}</span><button class="modal-x" onclick="closeModal()">×</button>`;
+  document.getElementById('mCat').textContent = d.cat;
+  document.getElementById('mTitle').textContent = d.title;
+  document.getElementById('mPills').innerHTML = `<div class="m-price">${d.price}</div><div class="m-pill">${d.duration}</div><div class="m-pill">${d.distance}</div><div class="m-pill">${d.rating}</div>`;
+  document.getElementById('mLooped').innerHTML = `<div class="ml-av">${d.looper}</div><div class="ml-text">Looped by <strong>${d.looperName}</strong> · ${d.looperRole}<br><em>"${d.looperQuote.replace(/^"|"$/g,'')}"</em></div>`;
+  document.getElementById('mDesc').textContent = d.desc;
+  document.getElementById('mIncTitle').textContent = isBundle ? "What's in the bundle" : "What's included";
+  document.getElementById('mInc').innerHTML = d.inc.map(i=>`<div class="inc-row"><span class="inc-check">✓</span>${i}</div>`).join('');
+  document.getElementById('ov').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('ov').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function maybeClose(e) { if (e.target === document.getElementById('ov')) closeModal(); }
+function bookNow() {
+  alert('🎉 Live version: opens your Viator/Klook affiliate link or direct booking form.\n\nYou earn 3–15% commission on every booking.');
+}
+function setcat(el) {
+  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
