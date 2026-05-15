@@ -128,7 +128,11 @@ export default async function ExperienceDetail({
             ))}
           </ul>
 
-          <BookCTA booking={listing.booking} />
+          <BookCTA
+            booking={listing.booking}
+            slug={listing.slug}
+            locale={locale}
+          />
         </article>
       </div>
     </main>

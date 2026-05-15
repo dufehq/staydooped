@@ -27,26 +27,22 @@ Bare minimum to put QR in the houses and start earning:
 
 ### Done ✅
 - [x] Next.js 16 app scaffold with `en`, `th`, `zh` locales
-- [x] 8 experiences + 4 bundles in `content/`
+- [x] 8 experiences + 4 bundles in `content/` — real Chiang Mai operators (Kerchor, Lila, Pongyang, etc.) with real Klook/Viator/GYG product IDs
 - [x] Home page layout (Hero, CategoryTabs, BundleScroll, FeaturedCard, ListingGrid)
 - [x] Detail page at `/e/[slug]`
 - [x] BookCTA component (branches on booking method)
 - [x] WhatsApp booking works
-- [x] `messages/zh.json` exists (UI shell strings only)
 - [x] Noto Sans SC font loaded for Chinese
 - [x] Locale auto-detection from `Accept-Language` (zh → /zh, en → /) and `NEXT_LOCALE` cookie persistence — works out of the box via next-intl middleware in `proxy.ts`. Verified with curl.
+- [x] **Language selector** — prominent EN / 中文 toggle at top of hero, visible on home + detail pages, path-preserving locale switch via next-intl `Link`.
+- [x] **Chinese listing content** — full ZH translations for all 12 listings (title, hook, description, contributorQuote, inclusions, priceLabel, duration, distance, rating, badge, saveBadge) layered via `content/i18n/zh.ts` and applied through `translateListing` getters. UI shell strings (sections, manifesto, footer, BookCTA, categories, etc.) also translated in `messages/zh.json`.
+- [x] **Hook copy** — `hook: string` on `ListingBase`, populated for all 12 listings (EN + ZH), rendered on FeaturedCard, ListingGrid, BundleCard.
+- [x] **`/api/go/[id]` route** — `id` is the listing slug; handler resolves vendor + productId from content, builds affiliate URL with sub-ID = `${locale}-${slug}`, 302 redirects. Reads env vars for affiliate keys (`KLOOK_AFF_ID`, `VIATOR_AFF_ID`, `GYG_AFF_ID`, `TRAVELPAYOUTS_MARKER`); WhatsApp listings rejected with 400, unknown slug → 404.
+- [x] **Listing images** — 12 WebP images at `public/images/listings/{slug}.webp` (1920×1072, ~150 KB each), rendered via `next/image` on FeaturedCard, ListingGrid, BundleCard, ListingList, and detail-page hero. Emoji dropped from hero areas; gradient stays as loading fallback.
 
 ### Day 1 — Core MVP
 
-- [ ] **Language selector** — prominent EN / 中文 toggle at top of hero (not buried in footer)
-  - Auto-detect browser language as hint, but always show the toggle visibly
-  - Clicking switches locale prefix (`/en/` ↔ `/zh/`)
-- [ ] **Chinese listing content** — translate titles, descriptions, contributor quotes, inclusions for all 8 experiences + 4 bundles into `messages/zh.json` or a `content/zh/` layer
-- [ ] **Hook copy** — add a `hook` field to listing type: one punchy sentence in EN + ZH that teases the story (shown on cards before the full description)
-- [ ] **Travelpayouts integration** — swap `PLACEHOLDER_*` product IDs once user provides them; update `BookingMethod` if needed to support Travelpayouts link format
-- [ ] **`/api/go/[id]` route** — redirect to affiliate URL with sub-ID tracking (locale + slug)
-- [ ] **Replace mock experience data with real Chiang Mai listings** — current `content/experiences.ts` is placeholder copy. Research 8 real, currently-operating Chiang Mai experiences (Old City / Thapae / Nimman / day-trip range) from recent sources (Klook, Viator, GetYourGuide, local press from the last ~12 months). For each, replace: `title`, `price` + `priceLabel` (THB), `duration`, `distance`, `description`, `contributorQuote`, `inclusions`, and `booking.productId` (real vendor ID, once affiliate IDs land). Keep the 8 slugs / categories / contributor personas — only the content swaps. Mirror into ZH alongside the Chinese listing content task above.
-- [ ] **Content audit** — ensure all 8 experiences are Chiang Mai Old City / Thapae area relevant
+- [ ] **Travelpayouts integration** — sign up + add `KLOOK_AFF_ID`, `VIATOR_AFF_ID`, `GYG_AFF_ID`, `TRAVELPAYOUTS_MARKER` to `.env.local`. Route handler already reads these; no code change needed once env is set.
 
 ### Day 2 — Deploy & QR
 

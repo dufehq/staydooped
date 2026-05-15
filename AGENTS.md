@@ -16,7 +16,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Content
 
 - Listings (bundles + experiences) live as typed TypeScript in `content/*.ts`. Single source of truth — no CMS. Layer 3 (Supabase) will migrate this shape over.
-- UI shell strings (section titles, hero, footer) live in `messages/{en,th,zh}.json` and are accessed via `useTranslations`. **Per-listing content is currently English-only**; translation lands in Phase 3.
+- UI shell strings (section titles, hero, footer) live in `messages/{en,th,zh}.json` and are accessed via `useTranslations` (server or client). Per-listing content is in `content/*.ts` (English base) with translation overlays in `content/i18n/{locale}.ts`. Getters take a `locale` argument (e.g. `getListing(slug, locale)`) and apply the overlay via `translateListing`. ZH ships; TH listing content lands in Phase 2.
 - Prices are stored as **THB integers** on `price` / `priceOriginal`. Format at render with `.toLocaleString()`; display copy lives on `priceLabel`.
 - `BookingMethod` is a discriminated union (`klook` / `viator` / `gyg` / `whatsapp`). Every listing must pick one. `<BookCTA>` branches on the discriminator.
 
@@ -35,7 +35,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Tooling
 
 - `npm run dev` uses **Webpack** (`next dev --webpack`), not Turbopack. Turbopack spawns one PostCSS subprocess per CSS file under `@tailwindcss/postcss` — heavy on this laptop. Revisit when Tailwind ships a Turbopack-native plugin or CSS surface area is small enough that the overhead doesn't matter.
-- Affiliate clicks route through `/api/go/[id]?p={vendor}` for click tracking and sub-ID injection. **Endpoint lands in Phase 4**; the `PLACEHOLDER_*` strings in `booking.productId` are intentional until then. WhatsApp links already work.
+- Affiliate clicks route through `app/api/go/[id]/route.ts` where `id` is the listing **slug** (e.g. `/api/go/elephant?locale=zh`). The handler looks up `booking.type` + `booking.productId` from content, builds the vendor's affiliate URL with sub-ID = `${locale}-${slug}`, and 302-redirects. WhatsApp listings bypass this route — `BookCTA` constructs `wa.me` URLs directly. Affiliate IDs read from env (`KLOOK_AFF_ID`, `VIATOR_AFF_ID`, `GYG_AFF_ID`, `TRAVELPAYOUTS_MARKER`); when unset, redirects still resolve to the operator's product page but no commission is tracked. Click logging to DB is Phase 2.
 - Playwright MCP (`.mcp.json`) is the browser for UI testing. When you finish a UI-testing pass:
   1. **Call `browser_close`** — leaving the session open holds a browser process and bleeds state (cookies like `NEXT_LOCALE`) into the next test run.
   2. **Delete the `.playwright-mcp/` artifacts you produced** (page snapshots, console logs, screenshots). They're per-session debug output, not deliverables — remove them so they don't pile up or end up committed.

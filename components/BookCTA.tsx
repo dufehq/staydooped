@@ -3,28 +3,28 @@ import type { BookingMethod } from "@/content/types";
 
 type Props = {
   booking: BookingMethod;
+  slug: string;
+  locale: string;
   whatsappNumber?: string;
 };
 
-function buildBookingUrl(booking: BookingMethod, whatsappNumber?: string): string {
-  switch (booking.type) {
-    case "klook":
-      return `/api/go/${booking.productId}?p=klook`;
-    case "viator":
-      return `/api/go/${booking.productId}?p=viator`;
-    case "gyg":
-      return `/api/go/${booking.productId}?p=gyg`;
-    case "whatsapp": {
-      const num = whatsappNumber ?? "0000000000";
-      const text = encodeURIComponent(booking.messageTemplate);
-      return `https://wa.me/${num}?text=${text}`;
-    }
+function buildBookingUrl(
+  booking: BookingMethod,
+  slug: string,
+  locale: string,
+  whatsappNumber?: string,
+): string {
+  if (booking.type === "whatsapp") {
+    const num = whatsappNumber ?? "0000000000";
+    const text = encodeURIComponent(booking.messageTemplate);
+    return `https://wa.me/${num}?text=${text}`;
   }
+  return `/api/go/${slug}?locale=${locale}`;
 }
 
-export function BookCTA({ booking, whatsappNumber }: Props) {
+export function BookCTA({ booking, slug, locale, whatsappNumber }: Props) {
   const t = useTranslations("BookCTA");
-  const href = buildBookingUrl(booking, whatsappNumber);
+  const href = buildBookingUrl(booking, slug, locale, whatsappNumber);
   const isExternal = booking.type === "whatsapp";
   const label =
     booking.type === "whatsapp" ? t("bookDirect") : t("bookThisLoop");
