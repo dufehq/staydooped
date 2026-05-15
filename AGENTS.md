@@ -22,7 +22,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Routing and layout
 
-- All routes live under `app/[locale]/...`. Locales: `en`, `th`, `zh`. Default `en`. Prefix `always`. Locale comes from `await params` (Next.js 16 async params).
+- All routes live under `app/[locale]/...`. Locales: `en`, `th`, `zh`. Default `en`. Prefix `as-needed` — default `en` has no URL prefix (`/`), other locales do (`/th/...`, `/zh/...`). Locale comes from `await params` (Next.js 16 async params).
 - Bundle and experience detail pages share **one route**: `app/[locale]/e/[slug]/page.tsx`, backed by `getListing(slug)`. Pre-render with `generateStaticParams`.
 - Edge logic lives in `proxy.ts` (Next.js 16 renamed `middleware.ts`).
 
@@ -36,3 +36,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 - `npm run dev` uses **Webpack** (`next dev --webpack`), not Turbopack. Turbopack spawns one PostCSS subprocess per CSS file under `@tailwindcss/postcss` — heavy on this laptop. Revisit when Tailwind ships a Turbopack-native plugin or CSS surface area is small enough that the overhead doesn't matter.
 - Affiliate clicks route through `/api/go/[id]?p={vendor}` for click tracking and sub-ID injection. **Endpoint lands in Phase 4**; the `PLACEHOLDER_*` strings in `booking.productId` are intentional until then. WhatsApp links already work.
+- Playwright MCP (`.mcp.json`) is the browser for UI testing. When you finish a UI-testing pass:
+  1. **Call `browser_close`** — leaving the session open holds a browser process and bleeds state (cookies like `NEXT_LOCALE`) into the next test run.
+  2. **Delete the `.playwright-mcp/` artifacts you produced** (page snapshots, console logs, screenshots). They're per-session debug output, not deliverables — remove them so they don't pile up or end up committed.
