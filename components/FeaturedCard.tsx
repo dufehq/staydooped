@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Experience } from "@/content/types";
 import { LoopedBy } from "./LoopedBy";
@@ -15,9 +16,16 @@ export function FeaturedCard({ experience: e, locale }: Props) {
         className="block overflow-hidden rounded-card shadow-card transition-transform hover:shadow-card-hover active:scale-[0.98] md:grid md:grid-cols-[1fr_1.1fr]"
       >
         <div
-          className={`relative flex h-[190px] items-center justify-center bg-gradient-to-br ${e.background} text-[80px] md:h-auto md:min-h-[320px] md:text-[140px] lg:text-[180px]`}
+          className={`relative h-[190px] overflow-hidden bg-gradient-to-br ${e.background} md:h-auto md:min-h-[320px]`}
         >
-          {e.emoji}
+          <Image
+            src={`/images/listings/${e.slug}.webp`}
+            alt={e.title}
+            fill
+            priority
+            sizes="(min-width: 1024px) 640px, (min-width: 768px) 380px, 100vw"
+            className="object-cover"
+          />
           <div
             aria-hidden
             className="absolute inset-0 bg-[linear-gradient(transparent_40%,rgba(14,11,7,0.92))] md:bg-[linear-gradient(to_right,transparent_60%,rgba(14,11,7,0.6))]"
@@ -32,9 +40,12 @@ export function FeaturedCard({ experience: e, locale }: Props) {
           <p className="mb-1.5 text-[8px] font-medium uppercase tracking-[0.25em] text-loop-2 md:mb-3 md:text-[10px] lg:text-xs">
             {e.category} · {e.duration}
           </p>
-          <h3 className="mb-2.5 font-serif text-[21px] font-semibold leading-[1.15] text-paper md:mb-5 md:text-3xl lg:text-5xl">
+          <h3 className="mb-1.5 font-serif text-[21px] font-semibold leading-[1.15] text-paper md:mb-2.5 md:text-3xl lg:text-5xl">
             {e.title}
           </h3>
+          <p className="mb-2.5 text-[12px] leading-snug text-paper/65 md:mb-5 md:text-base lg:text-lg">
+            {e.hook}
+          </p>
           <div className="flex flex-wrap items-center gap-2.5 md:gap-3">
             <p className="text-[15px] font-medium text-loop-2 md:text-xl lg:text-2xl">
               ฿{e.price.toLocaleString()}{" "}

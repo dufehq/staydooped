@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Hero } from "@/components/Hero";
 import { CommunityStrip } from "@/components/CommunityStrip";
 import { BundleScroll } from "@/components/BundleScroll";
@@ -22,8 +22,9 @@ export default async function Home({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const featured = getFeaturedExperience();
-  const rest = getNonFeaturedExperiences();
+  const t = await getTranslations("Sections");
+  const featured = getFeaturedExperience(locale);
+  const rest = getNonFeaturedExperiences(locale);
   const grid = rest.slice(0, 4);
   const list = rest.slice(4);
 
@@ -34,23 +35,23 @@ export default async function Home({
       <BundleScroll locale={locale} />
 
       <SectionHeader
-        title="Explore"
+        title={t("explore")}
         paddingClassName="px-[18px] pt-7 pb-2 md:px-12 md:pt-12 lg:px-16 lg:pt-16"
       />
       <CategoryTabs />
 
       <SectionHeader
-        label="Community top pick"
-        title="Most looped this week"
+        label={t("communityTopPick")}
+        title={t("mostLooped")}
         paddingClassName="px-[18px] pt-7 pb-2.5 md:px-12 md:pt-12 lg:px-16 lg:pt-16"
       />
       <FeaturedCard experience={featured} locale={locale} />
 
-      <SectionHeader title="Around the loop" />
+      <SectionHeader title={t("aroundTheLoop")} />
       <ListingGrid experiences={grid} locale={locale} />
 
       <SectionHeader
-        title="More loops"
+        title={t("moreLoops")}
         paddingClassName="px-[18px] pt-7 pb-3.5 mt-3 md:px-12 md:pt-12 lg:px-16 lg:pt-16"
       />
       <ListingList experiences={list} locale={locale} />

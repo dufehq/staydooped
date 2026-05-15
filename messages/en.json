@@ -5,9 +5,70 @@
     "wordmarkB": "LOOPED",
     "thaiSubtitle": "คู่มือท้องถิ่น — เชียงใหม่",
     "tagline": "Recommended by people who actually live here.",
-    "taglineSuffix": "Not algorithms. Not ads."
+    "taglineSuffix": "Not algorithms. Not ads.",
+    "pillOldCity": "📍 Old City",
+    "pillNimman": "🎨 Nimman",
+    "pillNimmanhaemin": "🌿 Nimmanhaemin",
+    "pillDoiSuthep": "🏔 Doi Suthep"
   },
   "Common": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "back": "Back",
+    "language": "Language",
+    "all": "All",
+    "becomeContributor": "+ Become a Loop contributor"
+  },
+  "Sections": {
+    "newOnStaylooped": "New on StayLooped",
+    "bundlesTitle": "Ready-made afternoons",
+    "bundlesSubtitle": "Everything sorted. One price. Zero planning stress.",
+    "viewAll": "All",
+    "explore": "Explore",
+    "communityTopPick": "Community top pick",
+    "mostLooped": "Most looped this week",
+    "aroundTheLoop": "Around the loop",
+    "moreLoops": "More loops"
+  },
+  "Categories": {
+    "food": "Food",
+    "culture": "Culture",
+    "nature": "Nature",
+    "wellness": "Wellness",
+    "adventure": "Adventure",
+    "nimman": "Nimman"
+  },
+  "CommunityStrip": {
+    "curatedBy": "Curated by 24 locals & hosts",
+    "subtitle": "Hosts, guides, chefs, expats — all loop contributors",
+    "loopsLabel": "Loops"
+  },
+  "Manifesto": {
+    "label": "What is StayLooped?",
+    "titleLine1": "Built by locals.",
+    "titleLine2": "For <em>every</em> visitor.",
+    "body": "StayLooped isn't one person's opinion. It's a living guide built by the people who <strong>actually live here</strong> — hosts, long-term expats, local chefs, guides, and residents. Every recommendation is a \"Loop\" — a real endorsement from a real person with their name on it.",
+    "bodyExtra": "No algorithms. No paid placements. No fake reviews.",
+    "loopsSuffix": "{count} loops"
+  },
+  "Footer": {
+    "tagline": "Recommended by people who actually live here.",
+    "about": "About",
+    "listBusiness": "List a business",
+    "becomeContributor": "Become a contributor",
+    "smallPrint": "Small commissions on bookings keep this guide free and independent. We only loop things we'd genuinely recommend to a friend."
+  },
+  "Detail": {
+    "bundleLabel": "Bundle",
+    "whatsIncluded": "What's included",
+    "whatsInTheBundle": "What's in the bundle"
+  },
+  "BookCTA": {
+    "bookDirect": "Book direct via WhatsApp →",
+    "bookThisLoop": "Book this loop →",
+    "footnote": "Instant confirmation · Free cancellation 24h before"
+  },
+  "LoopedBy": {
+    "loopedBy": "Looped by",
+    "by": "By"
   }
 }

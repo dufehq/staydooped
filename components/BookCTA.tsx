@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { BookingMethod } from "@/content/types";
 
 type Props = {
@@ -21,15 +22,12 @@ function buildBookingUrl(booking: BookingMethod, whatsappNumber?: string): strin
   }
 }
 
-function ctaLabel(booking: BookingMethod): string {
-  return booking.type === "whatsapp"
-    ? "Book direct via WhatsApp →"
-    : "Book this loop →";
-}
-
 export function BookCTA({ booking, whatsappNumber }: Props) {
+  const t = useTranslations("BookCTA");
   const href = buildBookingUrl(booking, whatsappNumber);
   const isExternal = booking.type === "whatsapp";
+  const label =
+    booking.type === "whatsapp" ? t("bookDirect") : t("bookThisLoop");
   return (
     <div>
       <a
@@ -38,10 +36,10 @@ export function BookCTA({ booking, whatsappNumber }: Props) {
         rel={isExternal ? "noopener noreferrer" : undefined}
         className="block w-full rounded-[10px] bg-loop py-4 text-center text-[13px] font-medium uppercase tracking-[0.15em] text-night transition-colors active:bg-loop-2"
       >
-        {ctaLabel(booking)}
+        {label}
       </a>
       <p className="mt-2 text-center text-[10px] text-muted">
-        Instant confirmation · Free cancellation 24h before
+        {t("footnote")}
       </p>
     </div>
   );

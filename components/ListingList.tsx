@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Experience } from "@/content/types";
 import { getContributor } from "@/content/contributors";
@@ -19,9 +20,15 @@ export function ListingList({ experiences, locale }: Props) {
               className="flex items-center gap-3 rounded-[12px] border border-border bg-white-cream px-3 py-2.5 transition-shadow hover:shadow-ambient active:scale-[0.98] md:gap-5 md:px-5 md:py-4 lg:gap-6 lg:px-6 lg:py-5"
             >
               <div
-                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br ${e.background} text-2xl md:h-16 md:w-16 md:rounded-xl md:text-3xl lg:h-20 lg:w-20 lg:text-4xl`}
+                className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-[10px] bg-gradient-to-br ${e.background} md:h-16 md:w-16 md:rounded-xl lg:h-20 lg:w-20`}
               >
-                {e.emoji}
+                <Image
+                  src={`/images/listings/${e.slug}.webp`}
+                  alt={e.title}
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className="mb-0.5 font-serif text-[15px] font-semibold leading-tight text-ink md:mb-1 md:text-lg lg:text-xl">

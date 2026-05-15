@@ -1,13 +1,74 @@
 {
   "Hero": {
-    "kicker": "",
+    "kicker": "清迈 · 社区指南",
     "wordmarkA": "STAY",
     "wordmarkB": "LOOPED",
-    "thaiSubtitle": "",
-    "tagline": "",
-    "taglineSuffix": ""
+    "thaiSubtitle": "คู่มือท้องถิ่น — เชียงใหม่",
+    "tagline": "由真正住在这里的人推荐。",
+    "taglineSuffix": "不是算法。不是广告。",
+    "pillOldCity": "📍 古城",
+    "pillNimman": "🎨 尼曼",
+    "pillNimmanhaemin": "🌿 尼曼海明",
+    "pillDoiSuthep": "🏔 素帖山"
   },
   "Common": {
-    "skipToContent": ""
+    "skipToContent": "跳到主要内容",
+    "back": "返回",
+    "language": "语言",
+    "all": "全部",
+    "becomeContributor": "+ 成为推荐人"
+  },
+  "Sections": {
+    "newOnStaylooped": "StayLooped 新上线",
+    "bundlesTitle": "现成下午套餐",
+    "bundlesSubtitle": "一切搞定。一个价格。零策划压力。",
+    "viewAll": "查看全部",
+    "explore": "浏览",
+    "communityTopPick": "社区精选",
+    "mostLooped": "本周最受推荐",
+    "aroundTheLoop": "更多体验",
+    "moreLoops": "更多推荐"
+  },
+  "Categories": {
+    "food": "美食",
+    "culture": "文化",
+    "nature": "自然",
+    "wellness": "养生",
+    "adventure": "冒险",
+    "nimman": "尼曼区"
+  },
+  "CommunityStrip": {
+    "curatedBy": "由 24 位本地人与房东精选",
+    "subtitle": "房东、向导、厨师、外籍居民 — 都是推荐人",
+    "loopsLabel": "推荐"
+  },
+  "Manifesto": {
+    "label": "什么是 StayLooped？",
+    "titleLine1": "本地人打造。",
+    "titleLine2": "为<em>每一位</em>访客而设。",
+    "body": "StayLooped 不是某个人的观点。它是一份活的指南，由<strong>真正住在这里的人</strong>共同建立——房东、长期外籍居民、本地厨师、向导和居民。每个推荐都是一个 \"Loop\"——来自有名有姓的真实之人。",
+    "bodyExtra": "没有算法。没有付费广告。没有刷好评。",
+    "loopsSuffix": "{count} 推荐"
+  },
+  "Footer": {
+    "tagline": "由真正住在这里的人推荐。",
+    "about": "关于我们",
+    "listBusiness": "登记商家",
+    "becomeContributor": "成为推荐人",
+    "smallPrint": "预订获得的小额佣金让这份指南保持免费与独立。我们只推荐那些会真心推荐给朋友的东西。"
+  },
+  "Detail": {
+    "bundleLabel": "套餐",
+    "whatsIncluded": "包含内容",
+    "whatsInTheBundle": "套餐包含"
+  },
+  "BookCTA": {
+    "bookDirect": "通过 WhatsApp 直接预订 →",
+    "bookThisLoop": "立即预订 →",
+    "footnote": "即时确认 · 24 小时前可免费取消"
+  },
+  "LoopedBy": {
+    "loopedBy": "推荐：",
+    "by": "由"
   }
 }

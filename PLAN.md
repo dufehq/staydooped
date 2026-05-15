@@ -34,6 +34,7 @@ Bare minimum to put QR in the houses and start earning:
 - [x] WhatsApp booking works
 - [x] `messages/zh.json` exists (UI shell strings only)
 - [x] Noto Sans SC font loaded for Chinese
+- [x] Locale auto-detection from `Accept-Language` (zh → /zh, en → /) and `NEXT_LOCALE` cookie persistence — works out of the box via next-intl middleware in `proxy.ts`. Verified with curl.
 
 ### Day 1 — Core MVP
 
@@ -44,6 +45,7 @@ Bare minimum to put QR in the houses and start earning:
 - [ ] **Hook copy** — add a `hook` field to listing type: one punchy sentence in EN + ZH that teases the story (shown on cards before the full description)
 - [ ] **Travelpayouts integration** — swap `PLACEHOLDER_*` product IDs once user provides them; update `BookingMethod` if needed to support Travelpayouts link format
 - [ ] **`/api/go/[id]` route** — redirect to affiliate URL with sub-ID tracking (locale + slug)
+- [ ] **Replace mock experience data with real Chiang Mai listings** — current `content/experiences.ts` is placeholder copy. Research 8 real, currently-operating Chiang Mai experiences (Old City / Thapae / Nimman / day-trip range) from recent sources (Klook, Viator, GetYourGuide, local press from the last ~12 months). For each, replace: `title`, `price` + `priceLabel` (THB), `duration`, `distance`, `description`, `contributorQuote`, `inclusions`, and `booking.productId` (real vendor ID, once affiliate IDs land). Keep the 8 slugs / categories / contributor personas — only the content swaps. Mirror into ZH alongside the Chinese listing content task above.
 - [ ] **Content audit** — ensure all 8 experiences are Chiang Mai Old City / Thapae area relevant
 
 ### Day 2 — Deploy & QR
@@ -51,7 +53,6 @@ Bare minimum to put QR in the houses and start earning:
 - [ ] **Custom domain** — point staylooped.co (or chosen domain) to Vercel
 - [ ] **QR code** — generate QR pointing to `https://yourdomain.com` (auto-redirects to `/en/` or `/zh/` via browser language)
 - [ ] **Mobile smoke test** — scan QR on actual phone, click through a booking, verify affiliate link fires
-- [ ] **Language auto-redirect** — `proxy.ts` detects `Accept-Language: zh` and routes to `/zh/` by default
 
 ### Phase 2 (post-MVP, after first revenue)
 - [ ] Analytics (Plausible or Vercel Analytics) — see which listings convert

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Bundle } from "@/content/types";
 import { LoopedBy } from "./LoopedBy";
@@ -14,26 +15,28 @@ export function BundleCard({ bundle, locale }: Props) {
       className="block w-60 shrink-0 overflow-hidden rounded-card shadow-card transition-transform hover:shadow-card-hover active:scale-[0.97] md:w-auto md:shrink"
     >
       <div
-        className={`relative flex h-[130px] items-center justify-center bg-gradient-to-br ${bundle.background} md:h-[180px] lg:h-[200px]`}
+        className={`relative h-[130px] overflow-hidden bg-gradient-to-br ${bundle.background} md:h-[180px] lg:h-[200px]`}
       >
+        <Image
+          src={`/images/listings/${bundle.slug}.webp`}
+          alt={bundle.title}
+          fill
+          sizes="(min-width: 1024px) 320px, (min-width: 768px) 380px, 240px"
+          className="object-cover"
+        />
         <span className="absolute left-2.5 top-2.5 z-10 rounded-pill bg-night/55 px-2 py-0.5 text-[8px] font-medium uppercase tracking-[0.15em] text-paper backdrop-blur-sm md:left-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px]">
           {bundle.badge}
         </span>
         <span className="absolute right-2.5 top-2.5 z-10 rounded-pill bg-loop px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.1em] text-night md:right-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px]">
           {bundle.saveBadge}
         </span>
-        <div className="flex gap-1 text-4xl md:text-5xl lg:text-6xl">
-          {bundle.emojis.map((e, i) => (
-            <span key={i}>{e}</span>
-          ))}
-        </div>
       </div>
       <div className="bg-white-cream px-3.5 pt-3 pb-3.5 md:px-5 md:pt-4 md:pb-5">
         <h3 className="mb-1 font-serif text-[17px] font-semibold leading-tight text-ink md:text-xl lg:text-2xl">
           {bundle.title}
         </h3>
         <p className="mb-2 text-[11px] leading-[1.4] text-muted md:text-sm md:leading-snug">
-          {bundle.tagline}
+          {bundle.hook}
         </p>
         <ul className="mb-2.5 flex flex-col gap-0.5 md:mb-3 md:gap-1">
           {bundle.inclusions.slice(0, 3).map((item) => (

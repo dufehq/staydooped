@@ -1,10 +1,11 @@
 import { useTranslations } from "next-intl";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 
-const PILLS = [
-  { label: "📍 Old City", active: true },
-  { label: "🎨 Nimman" },
-  { label: "🌿 Nimmanhaemin" },
-  { label: "🏔 Doi Suthep" },
+const PILL_KEYS: { key: string; active?: boolean }[] = [
+  { key: "pillOldCity", active: true },
+  { key: "pillNimman" },
+  { key: "pillNimmanhaemin" },
+  { key: "pillDoiSuthep" },
 ];
 
 export function Hero() {
@@ -20,7 +21,10 @@ export function Hero() {
         aria-hidden
         className="absolute inset-0 opacity-[0.06] [background:repeating-linear-gradient(0deg,transparent_0_28px,rgba(255,255,255,0.6)_28px_29px)]"
       />
-      <div className="relative z-10 px-[22px] pt-[52px] pb-9 md:px-12 md:pt-24 md:pb-20 lg:px-16 lg:pt-32 lg:pb-28">
+      <div className="relative z-10 px-[22px] pt-5 pb-9 md:px-12 md:pt-8 md:pb-20 lg:px-16 lg:pt-10 lg:pb-28">
+        <div className="mb-7 flex justify-end md:mb-12 lg:mb-16">
+          <LocaleSwitcher />
+        </div>
         <p className="mb-3.5 flex items-center gap-2 text-[9px] font-medium uppercase tracking-[0.4em] text-loop-2 md:mb-5 md:text-xs lg:text-sm">
           <span className="h-px w-5 bg-loop md:w-8 lg:w-12" />
           {t("kicker")}
@@ -39,9 +43,9 @@ export function Hero() {
           {t("taglineSuffix")}
         </p>
         <div className="mt-[18px] flex flex-wrap gap-1.5 md:mt-8 md:gap-2 lg:mt-10 lg:gap-3">
-          {PILLS.map((p) => (
+          {PILL_KEYS.map((p) => (
             <span
-              key={p.label}
+              key={p.key}
               className={
                 "rounded-pill px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.15em] md:px-4 md:py-1.5 md:text-xs lg:px-5 lg:py-2 lg:text-sm " +
                 (p.active
@@ -49,7 +53,7 @@ export function Hero() {
                   : "border border-paper/20 text-paper/60")
               }
             >
-              {p.label}
+              {t(p.key)}
             </span>
           ))}
         </div>

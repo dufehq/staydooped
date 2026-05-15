@@ -3,7 +3,7 @@ import { experiences, getExperience } from "./experiences";
 import type { Listing } from "./types";
 
 export * from "./types";
-export { bundles, getBundle } from "./bundles";
+export { bundles, getBundle, getAllBundles } from "./bundles";
 export {
   experiences,
   getExperience,
@@ -12,8 +12,8 @@ export {
 } from "./experiences";
 export { contributors, getContributor } from "./contributors";
 
-export function getListing(slug: string): Listing | undefined {
-  return getBundle(slug) ?? getExperience(slug);
+export function getListing(slug: string, locale = "en"): Listing | undefined {
+  return getBundle(slug, locale) ?? getExperience(slug, locale);
 }
 
 export function getAllListingSlugs(): string[] {

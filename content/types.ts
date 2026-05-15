@@ -34,7 +34,7 @@ type ListingBase = {
   emoji: string;
   category: Category;
   title: string;
-  tagline?: string;
+  hook: string;
   price: number;
   priceLabel: string;
   duration: string;

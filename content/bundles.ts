@@ -1,4 +1,5 @@
 import type { Bundle } from "./types";
+import { translateListing } from "./i18n";
 
 export const bundles: Bundle[] = [
   {
@@ -10,7 +11,7 @@ export const bundles: Bundle[] = [
     saveBadge: "Save ฿150",
     category: "wellness",
     title: "The Unwind Afternoon",
-    tagline: "Your relaxed afternoon, door to door",
+    hook: "Your relaxed afternoon, door to door",
     price: 750,
     priceOriginal: 900,
     priceLabel: "฿750 / person",
@@ -44,7 +45,7 @@ export const bundles: Bundle[] = [
     saveBadge: "Save ฿200",
     category: "culture",
     title: "The Golden Hour",
-    tagline: "The CM evening everyone remembers",
+    hook: "The CM evening everyone remembers",
     price: 1100,
     priceOriginal: 1300,
     priceLabel: "฿1,100 / person",
@@ -78,7 +79,7 @@ export const bundles: Bundle[] = [
     saveBadge: "Save ฿350",
     category: "nature",
     title: "The Big Day Out",
-    tagline: "Everything sorted before you wake up",
+    hook: "Everything sorted before you wake up",
     price: 3100,
     priceOriginal: 3450,
     priceLabel: "฿3,100 / person",
@@ -112,7 +113,7 @@ export const bundles: Bundle[] = [
     saveBadge: "Save ฿100",
     category: "food",
     title: "The Local Lunch Run",
-    tagline: "Eat where locals eat. Zero navigation stress.",
+    hook: "Eat where locals eat. Zero navigation stress.",
     price: 480,
     priceOriginal: 580,
     priceLabel: "฿480 / person",
@@ -138,6 +139,11 @@ export const bundles: Bundle[] = [
   },
 ];
 
-export function getBundle(slug: string): Bundle | undefined {
-  return bundles.find((b) => b.slug === slug);
+export function getBundle(slug: string, locale = "en"): Bundle | undefined {
+  const base = bundles.find((b) => b.slug === slug);
+  return base ? translateListing(base, locale) : undefined;
+}
+
+export function getAllBundles(locale = "en"): Bundle[] {
+  return bundles.map((b) => translateListing(b, locale));
 }

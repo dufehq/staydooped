@@ -1,6 +1,9 @@
+import { useTranslations } from "next-intl";
+
 const AVATARS = ["🏠", "🧘", "🍜", "🗺️"];
 
 export function CommunityStrip() {
+  const t = useTranslations("CommunityStrip");
   return (
     <div className="flex items-center gap-2.5 bg-loop px-[18px] py-3 md:gap-4 md:px-12 md:py-5 lg:px-16 lg:py-6">
       <div className="flex">
@@ -15,10 +18,10 @@ export function CommunityStrip() {
       </div>
       <div className="ml-3.5 flex-1 md:ml-5">
         <p className="text-[11px] font-medium leading-[1.3] text-night md:text-sm lg:text-base">
-          Curated by 24 locals &amp; hosts
+          {t("curatedBy")}
         </p>
         <p className="mt-px text-[9.5px] text-night/60 md:text-xs lg:text-sm">
-          Hosts, guides, chefs, expats — all loop contributors
+          {t("subtitle")}
         </p>
       </div>
       <div className="shrink-0 text-right">
@@ -26,7 +29,7 @@ export function CommunityStrip() {
           148
         </p>
         <p className="text-[8px] font-medium uppercase tracking-[0.1em] text-night/55 md:text-[10px] lg:text-xs">
-          Loops
+          {t("loopsLabel")}
         </p>
       </div>
     </div>
