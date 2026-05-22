@@ -39,6 +39,7 @@ Bare minimum to put QR in the houses and start earning:
 - [x] **Hook copy** — `hook: string` on `ListingBase`, populated for all 12 listings (EN + ZH), rendered on FeaturedCard, ListingGrid, BundleCard.
 - [x] **`/api/go/[id]` route** — `id` is the listing slug; handler resolves vendor + productId from content, builds affiliate URL with sub-ID = `${locale}-${slug}`, 302 redirects. Reads env vars for affiliate keys (`KLOOK_AFF_ID`, `VIATOR_AFF_ID`, `GYG_AFF_ID`, `TRAVELPAYOUTS_MARKER`); WhatsApp listings rejected with 400, unknown slug → 404.
 - [x] **Listing images** — 12 WebP images at `public/images/listings/{slug}.webp` (1920×1072, ~150 KB each), rendered via `next/image` on FeaturedCard, ListingGrid, BundleCard, ListingList, and detail-page hero. Emoji dropped from hero areas; gradient stays as loading fallback.
+- [x] **Phase 1 catalog is 100% affiliate-bookable** — no WhatsApp listings in the live catalog. The 6 originally-WhatsApp slugs (massage, sunday-market, unwind, golden-hour, big-day-out, lunch-run) were swapped for real Klook activities (IDs 88648, 109352, 2142, 127326, 77519, 77514). Original WhatsApp content + ZH translations parked in `content/archive/whatsapp-phase2.{ts,zh.ts}` for restoration in Phase 2 once ops booking is staffed.
 
 ### Day 1 — Core MVP
 
