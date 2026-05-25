@@ -40,10 +40,10 @@ function buildAffiliateUrl(
     case "klook": {
       const u = new URL(`https://www.klook.com/activity/${productId}/`);
       const aff = process.env.KLOOK_AFF_ID;
-      const marker = process.env.TRAVELPAYOUTS_MARKER;
-      if (aff) u.searchParams.set("aff_adid", aff);
-      if (marker) u.searchParams.set("marker", marker);
-      u.searchParams.set("aid", subId);
+      if (aff) {
+        u.searchParams.set("aid", aff);
+        u.searchParams.set("aff_adid", subId);
+      }
       return u.toString();
     }
     case "viator": {
