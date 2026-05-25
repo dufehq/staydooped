@@ -130,5 +130,7 @@ export function getBundle(slug: string, locale = "en"): Bundle | undefined {
 }
 
 export function getAllBundles(locale = "en"): Bundle[] {
-  return bundles.map((b) => translateListing(b, locale));
+  return bundles
+    .filter((b) => b.status !== "draft")
+    .map((b) => translateListing(b, locale));
 }

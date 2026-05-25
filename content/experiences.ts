@@ -272,14 +272,16 @@ export function getExperience(
   return base ? translateListing(base, locale) : undefined;
 }
 
+const isPublished = (e: Experience) => e.status !== "draft";
+
 export function getFeaturedExperience(locale = "en"): Experience {
-  const featured = experiences.find((e) => e.isFeatured);
+  const featured = experiences.find((e) => e.isFeatured && isPublished(e));
   if (!featured) throw new Error("No featured experience set");
   return translateListing(featured, locale);
 }
 
 export function getNonFeaturedExperiences(locale = "en"): Experience[] {
   return experiences
-    .filter((e) => !e.isFeatured)
+    .filter((e) => !e.isFeatured && isPublished(e))
     .map((e) => translateListing(e, locale));
 }

@@ -16,6 +16,14 @@ export function getListing(slug: string, locale = "en"): Listing | undefined {
   return getBundle(slug, locale) ?? getExperience(slug, locale);
 }
 
+/** Slugs for which Next.js should pre-render a static page. Drafts are
+ *  excluded so they don't ship in the static export, but `getListing`
+ *  still resolves them for direct preview in dev. */
 export function getAllListingSlugs(): string[] {
-  return [...bundles.map((b) => b.slug), ...experiences.map((e) => e.slug)];
+  const published = (l: { status?: "draft" | "published" }) =>
+    l.status !== "draft";
+  return [
+    ...bundles.filter(published).map((b) => b.slug),
+    ...experiences.filter(published).map((e) => e.slug),
+  ];
 }
