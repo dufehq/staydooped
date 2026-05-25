@@ -1,9 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Hero } from "@/components/Hero";
-import { CommunityStrip } from "@/components/CommunityStrip";
 import { BundleScroll } from "@/components/BundleScroll";
 import { SectionHeader } from "@/components/SectionHeader";
-import { CategoryTabs } from "@/components/CategoryTabs";
 import { FeaturedCard } from "@/components/FeaturedCard";
 import { ListingGrid } from "@/components/ListingGrid";
 import { ListingList } from "@/components/ListingList";
@@ -30,22 +28,16 @@ export default async function Home({
 
   return (
     <main className="mx-auto max-w-[430px] md:max-w-[760px] lg:max-w-[1280px]">
-      <Hero />
-      <CommunityStrip />
-      <BundleScroll locale={locale} />
-
-      <SectionHeader
-        title={t("explore")}
-        paddingClassName="px-[18px] pt-7 pb-2 md:px-12 md:pt-12 lg:px-16 lg:pt-16"
-      />
-      <CategoryTabs />
+      <Hero featuredSlug={featured.slug} />
 
       <SectionHeader
         label={t("communityTopPick")}
         title={t("mostLooped")}
-        paddingClassName="px-[18px] pt-7 pb-2.5 md:px-12 md:pt-12 lg:px-16 lg:pt-16"
+        paddingClassName="px-[18px] pt-6 pb-2.5 md:px-12 md:pt-10 lg:px-16 lg:pt-14"
       />
       <FeaturedCard experience={featured} locale={locale} />
+
+      <BundleScroll locale={locale} />
 
       <SectionHeader title={t("aroundTheLoop")} />
       <ListingGrid experiences={grid} locale={locale} />

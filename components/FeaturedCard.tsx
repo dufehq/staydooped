@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Experience } from "@/content/types";
-import { LoopedBy } from "./LoopedBy";
 
 type Props = {
   experience: Experience;
@@ -30,11 +29,6 @@ export function FeaturedCard({ experience: e, locale }: Props) {
             aria-hidden
             className="absolute inset-0 bg-[linear-gradient(transparent_40%,rgba(14,11,7,0.92))] md:bg-[linear-gradient(to_right,transparent_60%,rgba(14,11,7,0.6))]"
           />
-          {e.loops ? (
-            <span className="absolute right-3 top-3 rounded-pill bg-loop px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.15em] text-night md:right-4 md:top-4 md:px-3 md:py-1.5 md:text-[10px]">
-              🔥 {e.loops} loops
-            </span>
-          ) : null}
         </div>
         <div className="bg-night px-4 pt-3.5 pb-4 md:flex md:flex-col md:justify-center md:px-8 md:py-8 lg:px-12 lg:py-12">
           <p className="mb-1.5 text-[8px] font-medium uppercase tracking-[0.25em] text-loop-2 md:mb-3 md:text-[10px] lg:text-xs">
@@ -53,16 +47,10 @@ export function FeaturedCard({ experience: e, locale }: Props) {
                 / person
               </span>
             </p>
-            {e.rating ? (
-              <span className="rounded-pill bg-paper/10 px-2 py-0.5 text-[9px] text-paper/55 md:px-3 md:py-1 md:text-xs">
-                {e.rating.split(" · ")[0]}
-              </span>
-            ) : null}
             <span className="rounded-pill bg-paper/10 px-2 py-0.5 text-[9px] text-paper/55 md:px-3 md:py-1 md:text-xs">
               ⏱ {e.duration}
             </span>
           </div>
-          <LoopedBy contributorSlug={e.contributorSlug} variant="feature" />
         </div>
       </Link>
     </div>

@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
 const PILL_KEYS: { key: string; active?: boolean }[] = [
@@ -8,7 +9,11 @@ const PILL_KEYS: { key: string; active?: boolean }[] = [
   { key: "pillDoiSuthep" },
 ];
 
-export function Hero() {
+type Props = {
+  featuredSlug?: string;
+};
+
+export function Hero({ featuredSlug }: Props = {}) {
   const t = useTranslations("Hero");
 
   return (
@@ -22,8 +27,8 @@ export function Hero() {
         className="absolute inset-0 opacity-[0.06] [background:repeating-linear-gradient(0deg,transparent_0_28px,rgba(255,255,255,0.6)_28px_29px)]"
       />
       <div className="relative z-10 px-[22px] pt-5 pb-9 md:px-12 md:pt-8 md:pb-20 lg:px-16 lg:pt-10 lg:pb-28">
-        <div className="mb-7 flex justify-end md:mb-12 lg:mb-16">
-          <LocaleSwitcher />
+        <div className="mb-7 flex justify-center md:mb-12 lg:mb-16">
+          <LocaleSwitcher size="prominent" />
         </div>
         <p className="mb-3.5 flex items-center gap-2 text-[9px] font-medium uppercase tracking-[0.4em] text-loop-2 md:mb-5 md:text-xs lg:text-sm">
           <span className="h-px w-5 bg-loop md:w-8 lg:w-12" />
@@ -42,6 +47,14 @@ export function Hero() {
           </strong>{" "}
           {t("taglineSuffix")}
         </p>
+        {featuredSlug ? (
+          <Link
+            href={`/e/${featuredSlug}`}
+            className="mt-5 inline-flex items-center gap-2 rounded-pill bg-loop px-5 py-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-night transition-colors hover:bg-loop-2 active:bg-loop-2 md:mt-7 md:px-7 md:py-3.5 md:text-sm lg:mt-9 lg:px-8 lg:py-4 lg:text-base"
+          >
+            {t("ctaLabel")}
+          </Link>
+        ) : null}
         <div className="mt-[18px] flex flex-wrap gap-1.5 md:mt-8 md:gap-2 lg:mt-10 lg:gap-3">
           {PILL_KEYS.map((p) => (
             <span

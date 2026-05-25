@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Bundle } from "@/content/types";
-import { LoopedBy } from "./LoopedBy";
 
 type Props = {
   bundle: Bundle;
@@ -27,9 +26,11 @@ export function BundleCard({ bundle, locale }: Props) {
         <span className="absolute left-2.5 top-2.5 z-10 rounded-pill bg-night/55 px-2 py-0.5 text-[8px] font-medium uppercase tracking-[0.15em] text-paper backdrop-blur-sm md:left-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px]">
           {bundle.badge}
         </span>
-        <span className="absolute right-2.5 top-2.5 z-10 rounded-pill bg-loop px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.1em] text-night md:right-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px]">
-          {bundle.saveBadge}
-        </span>
+        {bundle.saveBadge ? (
+          <span className="absolute right-2.5 top-2.5 z-10 rounded-pill bg-loop px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.1em] text-night md:right-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px]">
+            {bundle.saveBadge}
+          </span>
+        ) : null}
       </div>
       <div className="bg-white-cream px-3.5 pt-3 pb-3.5 md:px-5 md:pt-4 md:pb-5">
         <h3 className="mb-1 font-serif text-[17px] font-semibold leading-tight text-ink md:text-xl lg:text-2xl">
@@ -54,15 +55,16 @@ export function BundleCard({ bundle, locale }: Props) {
             <span className="font-serif text-lg font-semibold text-loop md:text-xl">
               ฿{bundle.price.toLocaleString()}
             </span>
-            <span className="ml-1 text-[11px] text-muted line-through md:text-xs">
-              ฿{bundle.priceOriginal.toLocaleString()}
-            </span>
+            {bundle.priceOriginal && bundle.priceOriginal > bundle.price ? (
+              <span className="ml-1 text-[11px] text-muted line-through md:text-xs">
+                ฿{bundle.priceOriginal.toLocaleString()}
+              </span>
+            ) : null}
           </p>
           <span className="rounded-tight bg-ink px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.1em] text-paper md:px-4 md:py-2 md:text-[11px]">
-            Loop it →
+            Book →
           </span>
         </div>
-        <LoopedBy contributorSlug={bundle.contributorSlug} />
       </div>
     </Link>
   );

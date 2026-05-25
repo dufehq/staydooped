@@ -40,8 +40,8 @@ type ListingBase = {
   duration: string;
   distance: string;
   rating?: string;
-  contributorSlug: string;
-  contributorQuote: string;
+  contributorSlug?: string;
+  contributorQuote?: string;
   description: string;
   inclusions: string[];
   booking: BookingMethod;

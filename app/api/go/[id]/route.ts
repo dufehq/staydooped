@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { track } from "@vercel/analytics/server";
 import { getListing } from "@/content";
 import type { BookingMethod } from "@/content/types";
 
@@ -27,6 +28,13 @@ export async function GET(
 
   const subId = `${locale}-${slug}`;
   const target = buildAffiliateUrl(booking.type, booking.productId, subId);
+
+  void track("affiliate_click", {
+    slug,
+    vendor: booking.type,
+    productId: booking.productId,
+    locale,
+  });
 
   return NextResponse.redirect(target, 302);
 }

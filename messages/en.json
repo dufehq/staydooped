@@ -1,11 +1,12 @@
 {
   "Hero": {
-    "kicker": "Chiang Mai · Community Guide",
+    "kicker": "Chiang Mai · Curated Guide",
     "wordmarkA": "STAY",
     "wordmarkB": "LOOPED",
     "thaiSubtitle": "คู่มือท้องถิ่น — เชียงใหม่",
-    "tagline": "Recommended by people who actually live here.",
-    "taglineSuffix": "Not algorithms. Not ads.",
+    "tagline": "Things in Chiang Mai you might not want to miss.",
+    "taglineSuffix": "Hand-picked tours from operators we'd send a friend to.",
+    "ctaLabel": "See this week's top pick →",
     "pillOldCity": "📍 Old City",
     "pillNimman": "🎨 Nimman",
     "pillNimmanhaemin": "🌿 Nimmanhaemin",
@@ -15,19 +16,18 @@
     "skipToContent": "Skip to content",
     "back": "Back",
     "language": "Language",
-    "all": "All",
-    "becomeContributor": "+ Become a Loop contributor"
+    "all": "All"
   },
   "Sections": {
-    "newOnStaylooped": "New on StayLooped",
+    "newOnStaylooped": "Ready-made plans",
     "bundlesTitle": "Ready-made afternoons",
     "bundlesSubtitle": "Everything sorted. One price. Zero planning stress.",
     "viewAll": "All",
     "explore": "Explore",
-    "communityTopPick": "Community top pick",
-    "mostLooped": "Most looped this week",
-    "aroundTheLoop": "Around the loop",
-    "moreLoops": "More loops"
+    "communityTopPick": "Editor's pick",
+    "mostLooped": "Don't miss this one",
+    "aroundTheLoop": "More to do",
+    "moreLoops": "Also worth a look"
   },
   "Categories": {
     "food": "Food",
@@ -37,25 +37,17 @@
     "adventure": "Adventure",
     "nimman": "Nimman"
   },
-  "CommunityStrip": {
-    "curatedBy": "Curated by 24 locals & hosts",
-    "subtitle": "Hosts, guides, chefs, expats — all loop contributors",
-    "loopsLabel": "Loops"
-  },
   "Manifesto": {
     "label": "What is StayLooped?",
-    "titleLine1": "Built by locals.",
-    "titleLine2": "For <em>every</em> visitor.",
-    "body": "StayLooped isn't one person's opinion. It's a living guide built by the people who <strong>actually live here</strong> — hosts, long-term expats, local chefs, guides, and residents. Every recommendation is a \"Loop\" — a real endorsement from a real person with their name on it.",
-    "bodyExtra": "No algorithms. No paid placements. No fake reviews.",
-    "loopsSuffix": "{count} loops"
+    "titleLine1": "Hand-picked,",
+    "titleLine2": "not <em>crowd</em>-sourced.",
+    "body": "StayLooped is a small, curated guide to Chiang Mai's best-loved tours and activities. We pick a tight shortlist of vetted operators on Klook, Viator and GetYourGuide — the ones with consistent reviews and the kind of experience we'd send a friend on.",
+    "bodyExtra": "Bookings go straight to the operator. We earn a small commission on links you click, at no extra cost to you. That's what keeps this guide free."
   },
   "Footer": {
-    "tagline": "Recommended by people who actually live here.",
+    "tagline": "Hand-picked things to do in Chiang Mai.",
     "about": "About",
-    "listBusiness": "List a business",
-    "becomeContributor": "Become a contributor",
-    "smallPrint": "Small commissions on bookings keep this guide free and independent. We only loop things we'd genuinely recommend to a friend."
+    "smallPrint": "Affiliate disclosure: we earn a small commission on bookings made through links on this site — at no extra cost to you. Prices, availability, and inclusions are set by the operator and may change."
   },
   "Detail": {
     "bundleLabel": "Bundle",
@@ -64,11 +56,8 @@
   },
   "BookCTA": {
     "bookDirect": "Book direct via WhatsApp →",
-    "bookThisLoop": "Book this loop →",
-    "footnote": "Instant confirmation · Free cancellation 24h before"
-  },
-  "LoopedBy": {
-    "loopedBy": "Looped by",
-    "by": "By"
+    "bookThisLoop": "Check availability & book →",
+    "bookShort": "Book →",
+    "footnote": "You'll be taken to the operator's site to complete booking."
   }
 }

@@ -8,7 +8,7 @@ type Props = {
   whatsappNumber?: string;
 };
 
-function buildBookingUrl(
+export function buildBookingUrl(
   booking: BookingMethod,
   slug: string,
   locale: string,

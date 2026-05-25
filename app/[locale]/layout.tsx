@@ -3,6 +3,8 @@ import { Bebas_Neue, Fraunces, DM_Sans, Noto_Serif_Thai, Noto_Sans_SC } from "ne
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
@@ -40,9 +42,38 @@ const notoSC = Noto_Sans_SC({
   weight: ["400", "500", "700"],
 });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://staylooped.co";
+const DESCRIPTION =
+  "Hand-picked tours and activities in Chiang Mai — vetted operators on Klook, Viator and GetYourGuide.";
+
 export const metadata: Metadata = {
-  title: "StayLooped — Chiang Mai",
-  description: "Recommended by people who actually live here.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "StayLooped — Chiang Mai",
+    template: "%s · StayLooped Chiang Mai",
+  },
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "StayLooped",
+    title: "StayLooped — Chiang Mai",
+    description: DESCRIPTION,
+    images: [
+      {
+        url: "/og-default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "StayLooped — Hand-picked things to do in Chiang Mai",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "StayLooped — Chiang Mai",
+    description: DESCRIPTION,
+    images: ["/og-default.jpg"],
+  },
 };
 
 export function generateStaticParams() {
@@ -71,6 +102,8 @@ export default async function LocaleLayout({
     >
       <body className="min-h-screen">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

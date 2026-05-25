@@ -14,17 +14,6 @@ export function Footer() {
           </p>
         </div>
         <div className="mt-4 md:mt-0">
-          <ul className="mb-3.5 flex flex-wrap gap-x-3.5 gap-y-2 md:mb-5 md:gap-x-6">
-            <li className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted md:text-xs lg:text-sm">
-              {t("about")}
-            </li>
-            <li className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted md:text-xs lg:text-sm">
-              {t("listBusiness")}
-            </li>
-            <li className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted md:text-xs lg:text-sm">
-              {t("becomeContributor")}
-            </li>
-          </ul>
           <p className="text-[11px] leading-[1.6] text-muted md:text-sm md:leading-relaxed lg:text-base">
             {t("smallPrint")}
           </p>

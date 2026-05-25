@@ -1,11 +1,12 @@
 {
   "Hero": {
-    "kicker": "清迈 · 社区指南",
+    "kicker": "清迈 · 精选指南",
     "wordmarkA": "STAY",
     "wordmarkB": "LOOPED",
     "thaiSubtitle": "คู่มือท้องถิ่น — เชียงใหม่",
-    "tagline": "由真正住在这里的人推荐。",
-    "taglineSuffix": "不是算法。不是广告。",
+    "tagline": "在清迈，这些体验值得一试。",
+    "taglineSuffix": "都是我们会推荐给朋友的当地行程供应商精选。",
+    "ctaLabel": "看看本周精选 →",
     "pillOldCity": "📍 古城",
     "pillNimman": "🎨 尼曼",
     "pillNimmanhaemin": "🌿 尼曼海明",
@@ -15,19 +16,18 @@
     "skipToContent": "跳到主要内容",
     "back": "返回",
     "language": "语言",
-    "all": "全部",
-    "becomeContributor": "+ 成为推荐人"
+    "all": "全部"
   },
   "Sections": {
-    "newOnStaylooped": "StayLooped 新上线",
+    "newOnStaylooped": "现成行程组合",
     "bundlesTitle": "现成下午套餐",
     "bundlesSubtitle": "一切搞定。一个价格。零策划压力。",
     "viewAll": "查看全部",
     "explore": "浏览",
-    "communityTopPick": "社区精选",
-    "mostLooped": "本周最受推荐",
+    "communityTopPick": "编辑精选",
+    "mostLooped": "千万别错过",
     "aroundTheLoop": "更多体验",
-    "moreLoops": "更多推荐"
+    "moreLoops": "也值得看看"
   },
   "Categories": {
     "food": "美食",
@@ -37,25 +37,17 @@
     "adventure": "冒险",
     "nimman": "尼曼区"
   },
-  "CommunityStrip": {
-    "curatedBy": "由 24 位本地人与房东精选",
-    "subtitle": "房东、向导、厨师、外籍居民 — 都是推荐人",
-    "loopsLabel": "推荐"
-  },
   "Manifesto": {
     "label": "什么是 StayLooped？",
-    "titleLine1": "本地人打造。",
-    "titleLine2": "为<em>每一位</em>访客而设。",
-    "body": "StayLooped 不是某个人的观点。它是一份活的指南，由<strong>真正住在这里的人</strong>共同建立——房东、长期外籍居民、本地厨师、向导和居民。每个推荐都是一个 \"Loop\"——来自有名有姓的真实之人。",
-    "bodyExtra": "没有算法。没有付费广告。没有刷好评。",
-    "loopsSuffix": "{count} 推荐"
+    "titleLine1": "精挑细选，",
+    "titleLine2": "不是<em>人海</em>评分。",
+    "body": "StayLooped 是为清迈精心挑选的小型旅行指南。我们从 Klook、Viator 与 GetYourGuide 上严选了一小批口碑稳定的当地行程供应商——都是我们会真心推荐给朋友的那种。",
+    "bodyExtra": "预订直接走供应商。您通过本站链接下单时，我们会获得小额佣金——但不会改变您支付的价格。这就是让这份指南保持免费的方式。"
   },
   "Footer": {
-    "tagline": "由真正住在这里的人推荐。",
+    "tagline": "为清迈精选的体验清单。",
     "about": "关于我们",
-    "listBusiness": "登记商家",
-    "becomeContributor": "成为推荐人",
-    "smallPrint": "预订获得的小额佣金让这份指南保持免费与独立。我们只推荐那些会真心推荐给朋友的东西。"
+    "smallPrint": "联盟披露：通过本站链接完成的预订，我们会获得小额佣金——但您支付的价格不会因此增加。所有价格、库存与包含内容均由供应商设定，可能随时变更。"
   },
   "Detail": {
     "bundleLabel": "套餐",
@@ -64,11 +56,8 @@
   },
   "BookCTA": {
     "bookDirect": "通过 WhatsApp 直接预订 →",
-    "bookThisLoop": "立即预订 →",
-    "footnote": "即时确认 · 24 小时前可免费取消"
-  },
-  "LoopedBy": {
-    "loopedBy": "推荐：",
-    "by": "由"
+    "bookThisLoop": "查看库存并预订 →",
+    "bookShort": "立即预订 →",
+    "footnote": "您将跳转至供应商网站完成预订。"
   }
 }

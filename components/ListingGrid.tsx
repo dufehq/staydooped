@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Experience } from "@/content/types";
-import { LoopedBy } from "./LoopedBy";
 
 type Props = {
   experiences: Experience[];
@@ -44,9 +43,6 @@ export function ListingGrid({ experiences, locale }: Props) {
                 /person
               </span>
             </p>
-            <div className="mt-1 md:mt-2">
-              <LoopedBy contributorSlug={e.contributorSlug} variant="tag" />
-            </div>
           </div>
         </Link>
       ))}

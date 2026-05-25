@@ -1,17 +1,62 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getAllListingSlugs, getListing } from "@/content";
-import { getContributor } from "@/content/contributors";
 import { routing } from "@/i18n/routing";
 import { BookCTA } from "@/components/BookCTA";
+import { StickyBookBar } from "@/components/StickyBookBar";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 export function generateStaticParams() {
   return routing.locales.flatMap((locale) =>
     getAllListingSlugs().map((slug) => ({ locale, slug })),
   );
+}
+
+const OG_LOCALE: Record<string, string> = {
+  en: "en_US",
+  zh: "zh_CN",
+  th: "th_TH",
+};
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}): Promise<Metadata> {
+  const { locale, slug } = await params;
+  const listing = getListing(slug, locale);
+  if (!listing) return {};
+
+  const image = `/images/listings/${slug}.webp`;
+  const enPath = `/e/${slug}`;
+  const zhPath = `/zh/e/${slug}`;
+  const canonical = locale === "en" ? enPath : `/${locale}/e/${slug}`;
+
+  return {
+    title: listing.title,
+    description: listing.hook,
+    alternates: {
+      canonical,
+      languages: { en: enPath, zh: zhPath },
+    },
+    openGraph: {
+      type: "article",
+      siteName: "StayLooped",
+      locale: OG_LOCALE[locale] ?? "en_US",
+      title: listing.title,
+      description: listing.hook,
+      images: [{ url: image, width: 1920, height: 1072, alt: listing.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: listing.title,
+      description: listing.hook,
+      images: [image],
+    },
+  };
 }
 
 export default async function ExperienceDetail({
@@ -27,13 +72,11 @@ export default async function ExperienceDetail({
 
   const tDetail = await getTranslations("Detail");
   const tCommon = await getTranslations("Common");
-  const tLoopedBy = await getTranslations("LoopedBy");
   const tCat = await getTranslations("Categories");
-  const contributor = getContributor(listing.contributorSlug);
   const isBundle = listing.kind === "bundle";
 
   return (
-    <main className="mx-auto max-w-[430px] pb-12 md:max-w-[1100px] md:pb-20 lg:max-w-[1280px] lg:pb-28">
+    <main className="mx-auto max-w-[430px] pb-32 md:max-w-[1100px] md:pb-20 lg:max-w-[1280px] lg:pb-28">
       <div className="md:grid md:grid-cols-[1.05fr_1fr] md:gap-10 md:px-12 md:pt-12 lg:gap-16 lg:px-16 lg:pt-16">
         {/* Visual hero */}
         <div className="md:sticky md:top-12 md:self-start">
@@ -76,7 +119,7 @@ export default async function ExperienceDetail({
             <span className="font-serif text-xl font-semibold text-loop md:text-3xl lg:text-4xl">
               {listing.priceLabel}
             </span>
-            {isBundle ? (
+            {isBundle && listing.priceOriginal > listing.price ? (
               <span className="text-xs text-muted line-through md:text-sm lg:text-base">
                 ฿{listing.priceOriginal.toLocaleString()}
               </span>
@@ -87,26 +130,6 @@ export default async function ExperienceDetail({
             <span className="rounded-pill border border-border bg-warm px-2.5 py-1 text-[10px] text-muted md:px-3.5 md:py-1.5 md:text-xs">
               {listing.distance}
             </span>
-            {!isBundle && listing.rating ? (
-              <span className="rounded-pill border border-border bg-warm px-2.5 py-1 text-[10px] text-muted md:px-3.5 md:py-1.5 md:text-xs">
-                {listing.rating}
-              </span>
-            ) : null}
-          </div>
-
-          <div className="mb-3.5 flex items-start gap-2 rounded-btn bg-warm px-3 py-2.5 md:mb-6 md:gap-3 md:px-5 md:py-4">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sand text-[15px] md:h-10 md:w-10 md:text-xl">
-              {contributor.avatar}
-            </span>
-            <p className="text-[11.5px] leading-[1.5] text-muted md:text-sm md:leading-relaxed lg:text-base">
-              {tLoopedBy("loopedBy")}{" "}
-              <strong className="font-medium text-ink">
-                {contributor.name}
-              </strong>{" "}
-              · {contributor.role}
-              <br />
-              <em>&ldquo;{listing.contributorQuote}&rdquo;</em>
-            </p>
           </div>
 
           <p className="mb-4 text-[13.5px] leading-[1.7] text-muted md:mb-6 md:text-base md:leading-relaxed lg:text-lg">
@@ -135,6 +158,13 @@ export default async function ExperienceDetail({
           />
         </article>
       </div>
+
+      <StickyBookBar
+        booking={listing.booking}
+        slug={listing.slug}
+        locale={locale}
+        priceLabel={listing.priceLabel}
+      />
     </main>
   );
 }
