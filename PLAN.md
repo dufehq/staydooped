@@ -43,7 +43,10 @@ Bare minimum to put QR in the houses and start earning:
 
 ### Day 1 — Core MVP
 
-- [ ] **Travelpayouts integration** — sign up + add `KLOOK_AFF_ID`, `VIATOR_AFF_ID`, `GYG_AFF_ID`, `TRAVELPAYOUTS_MARKER` to `.env.local`. Route handler already reads these; no code change needed once env is set.
+**Affiliate programs** (going direct, not Travelpayouts):
+- [x] **Klook Partners** (affiliate.klook.com) — approved. `KLOOK_AFF_ID` in `.env.local`. Route uses `aid` for affiliate, `aff_adid` for sub-ID (verified via curl). Covers 4 of 8 experiences (`elephant`, `cooking`, `doi-suthep`, `zipline`).
+- [ ] **GetYourGuide Partner** (partner.getyourguide.com) — apply when ready. Will populate `GYG_AFF_ID`. Covers `nimman-coffee`.
+- [ ] **Viator Affiliate** (TripAdvisor partner program) — apply when ready. Will populate `VIATOR_AFF_ID`. Covers `temple`.
 
 ### Day 2 — Deploy & QR
 
