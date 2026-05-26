@@ -56,8 +56,12 @@ Length caps:
 - Inclusions: ≤ 5 items, each ≤ 60 chars.
 
 Field rules:
-- `price`: integer THB. No decimals, no commas in the number itself.
-- `priceLabel`: `"from ฿X,XXX / person"` (use `.toLocaleString()`-friendly format manually).
+- `price`: integer THB (the **lowest** observed tier). No decimals, no commas in the number itself.
+- `priceMax`: integer THB (the **highest** observed tier). Omit when only one tier is offered. When present, derive both bounds by walking every Klook `.desktop-attr-btn` in `.js-activity-package-options` and reading each rendered price; convert USD → THB at ~33.5 if Klook serves USD (non-Thai IP); floor min to nearest ฿50, ceil max to nearest ฿50.
+- `priceLabel`:
+  - Range form (when `priceMax` is set): `"฿X,XXX – ฿Y,YYY / person"` (en-dash with spaces).
+  - Single-tier form: `"from ฿X,XXX / person"`.
+  - Unit suffix matches the listing: `/ person` for most, `/ hour` for time-billed services like massage.
 - Pickup-zone inclusions qualified with `(per operator's pickup zone)`.
 - `distance`: framed relative to Thapae Soi 4 where it adds value.
 - `status: "draft"` — always for new listings.
@@ -131,7 +135,7 @@ Match the gradient to the image's dominant tones.
 5. **Pick category** from `food | culture | nature | wellness | adventure | nimman`. If ambiguous, ask.
 6. **Propose slug** (kebab-case derived from product name). Validate uniqueness against current `content/experiences.ts` + `content/bundles.ts`. If a collision exists, propose an alternative and confirm with user.
 7. **Pick background gradient** (see Background gradient).
-8. **Write EN content** following Voice & content rules. Fields: `slug`, `emoji`, `category`, `title`, `hook`, `price`, `priceLabel`, `duration`, `distance`, `description`, `inclusions`, `booking`, `background`, `status: 'draft'`.
+8. **Write EN content** following Voice & content rules. Fields: `slug`, `emoji`, `category`, `title`, `hook`, `price`, `priceMax` (when multi-tier), `priceLabel`, `duration`, `distance`, `description`, `inclusions`, `booking`, `background`, `status: 'draft'`.
 9. **Append to `content/experiences.ts`** before the closing `];`. Type-check immediately.
 10. **Write ZH translation** to `content/i18n/zh.ts` under the slug key. Mirror EN structure (title, hook, description, inclusions, priceLabel, duration, distance).
 11. **Write TH translation** to `content/i18n/th.ts` (create the file if missing — mirror the ZH structure). Per PLAN.md, TH content isn't shipping until Phase 2 but write it now since the user opted in.
@@ -153,8 +157,8 @@ Match the gradient to the image's dominant tones.
 2. For each: navigate via Playwright (with ~2s delay between requests — be polite). Capture Page Title.
 3. Flag as dead if Page Title is `404 Not Found`, contains `not found`, or is the bare vendor domain (e.g. `klook.com`) with no resolved product slug.
 4. From the screenshot, OCR-read the rating + booked count (best-effort). Compare to any baseline you have in commit history if useful.
-5. Best-effort scrape of current price from the snapshot. Compare to hardcoded `price` field. Flag drift > 15%.
-6. Output: markdown table — `slug | vendor | productId | status (live/dead) | rating | booked | price drift | action`.
+5. **Walk every tier** (click each `.desktop-attr-btn` in `.js-activity-package-options`; for the `js-package-option-section` and `booking-options` variants, collect inline prices). Derive `live_min` and `live_max` in THB (convert at ~33.5 if Klook serves USD). Compare against stored `price` (floor) and `priceMax ?? price` (ceiling). Flag drift > 15% on either bound.
+6. Output: markdown table — `slug | vendor | productId | status (live/dead) | rating | booked | stored ฿X (–฿Y) | live ฿X (–฿Y) | drift | action`.
 7. **Don't modify content.** Output is advisory; user decides which to replace / drop.
 
 ## Top mode — full sequence

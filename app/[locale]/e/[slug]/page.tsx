@@ -119,7 +119,7 @@ export default async function ExperienceDetail({
             <span className="font-serif text-xl font-semibold text-loop md:text-3xl lg:text-4xl">
               {listing.priceLabel}
             </span>
-            {isBundle && listing.priceOriginal > listing.price ? (
+            {isBundle && listing.priceOriginal && listing.priceOriginal > listing.price ? (
               <span className="text-xs text-muted line-through md:text-sm lg:text-base">
                 ฿{listing.priceOriginal.toLocaleString()}
               </span>

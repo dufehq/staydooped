@@ -51,12 +51,10 @@ export function BundleCard({ bundle, locale }: Props) {
           ))}
         </ul>
         <div className="flex items-center justify-between">
-          <p>
-            <span className="font-serif text-lg font-semibold text-loop md:text-xl">
-              ฿{bundle.price.toLocaleString()}
-            </span>
+          <p className="font-serif text-base font-semibold text-loop md:text-lg">
+            {bundle.priceLabel}
             {bundle.priceOriginal && bundle.priceOriginal > bundle.price ? (
-              <span className="ml-1 text-[11px] text-muted line-through md:text-xs">
+              <span className="ml-1 text-[11px] font-normal text-muted line-through md:text-xs">
                 ฿{bundle.priceOriginal.toLocaleString()}
               </span>
             ) : null}

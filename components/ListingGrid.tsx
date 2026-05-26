@@ -38,10 +38,7 @@ export function ListingGrid({ experiences, locale }: Props) {
               {e.hook}
             </p>
             <p className="text-xs font-medium text-loop md:text-sm lg:text-base">
-              ฿{e.price.toLocaleString()}{" "}
-              <span className="text-[10px] font-light text-muted md:text-xs">
-                /person
-              </span>
+              {e.priceLabel}
             </p>
           </div>
         </Link>

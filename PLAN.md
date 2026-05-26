@@ -13,10 +13,18 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 ### Done ✅ — Foundation
 - Next.js 16 app, `en`/`th`/`zh` locales, locale auto-detect + path-preserving switch
-- 10 experiences + 4 bundles = **14 listings** in `content/{experiences,bundles}.ts`
+- 10 experiences + 4 bundles in `content/{experiences,bundles}.ts` — as of 2026-05-26, 2 drafted out (doi-suthep / big-day-out — Klook says `Currently unavailable`), so **12 listings live** in production (9 experiences + 3 bundles)
 - Detail page at `/e/[slug]` with shared route for experiences + bundles
 - `/api/go/[id]` affiliate redirect — resolves vendor + productId from content, builds vendor URL with `aid` + `aff_adid=${locale}-${slug}` sub-ID, 302s; WhatsApp listings rejected (Phase 2 archive)
 - 14 listing images at 1920×1072 WebP in `public/images/listings/`
+
+### Done ✅ — Price-range display + delisting sweep (2026-05-26)
+- All cards and detail page now render `priceLabel` directly. Range form (`฿X – ฿Y / person`) for multi-tier listings; `from ฿X / person` for single-tier. `ListingBase.priceMax?: number` added; bundle `saveBadge` / `priceOriginal` made optional and dropped where range applies. EN + ZH overlays both updated.
+- Full Playwright tier-walk of all 14 listings: 8 listings updated with new ranges/floors derived from live Klook/GYG tiers (USD captured then converted at ~33.5 THB/USD, floor/ceil to ฿50).
+- Two listings flipped to `status: 'draft'` (so they hide from production but stay sourced for replacement):
+  - `doi-suthep` (Klook 18012) — `Currently unavailable` on the product page
+  - `big-day-out` (Klook 77519) — same; elephant-camp + sticky-waterfall combo bundle
+- Action items downstream: run `experience-pipeline replace` against both delistings to swap in new Klook productIds.
 
 ### Done ✅ — Catalog hygiene (live-vendor verified 2026-05-25)
 - Every productId hit live: Klook ×10, Viator ×0 (dropped), GYG ×1 (coffee-farm)
@@ -102,7 +110,8 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 Most of the **read** + **rewrite** + **image** pipeline shipped early as the [experience-pipeline skill](.claude/skills/experience-pipeline/SKILL.md). Outstanding:
 
-- [ ] **Re-sync cron** — Vercel Cron or GitHub Action that runs `experience-pipeline check` weekly. Reports dead productIds + price drift > 15%. Doesn't auto-update; opens a draft PR or Slack ping for review.
+- [ ] **Re-sync cron** — Vercel Cron or GitHub Action that runs `experience-pipeline check` weekly. For each listing it (a) flags dead productIds (`Currently unavailable` / 404), (b) walks every Klook tier (click each `.desktop-attr-btn`, scope to `.js-activity-package-options`) and re-derives `price` (min) + `priceMax` (max), and (c) compares to stored values — flags drift > 15% on either bound. Convert observed USD → THB at ~33.5, floor min and ceil max to ฿50 for stable rendering. Doesn't auto-update; opens a draft PR or Slack ping for review.
+- [ ] **Catalog hygiene cron — what 2026-05-26 revealed** — a single pass surfaced two delistings (doi-suthep / Klook 18012, big-day-out / Klook 77519 — both `Currently unavailable`) and 8 of 12 remaining listings drifting >15% on the bounds. Operator-side tier restructuring (e.g. Klook 77514 lunch-run jumping from ฿1,200 → ฿2,650 single-tier; Klook 88017 zipline now spans ฿200 coaster-only → ฿6,400 diamond combo) means manual once-a-quarter sweeps aren't enough. Until the cron lands, run `experience-pipeline check` after each Klook newsletter announces operator changes.
 - [ ] **`/admin` route or Supabase Studio** — surface drafts written by the pipeline for editorial review. Status flip lives there instead of in source files.
 - [ ] **Klook Partner API integration** — Klook offers an affiliate API. Could replace the browser-based product-page scraping the skill currently does, removing bot-blocking friction. Lower priority — Playwright works.
 - [ ] **Vendor image licensing audit** — currently we generate originals via Gemini per AGENTS.md image-conversion-workflow. If Klook's affiliate TOS allows their product images under attribution, we could save Gemini cost. Verify per-vendor before changing.
@@ -116,8 +125,8 @@ Depends on Phase 2 Supabase migration for full closed-loop automation. Until the
 
 | What | Where |
 |---|---|
-| Experience content | [content/experiences.ts](content/experiences.ts) (10 entries) |
-| Bundle content | [content/bundles.ts](content/bundles.ts) (4 entries) |
+| Experience content | [content/experiences.ts](content/experiences.ts) (10 entries; 1 drafted: `doi-suthep`) |
+| Bundle content | [content/bundles.ts](content/bundles.ts) (4 entries; 1 drafted: `big-day-out`) |
 | Type definitions (+ `status` for draft gate) | [content/types.ts](content/types.ts) |
 | ZH listing translations | [content/i18n/zh.ts](content/i18n/zh.ts) |
 | Phase 2 archive (WhatsApp originals) | [content/archive/whatsapp-phase2.ts](content/archive/whatsapp-phase2.ts) |

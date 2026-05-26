@@ -35,7 +35,11 @@ type ListingBase = {
   category: Category;
   title: string;
   hook: string;
+  /** Lowest tier price in THB. Used for sort/filter. */
   price: number;
+  /** Highest tier price in THB. Set when the vendor offers multiple tiers
+   *  through our affiliate link. When absent, priceLabel reads "from ฿X". */
+  priceMax?: number;
   priceLabel: string;
   duration: string;
   distance: string;
@@ -61,8 +65,11 @@ export type Bundle = ListingBase & {
   kind: "bundle";
   emojis: string[];
   badge: string;
-  saveBadge: string;
-  priceOriginal: number;
+  /** Editorial "Save ฿X" badge. Omit when the vendor's tier range makes a
+   *  fixed discount claim misleading. */
+  saveBadge?: string;
+  /** Editorial strikethrough price. Omit alongside saveBadge. */
+  priceOriginal?: number;
 };
 
 export type Listing = Experience | Bundle;

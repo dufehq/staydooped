@@ -36,7 +36,7 @@ export function ListingList({ experiences, locale }: Props) {
               </p>
               <div className="flex items-center gap-2 md:gap-3">
                 <span className="text-xs font-medium text-loop md:text-sm lg:text-base">
-                  ฿{e.price.toLocaleString()}/person
+                  {e.priceLabel}
                 </span>
                 <span className="text-[9.5px] text-muted md:text-xs">
                   ⏱ {e.duration}

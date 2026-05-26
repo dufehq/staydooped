@@ -42,10 +42,7 @@ export function FeaturedCard({ experience: e, locale }: Props) {
           </p>
           <div className="flex flex-wrap items-center gap-2.5 md:gap-3">
             <p className="text-[15px] font-medium text-loop-2 md:text-xl lg:text-2xl">
-              ฿{e.price.toLocaleString()}{" "}
-              <span className="text-[10px] font-light text-paper/40 md:text-sm">
-                / person
-              </span>
+              {e.priceLabel}
             </p>
             <span className="rounded-pill bg-paper/10 px-2 py-0.5 text-[9px] text-paper/55 md:px-3 md:py-1 md:text-xs">
               ⏱ {e.duration}
