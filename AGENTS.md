@@ -34,6 +34,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Git workflow
 
+- **Always `git fetch origin main` and branch from the latest `main` before starting any work.** Never branch from a stale local copy — this causes merge conflicts for the partner.
 - **Always update `PLAN.md` before opening a PR.** Log completed work under the relevant `Done ✅` section, referencing the PR number. This is a ritual — no PR goes out without the plan reflecting it.
 - Branch naming: `revise/<short-description>` for copy/UI changes, `feat/<short-description>` for new features, `fix/<short-description>` for bugs.
 - Always get owner approval before pushing a branch.
