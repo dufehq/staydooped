@@ -19,7 +19,6 @@ export function StickyBookBar({
 }: Props) {
   const t = useTranslations("BookCTA");
   const href = buildBookingUrl(booking, slug, locale, whatsappNumber);
-  const isExternal = booking.type === "whatsapp";
   const label = booking.type === "whatsapp" ? t("bookShort") : t("bookShort");
 
   return (
@@ -32,8 +31,8 @@ export function StickyBookBar({
         </div>
         <a
           href={href}
-          target={isExternal ? "_blank" : undefined}
-          rel={isExternal ? "noopener noreferrer" : undefined}
+          target="_blank"
+          rel="noopener noreferrer"
           className="shrink-0 rounded-[10px] bg-loop px-5 py-3 text-[13px] font-medium uppercase tracking-[0.12em] text-night active:bg-loop-2"
         >
           {label}

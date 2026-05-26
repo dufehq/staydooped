@@ -25,15 +25,14 @@ export function buildBookingUrl(
 export function BookCTA({ booking, slug, locale, whatsappNumber }: Props) {
   const t = useTranslations("BookCTA");
   const href = buildBookingUrl(booking, slug, locale, whatsappNumber);
-  const isExternal = booking.type === "whatsapp";
   const label =
     booking.type === "whatsapp" ? t("bookDirect") : t("bookThisLoop");
   return (
     <div>
       <a
         href={href}
-        target={isExternal ? "_blank" : undefined}
-        rel={isExternal ? "noopener noreferrer" : undefined}
+        target="_blank"
+        rel="noopener noreferrer"
         className="block w-full rounded-[10px] bg-loop py-4 text-center text-[13px] font-medium uppercase tracking-[0.15em] text-night transition-colors active:bg-loop-2"
       >
         {label}
