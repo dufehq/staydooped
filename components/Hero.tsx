@@ -8,7 +8,7 @@ const QUICK_LINKS = [
     label: "Klook",
     href: "https://www.klook.com/city/165-chiang-mai-things-to-do/?aid=121431",
   },
-  { icon: "🛒", label: "Lazada", href: "https://www.lazada.co.th/" },
+  { icon: "🛒", label: "Lazada", href: "https://s.lazada.co.th/s.Z6DXTU?c=a&t=ntv-t1_alp-native" },
   { icon: "🚗", label: "Grab", href: "https://www.grab.com/th/" },
 ];
 
@@ -62,7 +62,7 @@ export function Hero({ featuredSlug }: Props = {}) {
           <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.2em] text-paper/40 md:mb-3 md:text-xs">
             {t("appsPillLabel")}
           </p>
-          <div className="flex flex-wrap gap-1.5 md:gap-2 lg:gap-3">
+          <div className="flex flex-wrap items-center gap-1.5 md:gap-2 lg:gap-3">
             {QUICK_LINKS.map((link) => (
               <a
                 key={link.label}
@@ -75,6 +75,12 @@ export function Hero({ featuredSlug }: Props = {}) {
                 {link.label}
               </a>
             ))}
+            <Link
+              href="/guide"
+              className="text-[9px] font-medium tracking-wide text-paper/30 underline underline-offset-2 hover:text-paper/60 md:text-xs"
+            >
+              {t("appsGuideLink")}
+            </Link>
           </div>
         </div>
       </div>

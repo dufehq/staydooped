@@ -32,6 +32,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Design tokens are defined once in `app/globals.css` inside the `@theme` block. **Use the named utility classes** (`bg-paper`, `text-loop`, `font-display`, `shadow-card`) — don't paste raw hex or duplicate tokens.
 - Mobile-first responsive. Breakpoints: `md:` 768px (tablet), `lg:` 1024px (desktop). Container max-width grows `430px` → `760px` → `1280px`.
 
+## Git workflow
+
+- **Always update `PLAN.md` before opening a PR.** Log completed work under the relevant `Done ✅` section, referencing the PR number. This is a ritual — no PR goes out without the plan reflecting it.
+- Branch naming: `revise/<short-description>` for copy/UI changes, `feat/<short-description>` for new features, `fix/<short-description>` for bugs.
+- Always get owner approval before pushing a branch.
+- After pushing, ask the owner if they want a PR created. Include a clear description with what changed, why, and a test checklist.
+
 ## Tooling
 
 - `npm run dev` uses **Webpack** (`next dev --webpack`), not Turbopack. Turbopack spawns one PostCSS subprocess per CSS file under `@tailwindcss/postcss` — heavy on this laptop. Revisit when Tailwind ships a Turbopack-native plugin or CSS surface area is small enough that the overhead doesn't matter.
