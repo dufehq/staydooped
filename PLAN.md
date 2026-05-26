@@ -42,6 +42,9 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - Mobile-first responsive (430px → 760px → 1280px containers)
 - Hero neighborhood pills replaced with affiliate app quick links: 🎫 Klook (AID 121431), 🛒 Lazada, 🚗 Grab — label translated EN/ZH (PR #5)
 - Manifesto + meta description copy de-branded: operator names (Klook/Viator/GYG) removed so copy stays flexible as affiliate mix changes (PR #5)
+- `/guide` page: host-to-guest article covering Klook, Lazada (Mall/reviews/shipping tips), Grab, Google Translate, LINE — all app names linked, affiliate IDs attached where applicable (PR #6)
+- `CarCallout` strip on home page between featured card and bundles — promotes private car hire via Klook + Grab (PR #6)
+- Lazada hero pill updated to affiliate shortlink; "why these?" link added next to pills → `/guide` (PR #6)
 
 ### Done ✅ — Analytics & attribution
 - Vercel Analytics + Speed Insights mounted in [layout.tsx](app/[locale]/layout.tsx)
