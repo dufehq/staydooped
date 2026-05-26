@@ -120,7 +120,7 @@ export default async function GuidePage({
                 </li>
               </ul>
               <p>
-                Also great for Thai souvenirs — textiles, local snacks, handicrafts — shipped straight to your home address. No haggling, no extra luggage.
+                Also great for Thai souvenirs — textiles, local snacks, handicrafts — order online and have them delivered straight to where you're staying. No haggling, no carrying bags around all day.
               </p>
             </div>
           </section>
