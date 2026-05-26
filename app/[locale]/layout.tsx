@@ -45,7 +45,7 @@ const notoSC = Noto_Sans_SC({
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://staylooped.co";
 const DESCRIPTION =
-  "Hand-picked tours and activities in Chiang Mai — vetted operators on Klook, Viator and GetYourGuide.";
+  "Hand-picked tours and activities in Chiang Mai — vetted by locals, booked through trusted operators.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

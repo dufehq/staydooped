@@ -2,11 +2,14 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
-const PILL_KEYS: { key: string; active?: boolean }[] = [
-  { key: "pillOldCity", active: true },
-  { key: "pillNimman" },
-  { key: "pillNimmanhaemin" },
-  { key: "pillDoiSuthep" },
+const QUICK_LINKS = [
+  {
+    icon: "🎫",
+    label: "Klook",
+    href: "https://www.klook.com/city/165-chiang-mai-things-to-do/?aid=121431",
+  },
+  { icon: "🛒", label: "Lazada", href: "https://www.lazada.co.th/" },
+  { icon: "🚗", label: "Grab", href: "https://www.grab.com/th/" },
 ];
 
 type Props = {
@@ -55,20 +58,24 @@ export function Hero({ featuredSlug }: Props = {}) {
             {t("ctaLabel")}
           </Link>
         ) : null}
-        <div className="mt-[18px] flex flex-wrap gap-1.5 md:mt-8 md:gap-2 lg:mt-10 lg:gap-3">
-          {PILL_KEYS.map((p) => (
-            <span
-              key={p.key}
-              className={
-                "rounded-pill px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.15em] md:px-4 md:py-1.5 md:text-xs lg:px-5 lg:py-2 lg:text-sm " +
-                (p.active
-                  ? "border border-loop bg-loop text-night"
-                  : "border border-paper/20 text-paper/60")
-              }
-            >
-              {t(p.key)}
-            </span>
-          ))}
+        <div className="mt-[18px] md:mt-8 lg:mt-10">
+          <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.2em] text-paper/40 md:mb-3 md:text-xs">
+            {t("appsPillLabel")}
+          </p>
+          <div className="flex flex-wrap gap-1.5 md:gap-2 lg:gap-3">
+            {QUICK_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 rounded-pill border border-paper/20 px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-paper/60 transition-colors hover:border-loop hover:text-loop md:px-4 md:py-1.5 md:text-xs lg:px-5 lg:py-2 lg:text-sm"
+              >
+                <span>{link.icon}</span>
+                {link.label}
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </section>
