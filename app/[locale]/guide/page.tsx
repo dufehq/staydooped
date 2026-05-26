@@ -66,7 +66,15 @@ export default async function GuidePage({
                 . It's what we'd recommend for anything that needs a time slot — elephant sanctuaries, cooking classes, day trips out of the city.
               </p>
               <p>
-                One thing many guests don't realise: Klook also has <strong>private car hire for full-day trips</strong>. If you want to do Doi Inthanon, Chiang Rai, or Pai at your own pace with a driver who knows the roads, this is the most comfortable way to do it. You set the itinerary, the driver handles the rest.
+                One thing many guests don't realise: Klook also has <strong>private car hire for full-day trips</strong>. If you want to do Doi Inthanon, Chiang Rai, or Pai at your own pace with a driver who knows the roads, this is the most comfortable way to do it. You set the itinerary, the driver handles the rest.{" "}
+                <a
+                  href="https://www.klook.com/en-US/search/?query=chiang+mai+private+car&aid=121431"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-ink underline decoration-loop/40 underline-offset-4 hover:decoration-loop"
+                >
+                  Search "Chiang Mai private car" on Klook →
+                </a>
               </p>
               <p>
                 The main reason to book ahead: popular experiences sell out, especially on weekends and during high season (November to February). Booking through Klook means instant confirmation, clear pickup details, and a refund policy if plans change.
