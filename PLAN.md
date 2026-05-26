@@ -40,6 +40,8 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - CategoryTabs removed (visual-only, didn't filter → trust killer); revisit when inventory >20
 - OG default image (1200×630 branded) + per-listing OG/Twitter metadata + hreflang alternates
 - Mobile-first responsive (430px → 760px → 1280px containers)
+- Hero neighborhood pills replaced with affiliate app quick links: 🎫 Klook (AID 121431), 🛒 Lazada, 🚗 Grab — label translated EN/ZH (PR #5)
+- Manifesto + meta description copy de-branded: operator names (Klook/Viator/GYG) removed so copy stays flexible as affiliate mix changes (PR #5)
 
 ### Done ✅ — Analytics & attribution
 - Vercel Analytics + Speed Insights mounted in [layout.tsx](app/[locale]/layout.tsx)
