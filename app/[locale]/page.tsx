@@ -7,6 +7,7 @@ import { ListingGrid } from "@/components/ListingGrid";
 import { ListingList } from "@/components/ListingList";
 import { Manifesto } from "@/components/Manifesto";
 import { Footer } from "@/components/Footer";
+import { CarCallout } from "@/components/CarCallout";
 import {
   getFeaturedExperience,
   getNonFeaturedExperiences,
@@ -36,6 +37,8 @@ export default async function Home({
         paddingClassName="px-[18px] pt-6 pb-2.5 md:px-12 md:pt-10 lg:px-16 lg:pt-14"
       />
       <FeaturedCard experience={featured} locale={locale} />
+
+      <CarCallout />
 
       <BundleScroll locale={locale} />
 
