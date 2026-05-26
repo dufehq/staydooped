@@ -14,7 +14,7 @@ export function CarCallout() {
       </div>
       <div className="flex shrink-0 gap-2 pl-8 md:pl-0">
         <a
-          href="https://www.klook.com/city/165-chiang-mai-things-to-do/?aid=121431"
+          href="https://www.klook.com/en-US/search/?query=chiang+mai+private+car&aid=121431"
           target="_blank"
           rel="noopener noreferrer"
           className="rounded-pill bg-night px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-paper transition-colors hover:bg-ink md:text-xs"
