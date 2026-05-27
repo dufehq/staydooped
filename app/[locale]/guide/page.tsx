@@ -1,6 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 import { Footer } from "@/components/Footer";
+import { TopNav } from "@/components/TopNav";
 
 export default async function GuidePage({
   params,
@@ -12,16 +12,9 @@ export default async function GuidePage({
 
   return (
     <main className="mx-auto max-w-[430px] md:max-w-[760px] lg:max-w-[960px]">
-      <div className="px-[22px] pt-8 pb-4 md:px-12 md:pt-12 lg:px-16 lg:pt-16">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-muted hover:text-ink md:text-xs"
-        >
-          ← Back
-        </Link>
-      </div>
+      <TopNav />
 
-      <article className="px-[22px] pb-16 md:px-12 lg:px-16">
+      <article className="px-[22px] pb-16 pt-8 md:px-12 md:pt-12 lg:px-16 lg:pt-16">
         <header className="mb-10 md:mb-14">
           <p className="mb-3 text-[9px] font-medium uppercase tracking-[0.4em] text-loop md:text-xs">
             From your hosts
