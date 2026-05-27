@@ -9,12 +9,8 @@ _Full audit of pages, components, content, translations, and SEO. Produced 2026-
 ### 1. CarCallout is English-only
 `components/CarCallout.tsx` has every string hardcoded in English — "Need a private car for the day?", the description, and both button labels. Chinese guests (majority audience) see English copy here. Needs either a translations namespace added to `en.json` / `zh.json` and `getTranslations`, or an inline locale-check.
 
-### 2. Thai locale is in routing but 83% untranslated
-`messages/th.json` only covers `Common` + a partial `Hero` block. The following namespaces are entirely missing: `Sections`, `Categories`, `Manifesto`, `Footer`, `Detail`, `BookCTA`, `Guide` — 53+ keys. When a Thai-language user visits any page beyond the hero, next-intl silently falls back to English, so the page looks broken.
-
-**Options:**
-- Add full Thai translations (Phase 2 plan item — correct long-term fix)
-- Remove `th` from `routing.ts` locales until translations are ready — cleaner than silent English fallback
+### 2. ~~Thai locale is in routing but 83% untranslated~~ ✅ Fixed
+All 9 namespaces now complete in `messages/th.json`. Thai option added to `LocaleSwitcher`.
 
 ---
 
@@ -30,8 +26,8 @@ Both have complete images and data but are hidden from production:
 
 Run `/experience-pipeline replace` on each to swap in a live Klook productId, or formally archive them. Until replaced, the live catalogue is 12 of 14.
 
-### 4. `appsPillLabel` and `appsGuideLink` missing from `th.json`
-These two Hero keys exist in both `en.json` and `zh.json` but were never added to the Thai Hero block. Thai users see the app pills without labels.
+### 4. ~~`appsPillLabel` and `appsGuideLink` missing from `th.json`~~ ✅ Fixed
+Both keys added to th.json Hero block.
 
 ### 5. Hero Thai subtitle shows on all locales
 `คู่มือท้องถิ่น — เชียงใหม่` is the `thaiSubtitle` key — it renders for English and Chinese users too. This appears to be intentional branding (a decorative Thai script line under the English tagline), but worth confirming with the owner. If it should only show on the Thai locale, add a locale gate in `Hero.tsx`.
