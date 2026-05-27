@@ -31,14 +31,14 @@ export default async function Home({
     <main className="mx-auto max-w-[430px] md:max-w-[760px] lg:max-w-[1280px]">
       <Hero featuredSlug={featured.slug} />
 
+      <CarCallout />
+
       <SectionHeader
         label={t("communityTopPick")}
         title={t("mostLooped")}
         paddingClassName="px-[18px] pt-6 pb-2.5 md:px-12 md:pt-10 lg:px-16 lg:pt-14"
       />
       <FeaturedCard experience={featured} locale={locale} />
-
-      <CarCallout />
 
       <BundleScroll locale={locale} />
 
