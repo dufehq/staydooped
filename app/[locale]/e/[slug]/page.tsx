@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getAllListingSlugs, getListing } from "@/content";
 import { routing } from "@/i18n/routing";
 import { BookCTA } from "@/components/BookCTA";
 import { StickyBookBar } from "@/components/StickyBookBar";
-import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { TopNav } from "@/components/TopNav";
 
 export function generateStaticParams() {
   return routing.locales.flatMap((locale) =>
@@ -71,15 +70,15 @@ export default async function ExperienceDetail({
   if (!listing) notFound();
 
   const tDetail = await getTranslations("Detail");
-  const tCommon = await getTranslations("Common");
   const tCat = await getTranslations("Categories");
   const isBundle = listing.kind === "bundle";
 
   return (
     <main className="mx-auto max-w-[430px] pb-32 md:max-w-[1100px] md:pb-20 lg:max-w-[1280px] lg:pb-28">
+      <TopNav />
       <div className="md:grid md:grid-cols-[1.05fr_1fr] md:gap-10 md:px-12 md:pt-12 lg:gap-16 lg:px-16 lg:pt-16">
         {/* Visual hero */}
-        <div className="md:sticky md:top-12 md:self-start">
+        <div className="md:sticky md:top-[52px] md:self-start">
           <div
             className={`relative h-[220px] overflow-hidden bg-gradient-to-br ${listing.background} md:h-[480px] md:rounded-card lg:h-[560px]`}
           >
@@ -91,16 +90,6 @@ export default async function ExperienceDetail({
               sizes="(min-width: 1024px) 545px, (min-width: 768px) 545px, 100vw"
               className="object-cover"
             />
-            <Link
-              href={`/${locale}`}
-              aria-label={tCommon("back")}
-              className="absolute left-3.5 top-3.5 flex h-9 w-9 items-center justify-center rounded-full bg-night/55 text-base text-paper backdrop-blur-sm md:left-5 md:top-5 md:h-11 md:w-11 md:text-lg"
-            >
-              ‹
-            </Link>
-            <div className="absolute right-3.5 top-3.5 md:right-5 md:top-5">
-              <LocaleSwitcher />
-            </div>
           </div>
         </div>
 
