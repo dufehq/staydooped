@@ -5,7 +5,7 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Primary users:** Guests on their phones — mix of EN and ZH speakers (ZH guests are majority; many speak little English, so losing them at the first English screen is a real conversion risk).
 
-**Status as of 2026-05-26:** site is feature-complete and content-clean. Remaining blockers are deploy + QR, both Day-2 tasks.
+**Status as of 2026-05-27:** site is fully trilingual (EN/ZH/TH) with TopNav on all inner pages. Day-2 blockers (deploy, QR, smoke test) are done. Remaining: replace 2 draft listings, CarCallout i18n, SEO improvements.
 
 ---
 
@@ -53,6 +53,17 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - `/guide` page: host-to-guest article covering Klook, Lazada (Mall/reviews/shipping tips), Grab, Google Translate, LINE — all app names linked, affiliate IDs attached where applicable (PR #6)
 - `CarCallout` strip on home page between featured card and bundles — promotes private car hire via Klook + Grab (PR #6); Klook button links to search "chiang mai private car" with AID (PR #8)
 - Lazada hero pill updated to affiliate shortlink; "why these?" link added next to pills → `/guide` (PR #6)
+
+### Done ✅ — TopNav + full trilingual support (PR #10, 2026-05-27)
+- `components/TopNav.tsx` — sticky header with STAYLOOPED logo + locale switcher on all inner pages (`/guide`, `/e/[slug]`); home page intentionally excluded (has its own Hero switcher)
+- Detail page hero cleaned up: overlaid back button and locale switcher removed — replaced by TopNav
+- `/guide` page fully translated into ZH and TH — was previously hardcoded English (language switch looked broken)
+- `messages/th.json` completed: all 9 namespaces now translated (was 83% missing — Sections, Categories, Manifesto, Footer, Detail, BookCTA, Guide all added)
+- `content/i18n/th.ts` (new): all 14 listings translated into Thai — cards now show Thai titles, hooks, descriptions, inclusions, price labels
+- Thai UI copy rewritten for natural tone: Hero taglines, Manifesto titleLine1/2 and body revised by owner
+- LocaleSwitcher now shows **EN · 中文 · ไทย** on every page
+- `AGENTS.md` updated with multi-language checklist — enforced rule for every new page going forward
+- `SITE-REVIEW.md` added at repo root — full audit of all pages, components, translations, SEO; grouped by priority with action order
 
 ### Done ✅ — Analytics & attribution
 - Vercel Analytics + Speed Insights mounted in [layout.tsx](app/[locale]/layout.tsx)
