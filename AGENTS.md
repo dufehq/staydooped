@@ -55,6 +55,7 @@ When building any new `app/[locale]/<route>/page.tsx`:
 - Branch naming: `revise/<short-description>` for copy/UI changes, `feat/<short-description>` for new features, `fix/<short-description>` for bugs.
 - Always get owner approval before pushing a branch.
 - After pushing, ask the owner if they want a PR created. Include a clear description with what changed, why, and a test checklist.
+- **Always request `dhanuwat` as a reviewer on every PR** using the GitHub MCP `request_copilot_review` or reviewer request tool after creating the PR.
 
 ## Tooling
 
