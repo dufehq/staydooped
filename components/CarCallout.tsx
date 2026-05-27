@@ -1,6 +1,6 @@
 export function CarCallout() {
   return (
-    <div className="mx-[18px] my-5 flex flex-col gap-3 rounded-2xl border border-border bg-sand/40 px-5 py-4 md:mx-12 md:my-8 md:flex-row md:items-center md:justify-between md:px-8 md:py-5 lg:mx-16">
+    <div className="mx-[18px] mt-5 mb-2 flex flex-col gap-3 rounded-2xl border border-border bg-sand/40 px-5 py-4 md:mx-12 md:mt-8 md:mb-3 md:flex-row md:items-center md:justify-between md:px-8 md:py-5 lg:mx-16">
       <div className="flex items-start gap-3 md:items-center">
         <span className="mt-0.5 text-xl md:mt-0 md:text-2xl">🚗</span>
         <div>
