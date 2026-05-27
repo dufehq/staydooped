@@ -1,7 +1,8 @@
 import { zh } from "./zh";
+import { th } from "./th";
 import type { LocaleTranslations } from "./types";
 
-const TRANSLATIONS: Record<string, LocaleTranslations | undefined> = { zh };
+const TRANSLATIONS: Record<string, LocaleTranslations | undefined> = { zh, th };
 
 export function translateListing<T extends { slug: string }>(
   listing: T,

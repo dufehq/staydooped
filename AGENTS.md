@@ -26,6 +26,22 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Bundle and experience detail pages share **one route**: `app/[locale]/e/[slug]/page.tsx`, backed by `getListing(slug)`. Pre-render with `generateStaticParams`.
 - Edge logic lives in `proxy.ts` (Next.js 16 renamed `middleware.ts`).
 
+## Multi-language checklist — every new page
+
+**ZH users are the majority audience. A page that renders English when they switch locale is a broken page.**
+
+When building any new `app/[locale]/<route>/page.tsx`:
+
+1. **Add a translation namespace** for the page in `messages/en.json` and `messages/zh.json` (e.g. `"Guide": { ... }`). If Thai content is ready, add to `messages/th.json` too — otherwise leave TH as a copy of EN for now.
+2. **Use `getTranslations`** (async server components) or `useTranslations` (client components) — never hardcode English strings in JSX.
+3. **Use `t.rich()`** for any string that contains embedded links or HTML elements (e.g. `<strong>`, `<a>`). See `app/[locale]/guide/page.tsx` and `components/Manifesto.tsx` for the pattern.
+4. **Include `<TopNav />`** (or equivalent locale switcher) on every page so users can actually switch.
+5. **Test the switcher** — navigate to the page as EN, click 中文, confirm the content changes. If it looks the same, a string is still hardcoded.
+
+**Reference implementation:** `app/[locale]/guide/page.tsx` — fully bilingual, uses `t()` for simple strings and `t.rich()` for paragraphs with affiliate links.
+
+**Adding a new locale later:** add the locale to `i18n/routing.ts` locales array, create `messages/<locale>.json`, and add the `LocaleSwitcher` option in `components/LocaleSwitcher.tsx`. Every page that already uses `getTranslations` will automatically pick up the new locale.
+
 ## Components and design
 
 - **Server Components by default.** Opt into `"use client"` only for genuine interactivity (e.g., `CategoryTabs`).

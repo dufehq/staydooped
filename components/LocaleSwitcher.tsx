@@ -6,6 +6,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 const OPTIONS = [
   { locale: "en" as const, label: "EN" },
   { locale: "zh" as const, label: "中文" },
+  { locale: "th" as const, label: "ไทย" },
 ];
 
 type Size = "default" | "prominent";
