@@ -57,5 +57,32 @@
     "bookThisLoop": "Check availability & book →",
     "bookShort": "Book →",
     "footnote": "You'll be taken to the operator's site to complete booking."
+  },
+  "Guide": {
+    "kicker": "From your hosts",
+    "title": "A few apps that'll make your Chiang Mai trip a lot easier",
+    "subtitle": "We use all of these ourselves — thought they'd be handy to have on your phone before you arrive.",
+    "klookTagline": "book experiences and day trips in advance",
+    "klookP1": "Most of the tours and activities on this site are bookable through <link>Klook</link>. It's what we'd recommend for anything that needs a time slot — elephant sanctuaries, cooking classes, day trips out of the city.",
+    "klookP2": "One thing many guests don't realise: Klook also has <strong>private car hire for full-day trips</strong>. If you want to do Doi Inthanon, Chiang Rai, or Pai at your own pace with a driver who knows the roads, this is the most comfortable way to do it. You set the itinerary, the driver handles the rest. <searchLink>Search \"Chiang Mai private car\" on Klook →</searchLink>",
+    "klookP3": "The main reason to book ahead: popular experiences sell out, especially on weekends and during high season (November to February). Booking through Klook means instant confirmation, clear pickup details, and a refund policy if plans change.",
+    "lazadaTagline": "order souvenirs and essentials to your door",
+    "lazadaP1": "<link>Lazada</link> is Thailand's biggest online marketplace — think Amazon, but for Southeast Asia. Prices are often significantly cheaper than tourist-area shops.",
+    "lazadaP2": "Our tip: order a few things to the house a day or two after you arrive. Sunscreen, insect repellent, a power adapter, snacks, a daypack — all the things you'd otherwise spend an afternoon hunting for. Delivery to Chiang Mai is usually 1–3 days.",
+    "lazadaTip1": "<strong>Look for \"Lazada Mall\"</strong> when buying anything branded. Mall sellers are official brand stores — more reliable quality and easier returns.",
+    "lazadaTip2": "<strong>Always check the reviews</strong> before you buy, especially from non-Mall sellers.",
+    "lazadaTip3": "<strong>Check the shipping date carefully.</strong> Some items ship from overseas and can take 1–2 weeks — if you're leaving soon, filter for Thailand sellers only.",
+    "lazadaP3": "Also great for Thai souvenirs — textiles, local snacks, handicrafts — order online and have them delivered straight to where you're staying. No haggling, no carrying bags around all day.",
+    "grabTagline": "rides, food, and full-day drivers",
+    "grabP1": "<link>Grab</link> is the Uber of Southeast Asia — rides, motorbike taxis, and food delivery in one app. In Chiang Mai it's the most reliable way to get around without negotiating tuk-tuk fares.",
+    "grabP2": "Fixed prices shown upfront, no surprises. But beyond the basics: <strong>Grab also lets you book a driver for a full day.</strong> Tell the driver where you want to go — Doi Suthep, the elephant sanctuary, a temple loop outside the city — agree on a price, and they'll wait for you at each stop. Flexible, personal, and often cheaper than a group tour.",
+    "grabP3": "GrabFood is solid for evenings in. Coverage around Chiang Mai is good.",
+    "translateTagline": "your pocket translator",
+    "translateP1": "The camera mode is the one to know. Point your phone at a menu, a sign, or a product label and it translates instantly — no typing needed.",
+    "translateP2": "Download the Thai language pack before you leave the house so it works offline too. Chinese is usually pre-installed but worth double-checking.",
+    "lineTagline": "how Thailand communicates",
+    "lineP1": "LINE is the messaging app that runs Thailand. Locals, restaurants, tour operators, drivers — everyone's on it. If you're staying for more than a week or planning to come back, it's worth setting up.",
+    "lineP2": "Practically: some local restaurants only take bookings via LINE. Small tour operators and private drivers prefer it. A few market vendors use LINE Pay. Think of it less as a chat app and more as the national communication layer.",
+    "closing": "You're looped in. With these on your phone, you're already travelling more like a local than most tourists ever will. Go explore like you actually live here."
   }
 }
