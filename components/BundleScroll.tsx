@@ -13,7 +13,6 @@ export function BundleScroll({ locale }: Props) {
       <SectionHeader
         label={t("newOnStaylooped")}
         title={t("bundlesTitle")}
-        more={{ href: `/${locale}/bundles`, text: t("viewAll") }}
         subtitle={t("bundlesSubtitle")}
       />
       <div className="flex gap-2.5 overflow-x-auto px-[18px] pb-5 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] md:grid md:grid-cols-2 md:gap-5 md:overflow-visible md:px-12 md:pb-8 lg:grid-cols-4 lg:gap-6 lg:px-16 lg:pb-12 [&::-webkit-scrollbar]:hidden">

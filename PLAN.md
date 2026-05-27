@@ -65,6 +65,10 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - `AGENTS.md` updated with multi-language checklist — enforced rule for every new page going forward
 - `SITE-REVIEW.md` added at repo root — full audit of all pages, components, translations, SEO; grouped by priority with action order
 
+### Done ✅ — Bundle "All" button 404 fix (PR #12, 2026-05-27)
+- `BundleScroll` was passing `more={{ href: `/${locale}/bundles`, text: t("viewAll") }}` to `SectionHeader` — a route that doesn't exist
+- Removed the `more` prop so the "All" / "查看全部" button no longer renders; no broken link
+
 ### Done ✅ — Analytics & attribution
 - Vercel Analytics + Speed Insights mounted in [layout.tsx](app/[locale]/layout.tsx)
 - Non-blocking `void track('affiliate_click', { slug, vendor, productId, locale })` on `/api/go` — fires server-side without blocking the 302
