@@ -26,7 +26,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const listing = getListing(slug, locale);
+  const listing = await getListing(slug, locale);
   if (!listing) return {};
 
   const image = `/images/listings/${slug}.webp`;
@@ -66,7 +66,7 @@ export default async function ExperienceDetail({
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  const listing = getListing(slug, locale);
+  const listing = await getListing(slug, locale);
   if (!listing) notFound();
 
   const tDetail = await getTranslations("Detail");

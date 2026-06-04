@@ -12,7 +12,14 @@ export {
 } from "./experiences";
 export { contributors, getContributor } from "./contributors";
 
-export function getListing(slug: string, locale = "en"): Listing | undefined {
+export async function getListing(
+  slug: string,
+  locale = "en",
+): Promise<Listing | undefined> {
+  if (process.env.USE_SUPABASE === "true") {
+    const { getListingFromDB } = await import("./db");
+    return getListingFromDB(slug, locale);
+  }
   return getBundle(slug, locale) ?? getExperience(slug, locale);
 }
 
