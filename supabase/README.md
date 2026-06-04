@@ -104,8 +104,8 @@ behavior). Anon RLS hides drafts from any public path that uses
 - [x] Dev seeded (`npm run seed:supabase`) — 14 listings × 3 locales
 - [x] Generated types (`types/supabase.ts`)
 - [x] Runtime client wrapper (`lib/supabase.ts`) + DB-backed `getListing` (`content/db.ts`)
-- [ ] Smoke test `USE_SUPABASE=true` against `/e/elephant` (EN/ZH/TH) + `/api/go/elephant`
-- [ ] Migrate `getFeaturedExperience`, `getNonFeaturedExperiences`, `getAllBundles`, `getAllListingSlugs`
+- [x] Smoke test `USE_SUPABASE=true` against `/e/elephant` (EN/ZH/TH) + `/api/go/elephant`
+- [x] Migrate `getFeaturedExperience`, `getNonFeaturedExperiences`, `getAllBundles`, `getAllListingSlugs` (all 5 content getters now async + flag-gated)
 - [ ] Prod env vars mirrored to Vercel (Production environment)
 - [ ] Seed prod + flip `USE_SUPABASE=true` in Vercel Production
 - [ ] Schema design — `listings` (single table, `kind: 'experience' | 'bundle'` TBD) + `listing_translations`

@@ -8,9 +8,10 @@ import { BookCTA } from "@/components/BookCTA";
 import { StickyBookBar } from "@/components/StickyBookBar";
 import { TopNav } from "@/components/TopNav";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const slugs = await getAllListingSlugs();
   return routing.locales.flatMap((locale) =>
-    getAllListingSlugs().map((slug) => ({ locale, slug })),
+    slugs.map((slug) => ({ locale, slug })),
   );
 }
 

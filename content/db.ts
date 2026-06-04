@@ -1,5 +1,5 @@
 import "server-only";
-import { getSupabaseService } from "@/lib/supabase";
+import { getSupabaseAnon, getSupabaseService } from "@/lib/supabase";
 import type {
   BookingMethod,
   Bundle,
@@ -100,10 +100,20 @@ function rowToListing(row: ListingRow, tr: TranslationRow): Listing {
   return bundle;
 }
 
+function pickTranslation(rows: TranslationRow[], locale: string): TranslationRow {
+  const tr =
+    rows.find((t) => t.locale === locale) ??
+    rows.find((t) => t.locale === "en");
+  if (!tr) {
+    throw new Error("No EN translation row available (data invariant violated)");
+  }
+  return tr;
+}
+
 /** DB-backed `getListing`. Uses the service-role client so drafts resolve
  *  for preview at `/e/<draft-slug>` — matches the TS-file path's behavior.
- *  RLS still hides drafts from the anon path, which is what the homepage
- *  and search use. */
+ *  RLS hides drafts from the anon-key path, which is what the homepage
+ *  and the other published-only getters below use. */
 export async function getListingFromDB(
   slug: string,
   locale: string,
@@ -118,14 +128,111 @@ export async function getListingFromDB(
   if (error) throw error;
   if (!data) return undefined;
 
-  const translations = data.listing_translations as TranslationRow[];
-  const tr =
-    translations.find((t) => t.locale === locale) ??
-    translations.find((t) => t.locale === "en");
-
-  if (!tr) {
-    throw new Error(`Listing ${slug}: no EN translation row (data invariant violated)`);
-  }
+  const tr = pickTranslation(
+    data.listing_translations as unknown as TranslationRow[],
+    locale,
+  );
 
   return rowToListing(data as unknown as ListingRow, tr);
+}
+
+// Stable insertion order across reruns: `created_at` is set at first INSERT
+// and upserts don't touch it, so ordering by it preserves the order the seed
+// pushed rows in (which mirrors the TS-file source order). `slug` is a
+// deterministic tiebreaker if two rows share a timestamp.
+
+export async function getFeaturedExperienceFromDB(
+  locale: string,
+): Promise<Experience> {
+  const sb = getSupabaseAnon();
+  const { data, error } = await sb
+    .from("listings")
+    .select("*, listing_translations(*)")
+    .eq("kind", "experience")
+    .eq("is_featured", true)
+    .eq("status", "published")
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) throw new Error("No featured experience set");
+
+  const tr = pickTranslation(
+    data.listing_translations as unknown as TranslationRow[],
+    locale,
+  );
+  const listing = rowToListing(data as unknown as ListingRow, tr);
+  if (listing.kind !== "experience") {
+    throw new Error(`Featured listing ${listing.slug} is not an experience`);
+  }
+  return listing;
+}
+
+export async function getNonFeaturedExperiencesFromDB(
+  locale: string,
+): Promise<Experience[]> {
+  const sb = getSupabaseAnon();
+  const { data, error } = await sb
+    .from("listings")
+    .select("*, listing_translations(*)")
+    .eq("kind", "experience")
+    .eq("is_featured", false)
+    .eq("status", "published")
+    .order("created_at", { ascending: true })
+    .order("slug", { ascending: true });
+
+  if (error) throw error;
+  if (!data) return [];
+
+  return data.map((row) => {
+    const tr = pickTranslation(
+      row.listing_translations as unknown as TranslationRow[],
+      locale,
+    );
+    const listing = rowToListing(row as unknown as ListingRow, tr);
+    if (listing.kind !== "experience") {
+      throw new Error(`Non-featured query returned non-experience ${listing.slug}`);
+    }
+    return listing;
+  });
+}
+
+export async function getAllBundlesFromDB(locale: string): Promise<Bundle[]> {
+  const sb = getSupabaseAnon();
+  const { data, error } = await sb
+    .from("listings")
+    .select("*, listing_translations(*)")
+    .eq("kind", "bundle")
+    .eq("status", "published")
+    .order("created_at", { ascending: true })
+    .order("slug", { ascending: true });
+
+  if (error) throw error;
+  if (!data) return [];
+
+  return data.map((row) => {
+    const tr = pickTranslation(
+      row.listing_translations as unknown as TranslationRow[],
+      locale,
+    );
+    const listing = rowToListing(row as unknown as ListingRow, tr);
+    if (listing.kind !== "bundle") {
+      throw new Error(`Bundle query returned non-bundle ${listing.slug}`);
+    }
+    return listing;
+  });
+}
+
+export async function getAllListingSlugsFromDB(): Promise<string[]> {
+  const sb = getSupabaseAnon();
+  const { data, error } = await sb
+    .from("listings")
+    .select("slug")
+    .eq("status", "published")
+    .order("created_at", { ascending: true })
+    .order("slug", { ascending: true });
+
+  if (error) throw error;
+  if (!data) return [];
+
+  return data.map((row) => row.slug);
 }

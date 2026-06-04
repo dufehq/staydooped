@@ -22,8 +22,8 @@ export default async function Home({
   setRequestLocale(locale);
 
   const t = await getTranslations("Sections");
-  const featured = getFeaturedExperience(locale);
-  const rest = getNonFeaturedExperiences(locale);
+  const featured = await getFeaturedExperience(locale);
+  const rest = await getNonFeaturedExperiences(locale);
   const grid = rest.slice(0, 4);
   const list = rest.slice(4);
 

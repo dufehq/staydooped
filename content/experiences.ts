@@ -280,13 +280,25 @@ export function getExperience(
 
 const isPublished = (e: Experience) => e.status !== "draft";
 
-export function getFeaturedExperience(locale = "en"): Experience {
+export async function getFeaturedExperience(
+  locale = "en",
+): Promise<Experience> {
+  if (process.env.USE_SUPABASE === "true") {
+    const { getFeaturedExperienceFromDB } = await import("./db");
+    return getFeaturedExperienceFromDB(locale);
+  }
   const featured = experiences.find((e) => e.isFeatured && isPublished(e));
   if (!featured) throw new Error("No featured experience set");
   return translateListing(featured, locale);
 }
 
-export function getNonFeaturedExperiences(locale = "en"): Experience[] {
+export async function getNonFeaturedExperiences(
+  locale = "en",
+): Promise<Experience[]> {
+  if (process.env.USE_SUPABASE === "true") {
+    const { getNonFeaturedExperiencesFromDB } = await import("./db");
+    return getNonFeaturedExperiencesFromDB(locale);
+  }
   return experiences
     .filter((e) => !e.isFeatured && isPublished(e))
     .map((e) => translateListing(e, locale));
