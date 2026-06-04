@@ -76,6 +76,85 @@ npx supabase gen types typescript --linked > types/supabase.ts
 
 Rules live in root [.gitignore](../.gitignore).
 
+## Promoting to prod
+
+Run this sequence *before* merging the feature branch — Vercel auto-deploys
+main on push, so prod must be schema-ready and seeded by the time the
+deploy fires. We deliberately do **not** set `USE_SUPABASE=true` in Vercel
+yet; the deploy after merge keeps using the TS-file path until we flip the
+flag manually (zero-behavior-change rollout, easy rollback).
+
+### 1. Rotate the prod service_role (one-time)
+
+If the prod service_role key has ever been pasted into chat, version
+control, or any non-secrets-manager surface — rotate it now via Dashboard
+→ Settings → API Keys → "Reset service_role secret". Use the new value
+in step 3.
+
+### 2. Push the schema migration to prod
+
+```bash
+# Re-link the CLI from dev to prod
+npx supabase link --project-ref smavaoullkcwebksspta
+# (prompts for the PROD DB password — not the dev one)
+
+# Push the same migration file we applied to dev
+npx supabase db push
+
+# Re-link back to dev so subsequent local work stays on dev
+npx supabase link --project-ref wtjvrbycuiooiuthokjk
+```
+
+### 3. Create `.env.prod.local` for the seed
+
+Gitignored via the `.env*` rule. Holds prod creds, kept locally only —
+never committed, never used by `npm run dev` (which uses `.env.local`).
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://smavaoullkcwebksspta.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<prod anon key from Dashboard → Settings → API Keys>
+SUPABASE_SERVICE_ROLE_KEY=<prod service_role key (rotated in step 1)>
+```
+
+### 4. Seed prod
+
+```bash
+npm run seed:supabase:prod
+```
+
+Upserts 14 listings × 3 locales into the prod project. Same script as
+dev, just pointed at the other env file. Verify in Supabase Studio:
+`listings` should have 14 rows, `listing_translations` should have 42.
+
+### 5. Set Vercel env vars
+
+In Vercel → Project → Settings → Environment Variables, add three vars
+for **Production + Preview + Development**:
+
+| Var | Value |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://smavaoullkcwebksspta.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | prod anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | prod service_role (rotated) |
+
+**Do not set `USE_SUPABASE` yet.** Without it, the runtime stays on the
+TS-file path and the deploy is a no-op behaviorally.
+
+### 6. Merge the PR + verify the deploy is healthy
+
+Vercel auto-deploys main. The site should look identical (still reading
+from TS files). If anything breaks, the issue is in the code, not the DB
+swap — easier to debug.
+
+### 7. Flip the flag
+
+Once the post-merge deploy is verified, set `USE_SUPABASE=true` in Vercel
+Production. Vercel redeploys; the runtime now reads from prod Supabase.
+
+To roll back: unset `USE_SUPABASE` (or set to anything other than
+`"true"`). Next redeploy reverts to TS files. The data in prod Supabase
+stays — no destructive rollback.
+
 ## Runtime feature flag
 
 `USE_SUPABASE=true` in `.env.local` switches `getListing(slug, locale)` from
@@ -106,8 +185,12 @@ behavior). Anon RLS hides drafts from any public path that uses
 - [x] Runtime client wrapper (`lib/supabase.ts`) + DB-backed `getListing` (`content/db.ts`)
 - [x] Smoke test `USE_SUPABASE=true` against `/e/elephant` (EN/ZH/TH) + `/api/go/elephant`
 - [x] Migrate `getFeaturedExperience`, `getNonFeaturedExperiences`, `getAllBundles`, `getAllListingSlugs` (all 5 content getters now async + flag-gated)
-- [ ] Prod env vars mirrored to Vercel (Production environment)
-- [ ] Seed prod + flip `USE_SUPABASE=true` in Vercel Production
+- [ ] Prod service_role rotated (if originally exposed)
+- [ ] Schema migration applied to prod (`npx supabase db push` against prod)
+- [ ] Prod seeded (`npm run seed:supabase:prod`)
+- [ ] 3 Supabase env vars mirrored to Vercel (Production + Preview + Development)
+- [ ] PR merged + post-merge deploy verified healthy on TS-file path
+- [ ] `USE_SUPABASE=true` set in Vercel Production (flag flip)
 - [ ] Schema design — `listings` (single table, `kind: 'experience' | 'bundle'` TBD) + `listing_translations`
 - [ ] First migration written + pushed
 - [ ] `lib/supabase.ts` client wrapper
