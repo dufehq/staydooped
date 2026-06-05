@@ -129,16 +129,23 @@ dev, just pointed at the other env file. Verify in Supabase Studio:
 ### 5. Set Vercel env vars
 
 In Vercel → Project → Settings → Environment Variables, add three vars
-for **Production + Preview + Development**:
+to **Production** with prod values and three to **Preview** with dev
+values. Skip Vercel's Development environment (that's for `vercel dev`
+CLI runs only; we use `npm run dev` with `.env.local`).
 
-| Var | Value |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://smavaoullkcwebksspta.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | prod anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` | prod service_role (rotated) |
+| Var | **Production** (real users) | **Preview** (PR previews) |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://smavaoullkcwebksspta.supabase.co` | `https://wtjvrbycuiooiuthokjk.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | prod anon key | dev anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | prod service_role (rotated) | dev service_role |
 
-**Do not set `USE_SUPABASE` yet.** Without it, the runtime stays on the
-TS-file path and the deploy is a no-op behaviorally.
+Rationale: Production needs real data; Preview points at dev so PRs can
+show "what's coming" content updates and reviewer mistakes can't touch
+prod rows.
+
+**Do not set `USE_SUPABASE` yet** — in either env. Without it, the
+runtime stays on the TS-file path and the deploy is a no-op
+behaviorally. The flag flip is step 7, independent per environment.
 
 ### 6. Merge the PR + verify the deploy is healthy
 
@@ -149,11 +156,17 @@ swap — easier to debug.
 ### 7. Flip the flag
 
 Once the post-merge deploy is verified, set `USE_SUPABASE=true` in Vercel
-Production. Vercel redeploys; the runtime now reads from prod Supabase.
+**Production**. Vercel redeploys; the runtime now reads from prod
+Supabase.
 
-To roll back: unset `USE_SUPABASE` (or set to anything other than
-`"true"`). Next redeploy reverts to TS files. The data in prod Supabase
-stays — no destructive rollback.
+Optionally also set `USE_SUPABASE=true` in **Preview** — useful once
+we trust the Supabase path, since it makes PR previews exercise the
+real DB code path too. Until then, leaving Preview unset keeps PRs on
+the TS-file fallback (lower variance during code review).
+
+To roll back: unset `USE_SUPABASE` in whichever env (or set to anything
+other than `"true"`). Next redeploy reverts to TS files. The data in
+the Supabase project stays — no destructive rollback.
 
 ## Runtime feature flag
 
@@ -172,29 +185,32 @@ resolve at `/e/<draft-slug>` for editorial preview (matching current TS-file
 behavior). Anon RLS hides drafts from any public path that uses
 `getSupabaseAnon()` directly.
 
-## Status (as of 2026-05-28)
+## Status (as of 2026-06-05)
 
+**Foundation**
 - [x] Prod project provisioned (`smavaoullkcwebksspta`, ap-southeast-1)
 - [x] Dev project provisioned (`wtjvrbycuiooiuthokjk`, ap-southeast-1)
 - [x] `@supabase/supabase-js` + `supabase` CLI installed (dev dep)
-- [x] CLI logged in + linked to dev
-- [x] Dev creds in `.env.local`
-- [x] Schema migration applied to dev (`20260528100000_initial_schema.sql`)
-- [x] Dev seeded (`npm run seed:supabase`) — 14 listings × 3 locales
+- [x] CLI logged in + linked to dev; dev creds in `.env.local`
+
+**Dev**
+- [x] Schema migration applied (`20260528100000_initial_schema.sql`)
+- [x] Seeded (`npm run seed:supabase`) — 14 listings × 3 locales
 - [x] Generated types (`types/supabase.ts`)
-- [x] Runtime client wrapper (`lib/supabase.ts`) + DB-backed `getListing` (`content/db.ts`)
-- [x] Smoke test `USE_SUPABASE=true` against `/e/elephant` (EN/ZH/TH) + `/api/go/elephant`
-- [x] Migrate `getFeaturedExperience`, `getNonFeaturedExperiences`, `getAllBundles`, `getAllListingSlugs` (all 5 content getters now async + flag-gated)
-- [ ] Prod service_role rotated (if originally exposed)
-- [ ] Schema migration applied to prod (`npx supabase db push` against prod)
-- [ ] Prod seeded (`npm run seed:supabase:prod`)
-- [ ] 3 Supabase env vars mirrored to Vercel (Production + Preview + Development)
+
+**Runtime**
+- [x] Client wrapper `lib/supabase.ts` (anon + service factories, `server-only`)
+- [x] DB getters in `content/db.ts` — all 5 (`getListingFromDB`, `getFeaturedExperienceFromDB`, `getNonFeaturedExperiencesFromDB`, `getAllBundlesFromDB`, `getAllListingSlugsFromDB`)
+- [x] Async + flag-gated wrappers in `content/{experiences,bundles,index}.ts`
+- [x] Smoke test (`USE_SUPABASE=true`) on `/`, `/zh`, `/e/elephant` (EN/ZH/TH), drafts, `/api/go/elephant`
+
+**Prod rollout**
+- [x] Prod service_role rotated
+- [x] Schema applied to prod
+- [x] Prod seeded — 14 listings × 3 locales
+- [ ] Vercel env vars set — Production → prod values, Preview → dev values (skip Development env)
 - [ ] PR merged + post-merge deploy verified healthy on TS-file path
 - [ ] `USE_SUPABASE=true` set in Vercel Production (flag flip)
-- [ ] Schema design — `listings` (single table, `kind: 'experience' | 'bundle'` TBD) + `listing_translations`
-- [ ] First migration written + pushed
-- [ ] `lib/supabase.ts` client wrapper
-- [ ] Runtime migration: `content/*.ts` reads → Supabase reads in `getListing`, `getFeaturedExperience`, `getAllBundles`, etc.
-- [ ] `experience-pipeline` skill writer switched from "edit TS file" to "insert Supabase row"
+- [ ] (Optional) `USE_SUPABASE=true` set in Vercel Preview once trusted
 
 See [../PLAN.md](../PLAN.md) Phase 2 for the full migration plan.
