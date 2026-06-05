@@ -1,13 +1,13 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { getAllBundles } from "@/content/bundles";
 import { BundleCard } from "./BundleCard";
 import { SectionHeader } from "./SectionHeader";
 
 type Props = { locale: string };
 
-export function BundleScroll({ locale }: Props) {
-  const t = useTranslations("Sections");
-  const bundles = getAllBundles(locale);
+export async function BundleScroll({ locale }: Props) {
+  const t = await getTranslations("Sections");
+  const bundles = await getAllBundles(locale);
   return (
     <>
       <SectionHeader

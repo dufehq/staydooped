@@ -12,14 +12,25 @@ export {
 } from "./experiences";
 export { contributors, getContributor } from "./contributors";
 
-export function getListing(slug: string, locale = "en"): Listing | undefined {
+export async function getListing(
+  slug: string,
+  locale = "en",
+): Promise<Listing | undefined> {
+  if (process.env.USE_SUPABASE === "true") {
+    const { getListingFromDB } = await import("./db");
+    return getListingFromDB(slug, locale);
+  }
   return getBundle(slug, locale) ?? getExperience(slug, locale);
 }
 
 /** Slugs for which Next.js should pre-render a static page. Drafts are
  *  excluded so they don't ship in the static export, but `getListing`
  *  still resolves them for direct preview in dev. */
-export function getAllListingSlugs(): string[] {
+export async function getAllListingSlugs(): Promise<string[]> {
+  if (process.env.USE_SUPABASE === "true") {
+    const { getAllListingSlugsFromDB } = await import("./db");
+    return getAllListingSlugsFromDB();
+  }
   const published = (l: { status?: "draft" | "published" }) =>
     l.status !== "draft";
   return [

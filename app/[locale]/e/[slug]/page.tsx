@@ -8,9 +8,10 @@ import { BookCTA } from "@/components/BookCTA";
 import { StickyBookBar } from "@/components/StickyBookBar";
 import { TopNav } from "@/components/TopNav";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const slugs = await getAllListingSlugs();
   return routing.locales.flatMap((locale) =>
-    getAllListingSlugs().map((slug) => ({ locale, slug })),
+    slugs.map((slug) => ({ locale, slug })),
   );
 }
 
@@ -26,7 +27,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const listing = getListing(slug, locale);
+  const listing = await getListing(slug, locale);
   if (!listing) return {};
 
   const image = `/images/listings/${slug}.webp`;
@@ -66,7 +67,7 @@ export default async function ExperienceDetail({
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  const listing = getListing(slug, locale);
+  const listing = await getListing(slug, locale);
   if (!listing) notFound();
 
   const tDetail = await getTranslations("Detail");

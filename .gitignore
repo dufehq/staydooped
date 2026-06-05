@@ -45,3 +45,8 @@ next-env.d.ts
 
 # claude code per-developer local overrides (permissions, env)
 .claude/settings.local.json
+
+# supabase cli — machine-local cache and per-branch state
+supabase/.temp/
+supabase/.branches/
+supabase/.env

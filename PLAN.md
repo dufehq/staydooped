@@ -5,7 +5,7 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Primary users:** Guests on their phones — mix of EN and ZH speakers (ZH guests are majority; many speak little English, so losing them at the first English screen is a real conversion risk).
 
-**Status as of 2026-05-27:** site is fully trilingual (EN/ZH/TH) with TopNav on all inner pages. Day-2 blockers (deploy, QR, smoke test) are done. Remaining: replace 2 draft listings, CarCallout i18n, SEO improvements.
+**Status as of 2026-05-29:** site is fully trilingual (EN/ZH/TH) with TopNav on all inner pages. Day-2 blockers (deploy, QR, smoke test) are done. Phase 2 Supabase migration in flight on `feat/supabase-integration` — schema applied to dev, 14 listings seeded, all 5 content getters (`getListing`, `getFeaturedExperience`, `getNonFeaturedExperiences`, `getAllBundles`, `getAllListingSlugs`) read from Supabase behind `USE_SUPABASE=true`. Remaining: Vercel env vars + seed prod + flip flag in production. Also: replace 2 draft listings, CarCallout i18n, SEO improvements.
 
 ---
 
@@ -80,6 +80,16 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - **`experience-pipeline` skill** at [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md) — 5 modes (`add`, `check`, `top`, `replace`, `image`), enforces voice + content + image rules, runs affiliate URL smoke test
 - Image workflow codified: Gemini prompt template + sharp PNG→WebP @ 1920×1072
 
+### Done ✅ — Supabase Phase 2 foundation (2026-05-29, branch `feat/supabase-integration`)
+- Two cloud projects provisioned, both `ap-southeast-1`: **dev** (`wtjvrbycuiooiuthokjk`, active for local work) and **prod** (`smavaoullkcwebksspta`, Vercel-only later). See [supabase/README.md](supabase/README.md).
+- `@supabase/supabase-js` + `supabase` CLI installed as deps; CLI logged in and linked to dev.
+- **Initial schema** applied to dev ([supabase/migrations/20260528100000_initial_schema.sql](supabase/migrations/20260528100000_initial_schema.sql)): `listings` (language-neutral) + `listing_translations` (locale overlay), 5 enums (kind/status/category/booking_type/locale), 5 CHECK constraints enforcing the TS discriminated-union invariants (booking payload matches type, bundle/experience field segregation, price-range sanity), RLS enabled with public-read-on-published policies, `updated_at` trigger.
+- **Seed script** at [scripts/seed-supabase.ts](scripts/seed-supabase.ts) — imports `experiences` / `bundles` / `translateListing`, upserts on `slug` and `(listing_id, locale)`. Idempotent. Run via `npm run seed:supabase`. Dev now has 14 listings × 3 locales (42 translation rows).
+- **Generated types** at [types/supabase.ts](types/supabase.ts) — `Database` type from the live schema. Regenerate after every migration with `npx supabase gen types typescript --linked > types/supabase.ts`.
+- **Runtime read-path** — [lib/supabase.ts](lib/supabase.ts) (anon + service factories, `server-only`-gated) + [content/db.ts](content/db.ts) holds all 5 DB-backed getters (`getListingFromDB`, `getFeaturedExperienceFromDB`, `getNonFeaturedExperiencesFromDB`, `getAllBundlesFromDB`, `getAllListingSlugsFromDB`), single-query joins, locale fallback to EN, reshape to `Listing` TS shape. Anon + RLS for published-only queries; service_role only for `getListing` so drafts still resolve at `/e/<draft-slug>`. List queries order by `created_at ASC, slug ASC` — preserves seed insertion order across upsert reruns.
+- **Async getters** — all 5 content getters in `content/{experiences,bundles,index}.ts` are now `async` and branch on `USE_SUPABASE=true`. Callers (`app/[locale]/page.tsx`, `app/[locale]/e/[slug]/page.tsx`, `app/api/go/[id]/route.ts`, `components/BundleScroll.tsx`) updated to `await`. `BundleScroll` switched from `useTranslations` to `getTranslations` since it's now an async server component.
+- **Smoke test (`USE_SUPABASE=true`)**: `/` (home) renders all 12 published listings — 9 experiences + 3 bundles, drafts hidden — with correct ordering; `/zh` shows Chinese section headings; `/e/elephant` EN/ZH/TH all 200 with correct locale titles; `/e/doi-suthep` + `/e/big-day-out` draft preview still resolves; `/api/go/elephant` redirects to `klook.com/.../?aid=121431&aff_adid=en-elephant`; 0 console errors.
+
 ---
 
 ## Day 2 — Deploy & QR (remaining blockers)
@@ -116,11 +126,14 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - [ ] Restore "Looped by" community signals when we have real partners (parked in [components/LoopedBy.tsx](components/LoopedBy.tsx) and [components/CommunityStrip.tsx](components/CommunityStrip.tsx) — unused but undeleted for restoration)
 
 ### Supabase migration (the data-layer rewrite)
-- [ ] **`listings` table** (language-neutral): `id`, `slug`, `vendor`, `product_id`, `category`, `price`, `duration`, `distance`, `booking_method`, `status` (draft|published), `is_featured`, `background`, `image_url`
-- [ ] **`listing_translations` table** keyed by `(listing_id, locale)`: `title`, `hook`, `description`, `inclusions[]`, `price_label`
-- [ ] Mirrors the current `content/i18n/{locale}.ts` overlay shape — same `translateListing` logic moves to a DB query
-- [ ] Migrate the runtime: replace `content/*.ts` reads with Supabase reads in `getListing`, `getFeaturedExperience`, `getNonFeaturedExperiences`, `getAllBundles`, `getAllListingSlugs`
-- [ ] **Once migrated**: the `experience-pipeline` skill swaps its writer from "edit TS file" to "insert/update Supabase row" — single change
+- [x] **`listings` table** (language-neutral) — see [supabase/migrations/20260528100000_initial_schema.sql](supabase/migrations/20260528100000_initial_schema.sql). The schema flattens `BookingMethod` to `(booking_type, booking_product_id, booking_message_template)` with CHECK constraints; `vendor` is implied by `booking_type` (no separate column).
+- [x] **`listing_translations` table** keyed by `(listing_id, locale)`: `title`, `hook`, `description`, `inclusions[]`, `price_label`, `duration`, `distance`, `rating`, `contributor_quote`, `badge`, `save_badge`.
+- [x] Mirrors the current `content/i18n/{locale}.ts` overlay shape — the seed reuses `translateListing` so each locale row is built exactly the way the runtime renders today.
+- [x] Migrate the runtime — all 5 content getters (`getListing`, `getFeaturedExperience`, `getNonFeaturedExperiences`, `getAllBundles`, `getAllListingSlugs`) are now async and branch on `USE_SUPABASE=true`. Anon client + RLS for the published-only getters; service_role only for `getListing` (so `/e/<draft-slug>` preview keeps working).
+- [ ] **Vercel env vars (Production + Preview + Development)**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `USE_SUPABASE=true` — all pointed at the prod Supabase project.
+- [ ] **Seed prod** — re-run `seed:supabase` against the prod project once Vercel env vars are flipped.
+- [ ] **Image storage decision** — keep images in `public/images/listings/` (current) vs. move to Supabase Storage. Likely revisit when the `experience-pipeline` skill starts uploading generated images automatically.
+- [ ] **Once migrated**: the `experience-pipeline` skill swaps its writer from "edit TS file" to "insert/update Supabase row" — single change.
 
 ---
 
@@ -160,3 +173,4 @@ Depends on Phase 2 Supabase migration for full closed-loop automation. Until the
 | OG default image | [public/og-default.jpg](public/og-default.jpg) |
 | Listing images (14 WebPs) | [public/images/listings/](public/images/listings/) |
 | Phase 3 ops skill | [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md) |
+| Supabase data layer | [supabase/](supabase/) (migrations + README), [lib/supabase.ts](lib/supabase.ts), [content/db.ts](content/db.ts), [scripts/seed-supabase.ts](scripts/seed-supabase.ts), [types/supabase.ts](types/supabase.ts) |

@@ -124,7 +124,11 @@ export function getBundle(slug: string, locale = "en"): Bundle | undefined {
   return base ? translateListing(base, locale) : undefined;
 }
 
-export function getAllBundles(locale = "en"): Bundle[] {
+export async function getAllBundles(locale = "en"): Promise<Bundle[]> {
+  if (process.env.USE_SUPABASE === "true") {
+    const { getAllBundlesFromDB } = await import("./db");
+    return getAllBundlesFromDB(locale);
+  }
   return bundles
     .filter((b) => b.status !== "draft")
     .map((b) => translateListing(b, locale));

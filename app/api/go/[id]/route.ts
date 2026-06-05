@@ -13,7 +13,7 @@ export async function GET(
   const { searchParams } = new URL(request.url);
   const locale = searchParams.get("locale") ?? "en";
 
-  const listing = getListing(slug);
+  const listing = await getListing(slug);
   if (!listing) {
     return NextResponse.json({ error: "Unknown listing" }, { status: 404 });
   }
