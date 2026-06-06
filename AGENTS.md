@@ -56,6 +56,19 @@ When building any new `app/[locale]/<route>/page.tsx`:
 - Always get owner approval before pushing a branch.
 - After pushing, ask the owner if they want a PR created. Include a clear description with what changed, why, and a test checklist.
 
+## Deployment workflow (Vercel)
+
+Vercel is on the Pro plan under `fernmissions projects`. Only the owner has a Vercel seat — adding members costs $20/seat/month.
+
+**How to deploy without extra seats:**
+
+- The partner can create PRs and push branches freely.
+- **Only the owner or Claude (via GitHub API) should merge PRs into `main`.** When GitHub's merge mechanism triggers the push, Vercel deploys without checking team membership.
+- Direct `git push` to `main` from outside environments may be blocked by Vercel. Always use the PR → merge flow.
+- **Always merge with squash** (`merge_method: squash`) to keep the commit history clean.
+- **Never `git push --force` to `main`** — force pushes bypass GitHub's merge event and can cause Vercel to block the deployment.
+- After merging, request dhanuwat as reviewer on every PR using the GitHub MCP `update_pull_request` tool.
+
 ## Tooling
 
 - `npm run dev` uses **Webpack** (`next dev --webpack`), not Turbopack. Turbopack spawns one PostCSS subprocess per CSS file under `@tailwindcss/postcss` — heavy on this laptop. Revisit when Tailwind ships a Turbopack-native plugin or CSS surface area is small enough that the overhead doesn't matter.
