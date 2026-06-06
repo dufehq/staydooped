@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Experience } from "@/content/types";
+import { getListingImageUrl } from "@/lib/images";
 
 type Props = {
   experiences: Experience[];
@@ -20,7 +21,7 @@ export function ListingList({ experiences, locale }: Props) {
               className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-[10px] bg-gradient-to-br ${e.background} md:h-16 md:w-16 md:rounded-xl lg:h-20 lg:w-20`}
             >
               <Image
-                src={`/images/listings/${e.slug}.webp`}
+                src={getListingImageUrl(e.slug)}
                 alt={e.title}
                 fill
                 sizes="80px"

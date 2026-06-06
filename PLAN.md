@@ -5,7 +5,9 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Primary users:** Guests on their phones — mix of EN and ZH speakers (ZH guests are majority; many speak little English, so losing them at the first English screen is a real conversion risk).
 
-**Status as of 2026-05-29:** site is fully trilingual (EN/ZH/TH) with TopNav on all inner pages. Day-2 blockers (deploy, QR, smoke test) are done. Phase 2 Supabase migration in flight on `feat/supabase-integration` — schema applied to dev, 14 listings seeded, all 5 content getters (`getListing`, `getFeaturedExperience`, `getNonFeaturedExperiences`, `getAllBundles`, `getAllListingSlugs`) read from Supabase behind `USE_SUPABASE=true`. Remaining: Vercel env vars + seed prod + flip flag in production. Also: replace 2 draft listings, CarCallout i18n, SEO improvements.
+**Status as of 2026-06-06:** site is fully trilingual (EN/ZH/TH) on https://staylooped.co. **Phase 2 Supabase data layer is live in production** — all 5 content getters read from Supabase (`USE_SUPABASE=true` set in Vercel Production). Editorial content now flows: edit `content/*.ts` → `npm run seed:supabase:prod` → live on prod (no deploy needed). **Listing images now also live in Supabase Storage** (`listings` bucket, both dev + prod) and `public/images/listings/` has been removed — sync can land images without a deploy.
+
+**Next focus (planned 2026-06-06):** continue automating the experience pipeline via the existing `experience-pipeline` skill (not n8n). Remaining: (1) wire Gemini's image-generation API into the skill so the human paste-PNG step goes away, (2) add a new `experience-sync` mode that pulls top-rated Klook activities, soft-archives stale/expired ones, and keeps the catalog capped at 20 published listings. Also still on deck: replace 2 draft listings (`doi-suthep`, `big-day-out`), restore real social proof, sitemap/SEO.
 
 ---
 
@@ -16,7 +18,7 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - 10 experiences + 4 bundles in `content/{experiences,bundles}.ts` — as of 2026-05-26, 2 drafted out (doi-suthep / big-day-out — Klook says `Currently unavailable`), so **12 listings live** in production (9 experiences + 3 bundles)
 - Detail page at `/e/[slug]` with shared route for experiences + bundles
 - `/api/go/[id]` affiliate redirect — resolves vendor + productId from content, builds vendor URL with `aid` + `aff_adid=${locale}-${slug}` sub-ID, 302s; WhatsApp listings rejected (Phase 2 archive)
-- 14 listing images at 1920×1072 WebP in `public/images/listings/`
+- 14 listing images at 1920×1072 WebP — originally in `public/images/listings/`; as of 2026-06-06 moved to the Supabase Storage `listings` bucket (see "Done — Listings images on Supabase Storage" below)
 
 ### Done ✅ — Price-range display + delisting sweep (2026-05-26)
 - All cards and detail page now render `priceLabel` directly. Range form (`฿X – ฿Y / person`) for multi-tier listings; `from ฿X / person` for single-tier. `ListingBase.priceMax?: number` added; bundle `saveBadge` / `priceOriginal` made optional and dropped where range applies. EN + ZH overlays both updated.
@@ -80,6 +82,27 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - **`experience-pipeline` skill** at [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md) — 5 modes (`add`, `check`, `top`, `replace`, `image`), enforces voice + content + image rules, runs affiliate URL smoke test
 - Image workflow codified: Gemini prompt template + sharp PNG→WebP @ 1920×1072
 
+### Done ✅ — Phase 2 Supabase shipped to production (2026-06-05, merged via PR #14)
+- **`USE_SUPABASE=true` set in Vercel Production** — all 5 content getters now read from prod Supabase (`smavaoullkcwebksspta`).
+- Production verified: https://staylooped.co renders home, locale switcher, featured experience, bundles, and listing links via Supabase. WebFetch confirmed all 5 core elements after the flag flip.
+- Vercel env vars set: Production → prod Supabase; Preview → dev Supabase; `USE_SUPABASE=true` Production only (Preview still on TS-file fallback pending Vercel Preview team access).
+- Branch `feat/supabase-integration` merged via squash; remote branch deleted. 4 commits squashed into one on main.
+
+**Operational consequence:** content edits in `content/*.ts` no longer reach production through `git push`. Flow is now: edit TS → `npm run seed:supabase:prod` → live. Or edit directly in Supabase Studio. This is fine short-term; the long-term fix is flipping the `experience-pipeline` skill writer to Supabase (top item under Phase 3 below).
+
+### Done ✅ — Listings images on Supabase Storage (2026-06-06, branch `feat/supabase-image-storage`)
+
+- **Bucket** `listings` created in **dev** (`wtjvrbycuiooiuthokjk`) and **prod** (`smavaoullkcwebksspta`) via migration [supabase/migrations/20260606100000_listings_storage_bucket.sql](supabase/migrations/20260606100000_listings_storage_bucket.sql). Public-read, 5 MB file_size_limit, `image/webp` MIME allowlist. Writes go through service_role (bypasses RLS) — no INSERT/UPDATE/DELETE policy needed on storage.objects.
+- **Backfill script** at [scripts/backfill-listing-images.ts](scripts/backfill-listing-images.ts) uploads every WebP under `public/images/listings/` into the bucket (idempotent upsert, `cache-control: 31536000`). Run via `npm run backfill:images` (dev) or `npm run backfill:images:prod` (prod). All 14 images uploaded to both projects.
+- **Helper** at [lib/images.ts](lib/images.ts): `getListingImageUrl(slug)` → `${NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/${slug}.webp`. Safe in server + client components (reads only the public env var).
+- **Refactored 6 call sites** to use the helper: [components/ListingList.tsx](components/ListingList.tsx), [components/BundleCard.tsx](components/BundleCard.tsx), [components/ListingGrid.tsx](components/ListingGrid.tsx), [components/FeaturedCard.tsx](components/FeaturedCard.tsx), and [app/[locale]/e/[slug]/page.tsx](app/[locale]/e/[slug]/page.tsx) (both `generateMetadata` OG/Twitter and the hero `<Image>`).
+- **`next.config.ts`** — `images.remotePatterns` added for `https://*.supabase.co/storage/v1/object/public/listings/**`. Covers both dev + prod refs in one rule.
+- **`public/images/listings/` deleted** — 14 WebPs (3.2 MB) removed from the repo. Source of truth is now the Supabase Storage bucket. Recovery path: re-download from prod bucket or `git checkout` an earlier commit if ever needed.
+- **Smoke test (dev)**: home `/` and `/zh` both render all 12 published listings with Supabase URLs; detail page `/e/elephant` (EN) + `/th/e/khantoke` (TH) hero image + OG `og:image` + `twitter:image` all use Supabase URLs; Next/Image optimizer `/_next/image?url=…` returns 200; zero stale `/images/listings/` references remain anywhere in the rendered HTML.
+- **Prod verified**: `https://smavaoullkcwebksspta.supabase.co/storage/v1/object/public/listings/elephant.webp` → HTTP 200, `image/webp`. Live `staylooped.co` still serves the old `/images/listings/` paths until this PR merges (no deploy yet).
+
+**Operational consequence:** image regeneration via the `experience-pipeline` skill will now upload directly to the Supabase Storage bucket — no `git commit` / `git push` / Vercel deploy needed to ship an image. Unblocks "Next Up 1" (Gemini auto-gen) and "Next Up 2" (`experience-sync` mode).
+
 ### Done ✅ — Supabase Phase 2 foundation (2026-05-29, branch `feat/supabase-integration`)
 - Two cloud projects provisioned, both `ap-southeast-1`: **dev** (`wtjvrbycuiooiuthokjk`, active for local work) and **prod** (`smavaoullkcwebksspta`, Vercel-only later). See [supabase/README.md](supabase/README.md).
 - `@supabase/supabase-js` + `supabase` CLI installed as deps; CLI logged in and linked to dev.
@@ -89,6 +112,39 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - **Runtime read-path** — [lib/supabase.ts](lib/supabase.ts) (anon + service factories, `server-only`-gated) + [content/db.ts](content/db.ts) holds all 5 DB-backed getters (`getListingFromDB`, `getFeaturedExperienceFromDB`, `getNonFeaturedExperiencesFromDB`, `getAllBundlesFromDB`, `getAllListingSlugsFromDB`), single-query joins, locale fallback to EN, reshape to `Listing` TS shape. Anon + RLS for published-only queries; service_role only for `getListing` so drafts still resolve at `/e/<draft-slug>`. List queries order by `created_at ASC, slug ASC` — preserves seed insertion order across upsert reruns.
 - **Async getters** — all 5 content getters in `content/{experiences,bundles,index}.ts` are now `async` and branch on `USE_SUPABASE=true`. Callers (`app/[locale]/page.tsx`, `app/[locale]/e/[slug]/page.tsx`, `app/api/go/[id]/route.ts`, `components/BundleScroll.tsx`) updated to `await`. `BundleScroll` switched from `useTranslations` to `getTranslations` since it's now an async server component.
 - **Smoke test (`USE_SUPABASE=true`)**: `/` (home) renders all 12 published listings — 9 experiences + 3 bundles, drafts hidden — with correct ordering; `/zh` shows Chinese section headings; `/e/elephant` EN/ZH/TH all 200 with correct locale titles; `/e/doi-suthep` + `/e/big-day-out` draft preview still resolves; `/api/go/elephant` redirects to `klook.com/.../?aid=121431&aff_adid=en-elephant`; 0 console errors.
+
+---
+
+## Next Up — recommended next session order
+
+Pick highest-impact-per-effort first. Each item is self-contained and unblocks downstream work.
+
+**Theme: close the content-automation loop via the `experience-pipeline` skill (no n8n).** 1a (image storage migration) shipped on 2026-06-06 — see Done section above. Steps 1 → 2 below are the remaining strict-order dependencies.
+
+1. **Wire Gemini's image-generation API into the skill.** Removes the manual "user pastes the PNG" step in [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md). Scope:
+   - Add `GEMINI_API_KEY` to `.env.local` (and Vercel env if we ever run this server-side).
+   - Add `scripts/gen-image.ts` (~30 lines): takes `--slug` and `--prompt`, calls `gemini-2.5-flash-image`, writes base64 PNG → sharp converts to 1920×1072 WebP → uploads to the `listings` bucket via service-role client (reuse the upload pattern from [scripts/backfill-listing-images.ts](scripts/backfill-listing-images.ts)) → deletes the local PNG. Idempotent on slug (overwrite).
+   - Update the skill's "Image rules" section to invoke that script; keep the multimodal verify-and-retry-up-to-2x loop on the resulting WebP.
+   - Cost sanity check: ~$0.04/image. Refreshing the entire 20-listing catalog is under $1.
+
+2. **Add `experience-sync` mode to the skill** — the headline goal. Pulls top-rated Chiang Mai activities from Klook, soft-archives stale/expired listings, and enforces a 20-published-listing cap. Scope:
+   - Add `archived` to the `status` enum (migration: `ALTER TYPE listing_status ADD VALUE 'archived'`). Caps and home/listing queries already filter to `published`; archived rows stop rendering automatically but stay restorable.
+   - Sync algorithm: (1) Playwright walk Klook's Chiang Mai top-rated category, capture top-N candidates with rating + booked count; (2) for each currently-published listing, hit its product page and mark `Currently unavailable` ones as `archived`; (3) if (published count) < 20, draft new candidates from the top list into Supabase (with full content rewrite, translation, Gemini image generation via step 1) up to the cap; (4) all new listings land as `status='draft'` for editorial review before flip.
+   - Cap rule: enforce on `status='published'` only. Drafts and archived rows don't count.
+   - Periodic purge: separate skill subcommand (or quarterly manual run) that hard-deletes rows older than 90 days in `status='archived'`, plus their storage objects. Keeps the bucket clean without losing recent restorability.
+   - Also flip `add` / `replace` / `image` modes to write to Supabase via service-role client at the same time (they share the same write helpers).
+
+3. **Replace the 2 draft listings** (`doi-suthep`, `big-day-out`) — Klook delisted them in late May; both sit as `status='draft'` in Supabase. Once step 2 lands, the sync run will surface fresh top-rated replacements automatically. Until then, can also run `experience-pipeline replace` (after step 1) for a manual swap.
+4. **Sitemap.ts + robots.ts** — small, high-SEO-value. Pulls slugs from `getAllListingSlugs()` which already works via Supabase. ~1 hour of work.
+5. **Click logging table** — adds `affiliate_click` writes to Supabase from `app/api/go/[id]/route.ts`. Vercel Analytics only retains ~30 days; we want long-tail revenue attribution. New table + migration + non-blocking insert from the existing route. Low risk.
+6. **Real social proof on cards** — vendor rating + booked count, sourced manually or via vendor API. Trust-building win. (Becomes basically free once `experience-sync` is scraping ratings anyway — pipe them into the `listings` row.)
+7. **Vercel Preview unblock** — either (a) get the user on the Vercel team ($20/mo) or (b) toggle off Git Author Verification in Project Settings. Until done, Preview deploys fail the author check; this PR shipped without Preview verification (worked out fine, but risky long-term).
+
+### Operational consequence to remember
+
+Because `USE_SUPABASE=true` is set in Vercel Production, **editing `content/*.ts` and merging to main doesn't change what users see**. The edit reaches prod only after `npm run seed:supabase:prod` runs. Options to fix this:
+- **Short-term:** run the seed manually after content edits. Document this in any PR that touches `content/*.ts`.
+- **Long-term:** flip the `experience-pipeline` writer (item #1 above), then edits go to Supabase directly without touching TS files at all.
 
 ---
 
@@ -130,25 +186,25 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - [x] **`listing_translations` table** keyed by `(listing_id, locale)`: `title`, `hook`, `description`, `inclusions[]`, `price_label`, `duration`, `distance`, `rating`, `contributor_quote`, `badge`, `save_badge`.
 - [x] Mirrors the current `content/i18n/{locale}.ts` overlay shape — the seed reuses `translateListing` so each locale row is built exactly the way the runtime renders today.
 - [x] Migrate the runtime — all 5 content getters (`getListing`, `getFeaturedExperience`, `getNonFeaturedExperiences`, `getAllBundles`, `getAllListingSlugs`) are now async and branch on `USE_SUPABASE=true`. Anon client + RLS for the published-only getters; service_role only for `getListing` (so `/e/<draft-slug>` preview keeps working).
-- [ ] **Vercel env vars (Production + Preview + Development)**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `USE_SUPABASE=true` — all pointed at the prod Supabase project.
-- [ ] **Seed prod** — re-run `seed:supabase` against the prod project once Vercel env vars are flipped.
-- [ ] **Image storage decision** — keep images in `public/images/listings/` (current) vs. move to Supabase Storage. Likely revisit when the `experience-pipeline` skill starts uploading generated images automatically.
-- [ ] **Once migrated**: the `experience-pipeline` skill swaps its writer from "edit TS file" to "insert/update Supabase row" — single change.
+- [x] **Vercel env vars** — Production points at prod Supabase (`smavaoullkcwebksspta`); Preview points at dev (`wtjvrbycuiooiuthokjk`); `USE_SUPABASE=true` set in Production env only.
+- [x] **Seed prod** — `npm run seed:supabase:prod` ran clean, 14 listings × 3 locales in prod Supabase.
+- [ ] **Optional: enable `USE_SUPABASE=true` in Vercel Preview** once we trust the Supabase path. Currently Preview is blocked by Vercel's git-author check anyway, so this only matters after we get a teammate/owner on the Vercel team or disable that check.
+- [x] **Image storage decision — DONE 2026-06-06: moved to Supabase Storage.** Bucket created in dev + prod, 14 images backfilled, 6 components refactored, `public/images/listings/` deleted. See "Done — Listings images on Supabase Storage" section above.
+- [ ] **`experience-pipeline` skill writer flip** — currently the skill edits `content/*.ts` files. Now that runtime reads from Supabase, edits don't reach prod without `npm run seed:supabase:prod`. Folded into Next Up 2 (`experience-sync` mode shares the same write helpers).
 
 ---
 
 ## Phase 3 — Content automation pipeline
 
-Most of the **read** + **rewrite** + **image** pipeline shipped early as the [experience-pipeline skill](.claude/skills/experience-pipeline/SKILL.md). Outstanding:
+Most of the **read** + **rewrite** + **image** pipeline shipped early as the [experience-pipeline skill](.claude/skills/experience-pipeline/SKILL.md). The next round of automation (image storage migration, Gemini API auto-gen, `experience-sync` mode with 20-cap + soft-archive) is sequenced under Next Up 1a–1c. Outstanding beyond that:
 
-- [ ] **Re-sync cron** — Vercel Cron or GitHub Action that runs `experience-pipeline check` weekly. For each listing it (a) flags dead productIds (`Currently unavailable` / 404), (b) walks every Klook tier (click each `.desktop-attr-btn`, scope to `.js-activity-package-options`) and re-derives `price` (min) + `priceMax` (max), and (c) compares to stored values — flags drift > 15% on either bound. Convert observed USD → THB at ~33.5, floor min and ceil max to ฿50 for stable rendering. Doesn't auto-update; opens a draft PR or Slack ping for review.
+- [ ] **Re-sync cron** — Vercel Cron or GitHub Action that runs `experience-pipeline check` (and eventually `experience-sync`) weekly. For each listing it (a) flags dead productIds (`Currently unavailable` / 404), (b) walks every Klook tier (click each `.desktop-attr-btn`, scope to `.js-activity-package-options`) and re-derives `price` (min) + `priceMax` (max), and (c) compares to stored values — flags drift > 15% on either bound. Convert observed USD → THB at ~33.5, floor min and ceil max to ฿50 for stable rendering. Doesn't auto-publish; new candidates land as `status='draft'` for editorial review (see `/admin` item below).
 - [ ] **Catalog hygiene cron — what 2026-05-26 revealed** — a single pass surfaced two delistings (doi-suthep / Klook 18012, big-day-out / Klook 77519 — both `Currently unavailable`) and 8 of 12 remaining listings drifting >15% on the bounds. Operator-side tier restructuring (e.g. Klook 77514 lunch-run jumping from ฿1,200 → ฿2,650 single-tier; Klook 88017 zipline now spans ฿200 coaster-only → ฿6,400 diamond combo) means manual once-a-quarter sweeps aren't enough. Until the cron lands, run `experience-pipeline check` after each Klook newsletter announces operator changes.
-- [ ] **`/admin` route or Supabase Studio** — surface drafts written by the pipeline for editorial review. Status flip lives there instead of in source files.
+- [ ] **Archived-row purge** — runs alongside the re-sync cron. Hard-deletes `status='archived'` rows older than 90 days plus their storage objects. Keeps the bucket and table from bloating as the 20-cap rotates listings in/out. Restorability window: 90 days.
+- [ ] **`/admin` route or Supabase Studio** — surface drafts written by the pipeline for editorial review. Status flip (`draft` → `published`, or `published` → `archived`) lives there instead of in source files. Becomes more important once `experience-sync` is producing drafts automatically.
 - [ ] **Klook Partner API integration** — Klook offers an affiliate API. Could replace the browser-based product-page scraping the skill currently does, removing bot-blocking friction. Lower priority — Playwright works.
 - [ ] **Vendor image licensing audit** — currently we generate originals via Gemini per AGENTS.md image-conversion-workflow. If Klook's affiliate TOS allows their product images under attribution, we could save Gemini cost. Verify per-vendor before changing.
 - [ ] **Contributor attribution restoration** — when Phase 2 lands real contributors, the pipeline writes drafts with `contributor_slug` set. AGENTS.md "Looped by [Person]" idiom remains load-bearing.
-
-Depends on Phase 2 Supabase migration for full closed-loop automation. Until then, the skill writes to file-based content.
 
 ---
 
@@ -171,6 +227,6 @@ Depends on Phase 2 Supabase migration for full closed-loop automation. Until the
 | Affiliate route (+ non-blocking track) | [app/api/go/[id]/route.ts](app/api/go/[id]/route.ts) |
 | Locale middleware | [proxy.ts](proxy.ts) |
 | OG default image | [public/og-default.jpg](public/og-default.jpg) |
-| Listing images (14 WebPs) | [public/images/listings/](public/images/listings/) |
+| Listing images (14 WebPs) | Supabase Storage `listings` bucket (public-read). URL helper: [lib/images.ts](lib/images.ts). Upload script: [scripts/backfill-listing-images.ts](scripts/backfill-listing-images.ts). |
 | Phase 3 ops skill | [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md) |
 | Supabase data layer | [supabase/](supabase/) (migrations + README), [lib/supabase.ts](lib/supabase.ts), [content/db.ts](content/db.ts), [scripts/seed-supabase.ts](scripts/seed-supabase.ts), [types/supabase.ts](types/supabase.ts) |

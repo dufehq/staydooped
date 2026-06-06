@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Bundle } from "@/content/types";
+import { getListingImageUrl } from "@/lib/images";
 
 type Props = {
   bundle: Bundle;
@@ -17,7 +18,7 @@ export function BundleCard({ bundle, locale }: Props) {
         className={`relative h-[130px] overflow-hidden bg-gradient-to-br ${bundle.background} md:h-[180px] lg:h-[200px]`}
       >
         <Image
-          src={`/images/listings/${bundle.slug}.webp`}
+          src={getListingImageUrl(bundle.slug)}
           alt={bundle.title}
           fill
           sizes="(min-width: 1024px) 320px, (min-width: 768px) 380px, 240px"

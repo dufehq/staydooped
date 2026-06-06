@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Experience } from "@/content/types";
+import { getListingImageUrl } from "@/lib/images";
 
 type Props = {
   experience: Experience;
@@ -18,7 +19,7 @@ export function FeaturedCard({ experience: e, locale }: Props) {
           className={`relative h-[190px] overflow-hidden bg-gradient-to-br ${e.background} md:h-auto md:min-h-[320px]`}
         >
           <Image
-            src={`/images/listings/${e.slug}.webp`}
+            src={getListingImageUrl(e.slug)}
             alt={e.title}
             fill
             priority

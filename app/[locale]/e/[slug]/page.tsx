@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 import { BookCTA } from "@/components/BookCTA";
 import { StickyBookBar } from "@/components/StickyBookBar";
 import { TopNav } from "@/components/TopNav";
+import { getListingImageUrl } from "@/lib/images";
 
 export async function generateStaticParams() {
   const slugs = await getAllListingSlugs();
@@ -30,7 +31,7 @@ export async function generateMetadata({
   const listing = await getListing(slug, locale);
   if (!listing) return {};
 
-  const image = `/images/listings/${slug}.webp`;
+  const image = getListingImageUrl(slug);
   const enPath = `/e/${slug}`;
   const zhPath = `/zh/e/${slug}`;
   const canonical = locale === "en" ? enPath : `/${locale}/e/${slug}`;
@@ -84,7 +85,7 @@ export default async function ExperienceDetail({
             className={`relative h-[220px] overflow-hidden bg-gradient-to-br ${listing.background} md:h-[480px] md:rounded-card lg:h-[560px]`}
           >
             <Image
-              src={`/images/listings/${listing.slug}.webp`}
+              src={getListingImageUrl(listing.slug)}
               alt={listing.title}
               fill
               priority
