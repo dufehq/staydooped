@@ -58,17 +58,16 @@ When building any new `app/[locale]/<route>/page.tsx`:
 
 ## Deployment workflow (Vercel)
 
-Vercel is on the Pro plan under `fernmissions projects`. Only the owner has a Vercel seat — adding members costs $20/seat/month.
+Vercel is on the Pro plan under `fernmissions projects`. Only the owner (`fernmissions`) has a Vercel seat.
 
-**How to deploy without extra seats:**
+**Process for every change:**
 
-- Anyone can push branches and create PRs freely.
-- **Merging is done by the owner or dhanuwat (collaborator) via GitHub UI** — GitHub's merge event triggers Vercel automatically, no Vercel seat needed.
-- Direct `git push` to `main` from Claude Code's environment may be blocked by Vercel. Always use the PR → merge flow.
-- **Always squash merge** to keep the commit history clean.
-- **Never `git push --force` to `main`** — force pushes bypass GitHub's merge event and can block Vercel deployment.
+1. Push code to a feature branch and open a PR.
+2. dhanuwat reviews the PR.
+3. **Owner merges via GitHub UI** (squash merge) — this triggers Vercel to deploy automatically.
 
-**Review process:** dhanuwat reviews all PRs before merging. Either the owner or dhanuwat merges once approved.
+- **Never `git push --force` to `main`** and never merge from outside GitHub's UI — both can block Vercel deployment.
+- **Always squash merge** to keep commit history clean.
 
 ## Tooling
 
