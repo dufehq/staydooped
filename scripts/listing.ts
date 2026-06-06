@@ -6,6 +6,7 @@
  *
  *   npm run listing -- list                           # all listings, newest first
  *   npm run listing -- list --status archived         # filter by status
+ *   npm run listing -- get    --slug <slug>           # full listing + translations as JSON
  *   npm run listing -- archive --slug <slug>          # soft-archive
  *   npm run listing -- publish --slug <slug>          # unarchive / un-draft
  *   npm run listing -- draft   --slug <slug>          # back to draft
@@ -13,11 +14,13 @@
  *   npm run listing -- delete-image --slug <slug>     # remove <slug>.webp from bucket
  *   npm run listing -- purge [--older-than-days 90] [--dry-run]
  *   npm run listing -- upsert  --slug <slug>          # re-upsert from content/*.ts (transitional)
+ *   npm run listing -- upsert  --file <path>          # upsert from a ListingWriteInput JSON
  *
- * The `upsert` subcommand re-pushes one slug from the TS content files into
- * Supabase. After PR 1.2 (writer flip), the skill will drive upserts via a
- * JSON payload instead — but the TS-driven path stays useful for quick fixes.
+ * The skill's `add` / `replace` / `image` modes drive content writes via
+ * `upsert --file`. The TS-driven `upsert --slug` is kept for quick fixes /
+ * restores from `content/*.ts`.
  */
+import { readFileSync } from "node:fs";
 import { experiences } from "../content/experiences";
 import { bundles } from "../content/bundles";
 import type { Listing } from "../content/types";
@@ -27,11 +30,13 @@ import {
   deleteListing,
   deleteListingImage,
   draftListing,
+  getListingFull,
   getListingMeta,
   listListings,
   publishListing,
   purgeArchivedListings,
   upsertListing,
+  upsertListingWithTranslations,
   type ListingStatus,
 } from "./lib/listings-write";
 
@@ -63,13 +68,15 @@ function usage(): never {
     [
       "Usage:",
       "  npm run listing -- list [--status draft|published|archived]",
+      "  npm run listing -- get     --slug <slug>",
       "  npm run listing -- archive --slug <slug>",
       "  npm run listing -- publish --slug <slug>",
       "  npm run listing -- draft   --slug <slug>",
       "  npm run listing -- delete  --slug <slug> --confirm",
       "  npm run listing -- delete-image --slug <slug>",
       "  npm run listing -- purge [--older-than-days 90] [--dry-run]",
-      "  npm run listing -- upsert  --slug <slug>",
+      "  npm run listing -- upsert  --slug <slug>          # from content/*.ts",
+      "  npm run listing -- upsert  --file <path-to-json>  # from ListingWriteInput JSON",
     ].join("\n"),
   );
   process.exit(1);
@@ -167,10 +174,50 @@ async function main() {
       break;
     }
 
-    case "upsert": {
+    case "get": {
       const slug = getFlag("slug");
       if (!slug) {
-        console.error("upsert: --slug is required");
+        console.error("get: --slug is required");
+        process.exit(1);
+      }
+      const full = await getListingFull(sb, slug);
+      if (!full) {
+        console.error(`get: no listing with slug "${slug}"`);
+        process.exit(2);
+      }
+      // Print to stdout as JSON — pipeable to a file or jq.
+      process.stdout.write(JSON.stringify(full, null, 2) + "\n");
+      break;
+    }
+
+    case "upsert": {
+      const file = getFlag("file");
+      const slug = getFlag("slug");
+
+      if (file) {
+        const raw = readFileSync(file, "utf8");
+        let parsed: unknown;
+        try {
+          parsed = JSON.parse(raw);
+        } catch (e) {
+          console.error(
+            `upsert: ${file} is not valid JSON: ${(e as Error).message}`,
+          );
+          process.exit(1);
+        }
+        const id = await upsertListingWithTranslations(
+          sb,
+          parsed as Parameters<typeof upsertListingWithTranslations>[1],
+        );
+        const after = await getListingMeta(sb, (parsed as { slug: string }).slug);
+        console.log(
+          `[listing] upserted from ${file} (id=${id}, status='${after?.status}')`,
+        );
+        break;
+      }
+
+      if (!slug) {
+        console.error("upsert: --slug <slug> or --file <path> is required");
         process.exit(1);
       }
       const listing = findListing(slug);
