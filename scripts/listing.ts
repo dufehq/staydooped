@@ -39,7 +39,7 @@ import {
   upsertListing,
   upsertListingWithTranslations,
   type ListingStatus,
-} from "./lib/listings-write";
+} from "../lib/listings-write";
 
 const argv = process.argv.slice(2);
 const command = argv[0];

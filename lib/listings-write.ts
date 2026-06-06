@@ -4,16 +4,20 @@
  * RLS. Used by:
  *   - scripts/seed-supabase.ts (full reseed from content/*.ts)
  *   - scripts/listing.ts CLI (archive / publish / delete / purge / upsert)
- *   - the experience-pipeline skill (after the writer flip; PR 1.2)
+ *   - app/api/cron/purge-archived/route.ts (weekly purge cron)
+ *   - the experience-pipeline skill (via the CLI)
  *
- * Env (loaded via --env-file by the calling npm script):
+ * Lives in lib/ (not scripts/) because the cron API route imports it; Next.js
+ * doesn't bundle scripts/ files cleanly into the app.
+ *
+ * Env:
  *   NEXT_PUBLIC_SUPABASE_URL
  *   SUPABASE_SERVICE_ROLE_KEY
  */
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { translateListing } from "../../content/i18n";
-import type { Listing } from "../../content/types";
-import type { Database } from "../../types/supabase";
+import { translateListing } from "../content/i18n";
+import type { Listing } from "../content/types";
+import type { Database } from "../types/supabase";
 
 type SB = SupabaseClient<Database>;
 
