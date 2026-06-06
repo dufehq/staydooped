@@ -32,6 +32,7 @@ import {
   draftListing,
   getListingFull,
   getListingMeta,
+  listAllBookings,
   listListings,
   publishListing,
   purgeArchivedListings,
@@ -68,6 +69,7 @@ function usage(): never {
     [
       "Usage:",
       "  npm run listing -- list [--status draft|published|archived]",
+      "  npm run listing -- list-bookings           # JSON: every row's booking metadata (any status)",
       "  npm run listing -- get     --slug <slug>",
       "  npm run listing -- archive --slug <slug>",
       "  npm run listing -- publish --slug <slug>",
@@ -171,6 +173,12 @@ async function main() {
         `[listing] ${verb} ${slugs.length} archived listing(s) older than ${days}d on ${projectHost}`,
       );
       for (const s of slugs) console.log(`  - ${s}`);
+      break;
+    }
+
+    case "list-bookings": {
+      const rows = await listAllBookings(sb);
+      process.stdout.write(JSON.stringify(rows, null, 2) + "\n");
       break;
     }
 
