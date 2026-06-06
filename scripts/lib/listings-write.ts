@@ -194,6 +194,31 @@ export async function purgeArchivedListings(
   return { slugs };
 }
 
+export type BookingSummary = {
+  slug: string;
+  status: ListingStatus;
+  bookingType: "klook" | "viator" | "gyg" | "whatsapp";
+  productId: string | null; // null for whatsapp listings
+};
+
+/** Returns one row per listing with the booking metadata flattened. Used by
+ *  `experience-sync` to dedup candidates against rows already in the table
+ *  (including drafts + archived). */
+export async function listAllBookings(sb: SB): Promise<BookingSummary[]> {
+  const { data, error } = await sb
+    .from("listings")
+    .select("slug, status, booking_type, booking_product_id")
+    .order("status", { ascending: true })
+    .order("slug", { ascending: true });
+  if (error) throw new Error(`listAllBookings: ${error.message}`);
+  return (data ?? []).map((r) => ({
+    slug: r.slug,
+    status: r.status as ListingStatus,
+    bookingType: r.booking_type as BookingSummary["bookingType"],
+    productId: r.booking_product_id,
+  }));
+}
+
 /** List listings for CLI inspection. Newest-edited first. */
 export async function listListings(
   sb: SB,

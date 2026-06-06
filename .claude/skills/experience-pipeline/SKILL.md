@@ -10,11 +10,12 @@ Operational skill for the Phase 3 content pipeline described in `PLAN.md`.
 ## Modes
 
 ```
-/experience-pipeline add <vendor-url-or-id>      # Add one listing (always draft)
-/experience-pipeline check                       # Sweep all live productIds for delisting + price drift
-/experience-pipeline top <category> <n>          # Find top-N rated products in a vendor catalog
-/experience-pipeline replace <slug> <new-url>    # Swap a listing's productId (e.g. when one delists)
-/experience-pipeline image <slug>                # Regenerate just the image for an existing slug
+/experience-pipeline add <vendor-url-or-id>           # Add one listing (always draft)
+/experience-pipeline sync [--url <klook-url> ...]     # Catalog refresh: archive stale + draft new (cap 20)
+/experience-pipeline check                            # Sweep all live productIds for delisting + price drift
+/experience-pipeline top <category> <n>               # Find top-N rated products in a vendor catalog
+/experience-pipeline replace <slug> <new-url>         # Swap a listing's productId (e.g. when one delists)
+/experience-pipeline image <slug>                     # Regenerate just the image for an existing slug
 ```
 
 If invoked without a mode, ask the user which mode they want.
@@ -207,6 +208,124 @@ The writer is Supabase, not TS files. Content edits land in the `listings` + `li
 5. **Walk every tier** (click each `.desktop-attr-btn` in `.js-activity-package-options`; for the `js-package-option-section` and `booking-options` variants, collect inline prices). Derive `live_min` and `live_max` in THB (convert at ~33.5 if Klook serves USD). Compare against stored `price` (floor) and `priceMax ?? price` (ceiling). Flag drift > 15% on either bound.
 6. Output: markdown table — `slug | vendor | productId | status (live/dead) | rating | booked | stored ฿X (–฿Y) | live ฿X (–฿Y) | drift | action`.
 7. **Don't modify content.** Output is advisory; user decides which to replace / drop.
+
+## Sync mode — full sequence
+
+The headline mode: catalog hygiene + automatic refresh. In one run it (a) soft-archives delisted/expired Klook listings already in the catalog, and (b) drafts new candidates to keep the published count at the 20-listing cap. Two input paths:
+
+- **Auto** (no flags): scrape Klook's Chiang Mai top-rated and fill the catalog up to 20 with new candidates that pass the popularity gate (rating ≥ 4.5, booked ≥ 5K).
+- **Manual URL bypass** (`--url <klook-url>` repeatable): user-curated additions that **bypass the popularity gate** — used when a listing is known-good but doesn't clear the auto-rating threshold.
+
+The two paths can be combined: `/experience-pipeline sync --url <one>` runs the manual URL adds *then* fills any remaining slots from auto-sourced top-rated.
+
+**Cap rule**: 20 published listings. Drafts + archived rows don't count. Counting is `npm run listing -- list --status published | head` (or filter the `list-bookings` JSON).
+
+### Algorithm
+
+1. **Enumerate current state** — one round trip:
+   ```bash
+   npm run listing -- list-bookings
+   ```
+   Yields `[{slug, status, bookingType, productId}, ...]`. Keep in memory as `current`. Build `knownProductIds = new Set(current.filter(c => c.bookingType === 'klook').map(c => c.productId))` — used to dedup candidates against existing rows (any status, including archived — don't resurrect).
+
+2. **Stale sweep** — for every `current` entry where `status === 'published'` AND `bookingType === 'klook'`:
+   - `browser_navigate('https://www.klook.com/activity/<productId>/')`
+   - Wait for load. Capture Page Title + body text via `browser_snapshot`.
+   - Mark as dead if:
+     - Page Title is `404`, contains `Not Found`, or resolves to the bare vendor domain
+     - Body contains "Currently unavailable" (Klook's canonical delisting language)
+   - For each dead listing: `npm run listing -- archive --slug <slug>` (skip in `--dry-run`).
+   - Respect ~2s polite delay between requests.
+   - Update `current` in memory to reflect new statuses.
+
+3. **Recompute cap**:
+   - `publishedCount = current.filter(c => c.status === 'published').length`
+   - `slots = max(0, 20 - publishedCount)`
+
+4. **Source candidates**:
+
+   **Manual mode** (when `--url` flags are present):
+   - For each URL: parse productId, `browser_navigate`, capture title + rating + booked count.
+   - **Skip** if `productId` is already in `knownProductIds` — print "skipping <url>: already in catalog as `<slug>` (status: `<status>`)" and continue.
+   - **No popularity gate**: manual URLs pass through regardless of rating/booked.
+   - If `(publishedCount + len(manualCandidates)) > 20`: refuse the overflow. Tell the user how many to archive first; don't auto-archive on their behalf.
+   - Add accepted URLs to `chosen` candidate pool. Decrement `slots` accordingly.
+
+   **Auto mode** (when `slots > 0` after manual URLs are processed, OR no `--url` flags were given):
+   - `browser_navigate('https://www.klook.com/en-US/search/result/?query=chiang+mai&sort=BEST_SELLER')` (Klook surfaces top-rated under this URL; `top` mode uses the same pattern).
+   - Parse the YAML snapshot for activity links: `grep -oE "/activity/[0-9]+-[a-z0-9-]+" .playwright-mcp/page-*.yml | sort -u`.
+   - For each candidate up to `~3× slots` (over-fetch to allow filtering):
+     - Skip if `productId ∈ knownProductIds`.
+     - Navigate the activity page, capture rating + booked + title.
+     - Filter: `rating ≥ 4.5 AND booked ≥ 5K`.
+     - Add survivors to a sorted pool (rating desc, booked desc).
+   - Take top `slots` survivors and append to `chosen`.
+
+5. **Draft each candidate** — for every entry in `chosen`, execute Add mode's full per-listing flow:
+   - Pick category (best-fit from product page; default `nature` if ambiguous — don't ask the user mid-loop).
+   - Generate slug (kebab-case from product title). Check uniqueness against `current` slugs + slugs drafted earlier in this same run.
+   - Pick background gradient by category.
+   - Run **Tone audit** on the proposed EN copy. If it triggers, **degrade gracefully** in sync: rewrite once to address the flag; if it still triggers, log the failure for the run report and skip this candidate.
+   - Write `ListingWriteInput` JSON to `/tmp/<slug>.json` (status='draft', isFeatured=false).
+   - `npm run listing -- upsert --file /tmp/<slug>.json` (skip in `--dry-run`).
+   - Compose Gemini prompt + `npm run gen:image -- --slug <slug> --prompt "..."` (skip in `--dry-run`).
+   - Re-check image per Image rules. Retry up to 2× on failure. If still failing, log and skip (don't roll back the row; image can be regenerated later via `image` mode).
+   - Smoke-test the affiliate redirect.
+   - `rm /tmp/<slug>.json`.
+   - **Halt the loop only on infrastructure errors** (DB down, gen:image API failure). Per-candidate content failures should log and continue — don't let one bad candidate block the rest.
+
+6. **Report** — markdown summary at the end:
+
+    ```markdown
+    ## Sync run — <timestamp>
+    Mode: auto | manual | hybrid
+    Dry-run: yes | no
+
+    ### Archived (N)
+    | slug | productId | reason |
+    |---|---|---|
+    | doi-suthep | 18012 | Currently unavailable |
+
+    ### Drafted (M)
+    | slug | rating | booked | productId | preview |
+    |---|---|---|---|---|
+    | new-thing | 4.7 | 8.2K | 123456 | /e/new-thing |
+
+    ### Skipped (K) — only relevant in manual mode
+    | url | reason |
+    |---|---|
+
+    ### Failures (F)
+    | step | candidate | error |
+    |---|---|---|
+
+    ### Next steps
+    Review drafts at /e/<slug>. Publish with:
+        npm run listing -- publish --slug <slug>      # dev
+        npm run listing:prod -- publish --slug <slug> # production
+    ```
+
+### `--dry-run` behavior
+
+Do every read (Playwright scrape, Klook navigate, candidate filtering, tone audit) but skip every write:
+- No `listing archive` calls.
+- No `listing upsert` calls.
+- No `gen:image` calls.
+
+The Report still shows what *would* have happened. Use this before committing API spend (Gemini is ~$0.04/image, so a 10-candidate run is ~$0.40 if every image succeeds first try).
+
+### Failure recovery
+
+If the run crashes mid-loop:
+- Drafts already upserted and images already generated are persistent in Supabase + storage. Safe.
+- Re-running `sync` is safe: step 1's `list-bookings` will include the new drafts; step 4's dedup against `knownProductIds` prevents re-drafting them.
+- The crashed candidate's `/tmp/<slug>.json` may persist — clean up `/tmp/` files matching the candidate slugs in the failure report.
+
+### Operator etiquette
+
+- Always `browser_close` + `rm -rf .playwright-mcp` at the end (per [AGENTS.md](../../../AGENTS.md)).
+- Don't run `sync` more than once per day in auto mode — Klook's top-rated changes slowly and you'd be paying for redundant scraping.
+- Prefer `--dry-run` first whenever the catalog state isn't fresh in your head.
 
 ## Top mode — full sequence
 

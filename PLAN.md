@@ -7,7 +7,7 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Status as of 2026-06-06:** site is fully trilingual (EN/ZH/TH) on https://staylooped.co. **Phase 2 Supabase data layer is live in production** — all 5 content getters read from Supabase (`USE_SUPABASE=true` set in Vercel Production). Editorial content now flows: edit `content/*.ts` → `npm run seed:supabase:prod` → live on prod (no deploy needed). **Listing images now also live in Supabase Storage** (`listings` bucket, both dev + prod) and `public/images/listings/` has been removed — sync can land images without a deploy.
 
-**Next focus (planned 2026-06-06):** continue automating the experience pipeline via the existing `experience-pipeline` skill (not n8n). Image generation via Gemini is wired in (PR #18); the `experience-sync` mode is being delivered as four small PRs. **PRs 1.1 (foundation) and 1.2 (writer flip) shipped on 2026-06-07** — see Done sections below. Remaining: PR 1.3 (sync orchestration), PR 1.4 (purge cron). Also still on deck: replace 2 draft listings (`doi-suthep`, `big-day-out`), restore real social proof, sitemap/SEO.
+**Next focus (planned 2026-06-06):** continue automating the experience pipeline via the existing `experience-pipeline` skill (not n8n). Image generation via Gemini is wired in (PR #18); the `experience-sync` mode is being delivered as four small PRs. **PRs 1.1 (foundation), 1.2 (writer flip), and 1.3 (sync mode orchestration) all shipped on 2026-06-07** — see Done sections below. Remaining: PR 1.4 (purge cron). Also still on deck: replace 2 draft listings (`doi-suthep`, `big-day-out`) via the new sync mode, restore real social proof, sitemap/SEO.
 
 ---
 
@@ -90,6 +90,25 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Operational consequence:** content edits in `content/*.ts` no longer reach production through `git push`. Flow is now: edit TS → `npm run seed:supabase:prod` → live. Or edit directly in Supabase Studio. This is fine short-term; the long-term fix is flipping the `experience-pipeline` skill writer to Supabase (top item under Phase 3 below).
 
+### Done ✅ — `experience-sync` mode orchestration (2026-06-07, branch `feat/experience-sync-mode`)
+
+The headline mode is wired up. One run: archives delisted Klook productIds + drafts new candidates up to the 20-published cap. Two input paths: auto (scrape Klook top-rated, filter by rating ≥ 4.5 AND booked ≥ 5K) and manual `--url <klook-url>` (bypasses the popularity gate).
+
+- **Enumeration helper** `listAllBookings(sb)` added to [scripts/lib/listings-write.ts](scripts/lib/listings-write.ts) — returns `[{slug, status, bookingType, productId}, ...]` for every row regardless of status. Lets the skill build a `knownProductIds` set in one round-trip and dedup candidates against existing drafts + archived rows (so the sync doesn't resurrect listings that were just archived).
+- **CLI subcommand** `npm run listing -- list-bookings` outputs the same data as JSON. Updated [scripts/listing.ts](scripts/listing.ts) usage banner.
+- **Skill mode** at [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md) §"Sync mode — full sequence". Documents the six-step algorithm:
+  1. Enumerate current state via `list-bookings` (one round trip; cached as `current` + `knownProductIds`).
+  2. Stale sweep: for each `published` Klook listing, navigate the product page and archive if title is `404`/`Not Found` or body says "Currently unavailable".
+  3. Recompute cap (`slots = max(0, 20 - publishedCount)`).
+  4. Source candidates — manual URLs first (no popularity gate, but cap rule still applies — refuses overflow), then auto-fill from Klook top-rated (rating ≥ 4.5 AND booked ≥ 5K, deduped against `knownProductIds`).
+  5. Draft each candidate via Add mode's per-listing flow (`upsert --file` + `gen:image` + image vision re-check + smoke test). Continues on per-candidate content failures; halts only on infra errors.
+  6. Markdown summary report (archived / drafted / skipped / failures / next steps).
+- **`--dry-run` flag** documented: does every Playwright scrape and decision but skips every write (no archive, no upsert, no Gemini call). Lets the user preview a run before paying ~$0.04/image API spend.
+- **Failure recovery** is built in: re-running `sync` re-enumerates state, dedups against in-flight drafts, no duplicates.
+- **Operator etiquette** captured: `browser_close` + `.playwright-mcp` cleanup at end of run; don't run more than once a day in auto mode.
+
+**Operational consequence:** catalog rotation is now a skill-driven one-shot. Replacing the two long-standing draft listings (`doi-suthep`, `big-day-out`) is now a `/experience-pipeline sync` away — the stale sweep flips them from draft to archived if Klook still says "Currently unavailable", and the auto-source picks two fresh top-rated to fill the cap. The actual run will happen in a future session (not in this PR — no API spend during the implementation).
+
 ### Done ✅ — Skill writer flip to Supabase (2026-06-07, branch `feat/skill-supabase-writer`)
 
 - **JSON write path**: added `ListingWriteInput` + `TranslationInput` types and `upsertListingWithTranslations(sb, input)` to [scripts/lib/listings-write.ts](scripts/lib/listings-write.ts). EN translation is required; ZH / TH fall back to EN for missing locales (same semantics as the existing TS overlay path).
@@ -169,10 +188,9 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 Pick highest-impact-per-effort first. Each item is self-contained and unblocks downstream work.
 
-**Theme: close the content-automation loop via the `experience-pipeline` skill (no n8n).** Image storage (1a, 2026-06-06), Gemini auto-gen (1b, 2026-06-07), foundation (1.1, 2026-06-07), and the writer flip (1.2, 2026-06-07) shipped — see Done sections above. Remaining `experience-sync` PRs:
+**Theme: close the content-automation loop via the `experience-pipeline` skill (no n8n).** Image storage (1a, 2026-06-06), Gemini auto-gen (1b, 2026-06-07), foundation (1.1, 2026-06-07), writer flip (1.2, 2026-06-07), and sync mode (1.3, 2026-06-07) all shipped — see Done sections above. Only remaining `experience-sync` PR:
 
-1. **Sync orchestration**: Playwright scrape Klook's Chiang Mai top-rated category → for each currently-published listing hit its product page and mark `Currently unavailable` ones as `archived` → if (published count) < 20, draft new candidates from the top list (full content rewrite + translation + Gemini image gen via `npm run gen:image`) up to the cap → all new listings land as `status='draft'` for editorial review. **Dual-path UX**: also accepts a specific Klook activity URL (or list of URLs) — those bypass the popularity gate and get drafted regardless of rating/booked-count. Use case: human-curated additions below the auto-rating threshold but known to be good. Cap rule: enforce on `status='published'` only; drafts + archived don't count.
-2. **Periodic purge**: scheduled cron (Vercel Cron or GitHub Action) that runs `npm run listing:prod -- purge --older-than-days 90` weekly. The CLI already supports this — PR scope is the scheduling story + a `purge` summary report.
+1. **Periodic purge**: scheduled cron (Vercel Cron or GitHub Action) that runs `npm run listing:prod -- purge --older-than-days 90` weekly. The CLI already supports this — PR scope is the scheduling story + a `purge` summary report.
 
 2. **Replace the 2 draft listings** (`doi-suthep`, `big-day-out`) — Klook delisted them in late May; both sit as `status='draft'` in Supabase. Once step 1 lands, the sync run will surface fresh top-rated replacements automatically. Until then, can also run `experience-pipeline replace` for a manual swap (image generation now fully automated via `gen:image`).
 3. **Sitemap.ts + robots.ts** — small, high-SEO-value. Pulls slugs from `getAllListingSlugs()` which already works via Supabase. ~1 hour of work.
