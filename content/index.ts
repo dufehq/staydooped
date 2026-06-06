@@ -31,8 +31,8 @@ export async function getAllListingSlugs(): Promise<string[]> {
     const { getAllListingSlugsFromDB } = await import("./db");
     return getAllListingSlugsFromDB();
   }
-  const published = (l: { status?: "draft" | "published" }) =>
-    l.status !== "draft";
+  const published = (l: { status?: "draft" | "published" | "archived" }) =>
+    l.status === undefined || l.status === "published";
   return [
     ...bundles.filter(published).map((b) => b.slug),
     ...experiences.filter(published).map((e) => e.slug),

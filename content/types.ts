@@ -51,8 +51,10 @@ type ListingBase = {
   booking: BookingMethod;
   background: string;
   /** Drafts are excluded from home/listing pages but still resolve at /e/<slug>
-   *  for direct preview. Missing = published. Skill writes drafts by default. */
-  status?: "draft" | "published";
+   *  for direct preview. Archived rows are excluded from every public surface
+   *  but stay in the table for ~90 days for restorability. Missing = published.
+   *  Skill writes drafts by default; `experience-sync` archives stale rows. */
+  status?: "draft" | "published" | "archived";
 };
 
 export type Experience = ListingBase & {

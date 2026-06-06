@@ -23,7 +23,7 @@ type ListingRow = {
   is_featured: boolean;
   loops: number | null;
   contributor_slug: string | null;
-  status: "draft" | "published";
+  status: "draft" | "published" | "archived";
 };
 
 type TranslationRow = {

@@ -184,7 +184,7 @@ export type Database = {
         | "adventure"
         | "nimman"
       listing_kind: "experience" | "bundle"
-      listing_status: "draft" | "published"
+      listing_status: "draft" | "published" | "archived"
       locale: "en" | "th" | "zh"
     }
     CompositeTypes: {
@@ -326,7 +326,7 @@ export const Constants = {
         "nimman",
       ],
       listing_kind: ["experience", "bundle"],
-      listing_status: ["draft", "published"],
+      listing_status: ["draft", "published", "archived"],
       locale: ["en", "th", "zh"],
     },
   },

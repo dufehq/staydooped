@@ -11,7 +11,9 @@
     "seed:supabase:prod": "tsx --env-file=.env.prod.local scripts/seed-supabase.ts",
     "backfill:images": "tsx --env-file=.env.local scripts/backfill-listing-images.ts",
     "backfill:images:prod": "tsx --env-file=.env.prod.local scripts/backfill-listing-images.ts",
-    "gen:image": "tsx --env-file=.env.local scripts/gen-image.ts"
+    "gen:image": "tsx --env-file=.env.local scripts/gen-image.ts",
+    "listing": "tsx --env-file=.env.local scripts/listing.ts",
+    "listing:prod": "tsx --env-file=.env.prod.local scripts/listing.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",
