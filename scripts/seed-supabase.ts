@@ -6,8 +6,9 @@
  *   npm run seed:supabase            # dev (uses .env.local)
  *   npm run seed:supabase:prod       # prod (uses .env.prod.local)
  *
- * The actual upsert logic lives in scripts/lib/listings-write.ts so the seed,
- * the listing CLI, and the experience-pipeline skill all write the same way.
+ * The actual upsert logic lives in lib/listings-write.ts so the seed, the
+ * listing CLI, the cron API route, and the experience-pipeline skill all
+ * write the same way.
  */
 import { experiences } from "../content/experiences";
 import { bundles } from "../content/bundles";
@@ -15,7 +16,7 @@ import type { Listing } from "../content/types";
 import {
   createListingsClient,
   upsertListing,
-} from "./lib/listings-write";
+} from "../lib/listings-write";
 
 async function seed() {
   const sb = createListingsClient();

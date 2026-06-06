@@ -7,7 +7,7 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Status as of 2026-06-06:** site is fully trilingual (EN/ZH/TH) on https://staylooped.co. **Phase 2 Supabase data layer is live in production** — all 5 content getters read from Supabase (`USE_SUPABASE=true` set in Vercel Production). Editorial content now flows: edit `content/*.ts` → `npm run seed:supabase:prod` → live on prod (no deploy needed). **Listing images now also live in Supabase Storage** (`listings` bucket, both dev + prod) and `public/images/listings/` has been removed — sync can land images without a deploy.
 
-**Next focus (planned 2026-06-06):** continue automating the experience pipeline via the existing `experience-pipeline` skill (not n8n). Image generation via Gemini is wired in (PR #18); the `experience-sync` mode is being delivered as four small PRs. **PRs 1.1 (foundation), 1.2 (writer flip), and 1.3 (sync mode orchestration) all shipped on 2026-06-07** — see Done sections below. Remaining: PR 1.4 (purge cron). Also still on deck: replace 2 draft listings (`doi-suthep`, `big-day-out`) via the new sync mode, restore real social proof, sitemap/SEO.
+**Next focus (planned 2026-06-06):** continue automating the experience pipeline via the existing `experience-pipeline` skill (not n8n). Image generation via Gemini is wired in (PR #18); the `experience-sync` mode shipped as four small PRs. **PRs 1.1 (foundation), 1.2 (writer flip), 1.3 (sync mode), and 1.4 (purge cron) all shipped on 2026-06-07** — see Done sections below. The whole `experience-sync` sequence is now complete; the headline mode is ready to run for real (will retire `doi-suthep` + `big-day-out` and add two top-rated replacements). Also still on deck: restore real social proof, sitemap/SEO.
 
 ---
 
@@ -89,6 +89,22 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 - Branch `feat/supabase-integration` merged via squash; remote branch deleted. 4 commits squashed into one on main.
 
 **Operational consequence:** content edits in `content/*.ts` no longer reach production through `git push`. Flow is now: edit TS → `npm run seed:supabase:prod` → live. Or edit directly in Supabase Studio. This is fine short-term; the long-term fix is flipping the `experience-pipeline` skill writer to Supabase (top item under Phase 3 below).
+
+### Done ✅ — Archived-listings purge cron (2026-06-07, branch `feat/purge-cron`)
+
+Closes the experience-sync sequence. A Vercel Cron hits a new API route weekly to hard-delete `status='archived'` rows whose `updated_at` is older than 90 days (the restorability window), plus their storage objects.
+
+- **API route** at [app/api/cron/purge-archived/route.ts](app/api/cron/purge-archived/route.ts): GET handler, verifies `Authorization: Bearer ${CRON_SECRET}` header (Vercel auto-injects on cron invocations), calls `purgeArchivedListings(sb, days, {dryRun})`, returns JSON `{days, dryRun, purgedCount, slugs}`. Supports `?days=N` + `?dryRun=true` query params for manual override / inspection.
+- **Cron schedule** in [vercel.json](vercel.json): `"0 2 * * 0"` — every Sunday 02:00 UTC (09:00 ICT, low-activity window for the local audience).
+- **Module move**: [scripts/lib/listings-write.ts](scripts/lib/listings-write.ts) → [lib/listings-write.ts](lib/listings-write.ts) so the API route can import without crossing the scripts/app boundary. All callers (`scripts/seed-supabase.ts`, `scripts/listing.ts`) updated to import from the new path.
+- **New deploy requirement**: `CRON_SECRET` must be set in Vercel Production env vars (any random string — Vercel's dashboard can generate one) before the cron has effect. Without it the route returns 500 `"CRON_SECRET is not configured"` and the cron run becomes a no-op on each invocation.
+- **Local testing**: with `CRON_SECRET=<value>` in `.env.local`, the route is reachable via `curl -H "Authorization: Bearer <value>" http://localhost:3000/api/cron/purge-archived`. Smoke-tested all paths on dev:
+  - No auth header → 401.
+  - Wrong secret → 401.
+  - Correct secret, no archived rows → 200, `{purgedCount: 0, slugs: []}`.
+  - After archiving `doi-suthep`, `?days=0&dryRun=true` correctly reports it as a candidate without writing; `?days=365` correctly returns 0 (just-archived doesn't match 365-day cutoff). Restored `doi-suthep` to draft afterwards.
+
+**Operational consequence:** the experience-sync sequence is now fully autonomous from end-to-end — sync archives stale listings → 90 days later the cron hard-deletes them + their storage objects → bucket stays clean as the catalog rotates. The only standing manual step is the editorial draft → published flip (intentionally — human review of new drafts is the value-add).
 
 ### Done ✅ — `experience-sync` mode orchestration (2026-06-07, branch `feat/experience-sync-mode`)
 
@@ -188,9 +204,9 @@ The headline mode is wired up. One run: archives delisted Klook productIds + dra
 
 Pick highest-impact-per-effort first. Each item is self-contained and unblocks downstream work.
 
-**Theme: close the content-automation loop via the `experience-pipeline` skill (no n8n).** Image storage (1a, 2026-06-06), Gemini auto-gen (1b, 2026-06-07), foundation (1.1, 2026-06-07), writer flip (1.2, 2026-06-07), and sync mode (1.3, 2026-06-07) all shipped — see Done sections above. Only remaining `experience-sync` PR:
+**Theme: close the content-automation loop via the `experience-pipeline` skill (no n8n).** Image storage (1a, 2026-06-06), Gemini auto-gen (1b, 2026-06-07), foundation (1.1), writer flip (1.2), sync mode (1.3), and purge cron (1.4) all shipped — see Done sections above. **The experience-sync sequence is complete.** What's next:
 
-1. **Periodic purge**: scheduled cron (Vercel Cron or GitHub Action) that runs `npm run listing:prod -- purge --older-than-days 90` weekly. The CLI already supports this — PR scope is the scheduling story + a `purge` summary report.
+1. **Run sync for real** — fire `/experience-pipeline sync --dry-run` first to preview, then a real run to retire `doi-suthep` + `big-day-out` (already drafted out) and bring in two fresh top-rated replacements.
 
 2. **Replace the 2 draft listings** (`doi-suthep`, `big-day-out`) — Klook delisted them in late May; both sit as `status='draft'` in Supabase. Once step 1 lands, the sync run will surface fresh top-rated replacements automatically. Until then, can also run `experience-pipeline replace` for a manual swap (image generation now fully automated via `gen:image`).
 3. **Sitemap.ts + robots.ts** — small, high-SEO-value. Pulls slugs from `getAllListingSlugs()` which already works via Supabase. ~1 hour of work.
@@ -289,4 +305,5 @@ Most of the **read** + **rewrite** + **image** pipeline shipped early as the [ex
 | Phase 3 ops skill | [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md) |
 | Supabase data layer | [supabase/](supabase/) (migrations + README), [lib/supabase.ts](lib/supabase.ts), [content/db.ts](content/db.ts), [scripts/seed-supabase.ts](scripts/seed-supabase.ts), [types/supabase.ts](types/supabase.ts) |
 | Gemini image generator | [scripts/gen-image.ts](scripts/gen-image.ts) (`npm run gen:image -- --slug X --prompt "..."`) |
-| Listing write helpers + CLI | [scripts/lib/listings-write.ts](scripts/lib/listings-write.ts) (shared upsert/archive/delete/purge helpers), [scripts/listing.ts](scripts/listing.ts) (`npm run listing -- <subcommand>` / `npm run listing:prod -- <subcommand>`) |
+| Listing write helpers + CLI | [lib/listings-write.ts](lib/listings-write.ts) (shared upsert/archive/delete/purge helpers; lives in lib/ so the cron API route can import), [scripts/listing.ts](scripts/listing.ts) (`npm run listing -- <subcommand>` / `npm run listing:prod -- <subcommand>`) |
+| Archived-listings purge cron | [app/api/cron/purge-archived/route.ts](app/api/cron/purge-archived/route.ts) (Vercel Cron GET; verifies `CRON_SECRET`), schedule in [vercel.json](vercel.json) (`0 2 * * 0` — Sundays 02:00 UTC) |
