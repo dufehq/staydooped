@@ -69,6 +69,11 @@ Vercel is on the Pro plan under `fernmissions projects`. Only the owner (`fernmi
 - **Never `git push --force` to `main`** and never merge from outside GitHub's UI — both can block Vercel deployment.
 - **Always squash merge** to keep commit history clean.
 
+**When the owner says "my partner asked me to review / merge a PR":**
+- Do NOT merge it via the GitHub API — partner-authored commits merged by Claude will show the partner's name and Vercel will block the deployment.
+- Instead, remind the owner: **"Please merge this yourself via GitHub UI (squash merge) so the deploy goes through cleanly."**
+- If the owner still asks Claude to merge it, create a separate empty-commit PR from a Claude-authored branch and ask the owner to merge that one via GitHub UI to retrigger the deploy.
+
 ## Tooling
 
 - `npm run dev` uses **Webpack** (`next dev --webpack`), not Turbopack. Turbopack spawns one PostCSS subprocess per CSS file under `@tailwindcss/postcss` — heavy on this laptop. Revisit when Tailwind ships a Turbopack-native plugin or CSS surface area is small enough that the overhead doesn't matter.
