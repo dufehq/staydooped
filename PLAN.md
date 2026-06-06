@@ -7,7 +7,7 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Status as of 2026-06-06:** site is fully trilingual (EN/ZH/TH) on https://staylooped.co. **Phase 2 Supabase data layer is live in production** — all 5 content getters read from Supabase (`USE_SUPABASE=true` set in Vercel Production). Editorial content now flows: edit `content/*.ts` → `npm run seed:supabase:prod` → live on prod (no deploy needed). **Listing images now also live in Supabase Storage** (`listings` bucket, both dev + prod) and `public/images/listings/` has been removed — sync can land images without a deploy.
 
-**Next focus (planned 2026-06-06):** continue automating the experience pipeline via the existing `experience-pipeline` skill (not n8n). Remaining: (1) wire Gemini's image-generation API into the skill so the human paste-PNG step goes away, (2) add a new `experience-sync` mode that pulls top-rated Klook activities, soft-archives stale/expired ones, and keeps the catalog capped at 20 published listings. Also still on deck: replace 2 draft listings (`doi-suthep`, `big-day-out`), restore real social proof, sitemap/SEO.
+**Next focus (planned 2026-06-06):** continue automating the experience pipeline via the existing `experience-pipeline` skill (not n8n). Image generation via Gemini is now wired in (step 1 of the original plan — see "Done — Gemini image-gen automation" below). Remaining headline item: add a new `experience-sync` mode that pulls top-rated Klook activities, soft-archives stale/expired ones, and keeps the catalog capped at 20 published listings. Also still on deck: replace 2 draft listings (`doi-suthep`, `big-day-out`), restore real social proof, sitemap/SEO.
 
 ---
 
@@ -90,6 +90,17 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Operational consequence:** content edits in `content/*.ts` no longer reach production through `git push`. Flow is now: edit TS → `npm run seed:supabase:prod` → live. Or edit directly in Supabase Studio. This is fine short-term; the long-term fix is flipping the `experience-pipeline` skill writer to Supabase (top item under Phase 3 below).
 
+### Done ✅ — Gemini image-gen automation (2026-06-07, branch `feat/gemini-image-generation`)
+
+- **`scripts/gen-image.ts`** — takes `--slug` and `--prompt`, calls Gemini `gemini-2.5-flash-image` (v1beta endpoint), decodes base64 PNG, sharp-converts to 1920×1072 WebP @ q82 in-memory, uploads to the Supabase Storage `listings` bucket via service-role client. No temp files; idempotent (upsert).
+- **npm script** `gen:image` (loads `.env.local` via `--env-file`). New env requirements: `GEMINI_API_KEY` (paid-tier Google account — free tier image-gen quota is 0).
+- **Skill updated** at [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md): "Image rules" section now describes a single `npm run gen:image` invocation; the paste-PNG human step is removed. The multimodal verify-and-retry-up-to-2× loop is preserved (Claude downloads the uploaded WebP to `/tmp` and `Read`s it). Pre-flight adds `GEMINI_API_KEY` + Supabase env-var checks. Slug rules updated to reference the bucket instead of `public/images/listings/`. Old in-skill sharp conversion snippet removed.
+- **Gemini API quirks captured in the skill**: must use `/v1beta` (not `/v1`); `responseFormat.image.{aspectRatio,imageSize}` enums are rejected on this model — the prompt itself biases toward landscape and sharp does the authoritative resize+crop. Auth via `x-goog-api-key` header.
+- **Tested end-to-end** on a throwaway `_test-gen-image` slug: 10s round-trip, 1.78 MB PNG → 130 KB WebP, public URL fetches at HTTP 200, vision check passes (subject correct, no text/artifacts, 1920×1072). Test object cleaned up from bucket after verification.
+- **Cost reality check**: ~$0.04 per call. Refreshing a 20-listing catalog with one retry per call = ~$1.60. Catalog-wide manual regens are pocket change; runaway retry loops are still cheap.
+
+**Operational consequence:** the `experience-pipeline` skill (`add` / `replace` / `image` modes) can now generate + upload an image without a human paste step. Unblocks "Next Up 1" (`experience-sync` mode) — that mode reuses `gen:image` for every newly-drafted listing.
+
 ### Done ✅ — Listings images on Supabase Storage (2026-06-06, branch `feat/supabase-image-storage`)
 
 - **Bucket** `listings` created in **dev** (`wtjvrbycuiooiuthokjk`) and **prod** (`smavaoullkcwebksspta`) via migration [supabase/migrations/20260606100000_listings_storage_bucket.sql](supabase/migrations/20260606100000_listings_storage_bucket.sql). Public-read, 5 MB file_size_limit, `image/webp` MIME allowlist. Writes go through service_role (bypasses RLS) — no INSERT/UPDATE/DELETE policy needed on storage.objects.
@@ -119,26 +130,20 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 Pick highest-impact-per-effort first. Each item is self-contained and unblocks downstream work.
 
-**Theme: close the content-automation loop via the `experience-pipeline` skill (no n8n).** 1a (image storage migration) shipped on 2026-06-06 — see Done section above. Steps 1 → 2 below are the remaining strict-order dependencies.
+**Theme: close the content-automation loop via the `experience-pipeline` skill (no n8n).** Image storage (1a, 2026-06-06) and Gemini auto-gen (1b, 2026-06-07) shipped — see Done sections above. Remaining headline item is the `experience-sync` mode below.
 
-1. **Wire Gemini's image-generation API into the skill.** Removes the manual "user pastes the PNG" step in [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md). Scope:
-   - Add `GEMINI_API_KEY` to `.env.local` (and Vercel env if we ever run this server-side).
-   - Add `scripts/gen-image.ts` (~30 lines): takes `--slug` and `--prompt`, calls `gemini-2.5-flash-image`, writes base64 PNG → sharp converts to 1920×1072 WebP → uploads to the `listings` bucket via service-role client (reuse the upload pattern from [scripts/backfill-listing-images.ts](scripts/backfill-listing-images.ts)) → deletes the local PNG. Idempotent on slug (overwrite).
-   - Update the skill's "Image rules" section to invoke that script; keep the multimodal verify-and-retry-up-to-2x loop on the resulting WebP.
-   - Cost sanity check: ~$0.04/image. Refreshing the entire 20-listing catalog is under $1.
-
-2. **Add `experience-sync` mode to the skill** — the headline goal. Pulls top-rated Chiang Mai activities from Klook, soft-archives stale/expired listings, and enforces a 20-published-listing cap. Scope:
+1. **Add `experience-sync` mode to the skill** — the headline goal. Pulls top-rated Chiang Mai activities from Klook, soft-archives stale/expired listings, and enforces a 20-published-listing cap. Scope:
    - Add `archived` to the `status` enum (migration: `ALTER TYPE listing_status ADD VALUE 'archived'`). Caps and home/listing queries already filter to `published`; archived rows stop rendering automatically but stay restorable.
-   - Sync algorithm: (1) Playwright walk Klook's Chiang Mai top-rated category, capture top-N candidates with rating + booked count; (2) for each currently-published listing, hit its product page and mark `Currently unavailable` ones as `archived`; (3) if (published count) < 20, draft new candidates from the top list into Supabase (with full content rewrite, translation, Gemini image generation via step 1) up to the cap; (4) all new listings land as `status='draft'` for editorial review before flip.
+   - Sync algorithm: (1) Playwright walk Klook's Chiang Mai top-rated category, capture top-N candidates with rating + booked count; (2) for each currently-published listing, hit its product page and mark `Currently unavailable` ones as `archived`; (3) if (published count) < 20, draft new candidates from the top list into Supabase (with full content rewrite, translation, Gemini image generation via `npm run gen:image`) up to the cap; (4) all new listings land as `status='draft'` for editorial review before flip.
    - Cap rule: enforce on `status='published'` only. Drafts and archived rows don't count.
    - Periodic purge: separate skill subcommand (or quarterly manual run) that hard-deletes rows older than 90 days in `status='archived'`, plus their storage objects. Keeps the bucket clean without losing recent restorability.
    - Also flip `add` / `replace` / `image` modes to write to Supabase via service-role client at the same time (they share the same write helpers).
 
-3. **Replace the 2 draft listings** (`doi-suthep`, `big-day-out`) — Klook delisted them in late May; both sit as `status='draft'` in Supabase. Once step 2 lands, the sync run will surface fresh top-rated replacements automatically. Until then, can also run `experience-pipeline replace` (after step 1) for a manual swap.
-4. **Sitemap.ts + robots.ts** — small, high-SEO-value. Pulls slugs from `getAllListingSlugs()` which already works via Supabase. ~1 hour of work.
-5. **Click logging table** — adds `affiliate_click` writes to Supabase from `app/api/go/[id]/route.ts`. Vercel Analytics only retains ~30 days; we want long-tail revenue attribution. New table + migration + non-blocking insert from the existing route. Low risk.
-6. **Real social proof on cards** — vendor rating + booked count, sourced manually or via vendor API. Trust-building win. (Becomes basically free once `experience-sync` is scraping ratings anyway — pipe them into the `listings` row.)
-7. **Vercel Preview unblock** — either (a) get the user on the Vercel team ($20/mo) or (b) toggle off Git Author Verification in Project Settings. Until done, Preview deploys fail the author check; this PR shipped without Preview verification (worked out fine, but risky long-term).
+2. **Replace the 2 draft listings** (`doi-suthep`, `big-day-out`) — Klook delisted them in late May; both sit as `status='draft'` in Supabase. Once step 1 lands, the sync run will surface fresh top-rated replacements automatically. Until then, can also run `experience-pipeline replace` for a manual swap (image generation now fully automated via `gen:image`).
+3. **Sitemap.ts + robots.ts** — small, high-SEO-value. Pulls slugs from `getAllListingSlugs()` which already works via Supabase. ~1 hour of work.
+4. **Click logging table** — adds `affiliate_click` writes to Supabase from `app/api/go/[id]/route.ts`. Vercel Analytics only retains ~30 days; we want long-tail revenue attribution. New table + migration + non-blocking insert from the existing route. Low risk.
+5. **Real social proof on cards** — vendor rating + booked count, sourced manually or via vendor API. Trust-building win. (Becomes basically free once `experience-sync` is scraping ratings anyway — pipe them into the `listings` row.)
+6. **Vercel Preview unblock** — either (a) get the user on the Vercel team ($20/mo) or (b) toggle off Git Author Verification in Project Settings. Until done, Preview deploys fail the author check; this PR shipped without Preview verification (worked out fine, but risky long-term).
 
 ### Operational consequence to remember
 
@@ -230,3 +235,4 @@ Most of the **read** + **rewrite** + **image** pipeline shipped early as the [ex
 | Listing images (14 WebPs) | Supabase Storage `listings` bucket (public-read). URL helper: [lib/images.ts](lib/images.ts). Upload script: [scripts/backfill-listing-images.ts](scripts/backfill-listing-images.ts). |
 | Phase 3 ops skill | [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md) |
 | Supabase data layer | [supabase/](supabase/) (migrations + README), [lib/supabase.ts](lib/supabase.ts), [content/db.ts](content/db.ts), [scripts/seed-supabase.ts](scripts/seed-supabase.ts), [types/supabase.ts](types/supabase.ts) |
+| Gemini image generator | [scripts/gen-image.ts](scripts/gen-image.ts) (`npm run gen:image -- --slug X --prompt "..."`) |
