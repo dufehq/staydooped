@@ -24,7 +24,9 @@ If invoked without a mode, ask the user which mode they want.
 1. Read [CLAUDE.md](../../../CLAUDE.md), [AGENTS.md](../../../AGENTS.md), [PLAN.md](../../../PLAN.md) — project conventions change.
 2. Confirm a dev server is up on `http://localhost:3000`. If not, start one with `npm run dev` in the background.
 3. Confirm `.env.local` has `KLOOK_AFF_ID` set (and `VIATOR_AFF_ID` / `GYG_AFF_ID` for those vendors).
-4. Remind the user that the same vars must be set in Vercel for production — affiliate attribution silently fails if they aren't.
+4. Confirm `.env.local` has `GEMINI_API_KEY` set (needed for image generation). The key must be on a Google AI Studio / Cloud project with **billing enabled** — image generation is a paid-tier feature (free tier quota is 0).
+5. Confirm `.env.local` has `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` set (needed for image upload + content writes).
+6. Remind the user that the same vars must be set in Vercel for production — affiliate attribution silently fails if they aren't.
 
 ## Vendor fetching
 
@@ -71,21 +73,38 @@ Field rules:
 ## Image rules
 
 - **Never** scrape or embed the vendor's own product photos. License risk.
-- Source: Gemini (you generate the prompt; user pastes the PNG into `public/images/listings/<slug>.png`).
-- Final format: WebP, 1920×1072, quality 82, effort 5. Target size 150–500 KB.
-- Path: `public/images/listings/<slug>.webp`.
-- Conversion: use sharp via Node (see Image conversion below).
-- After conversion: delete the source PNG. Verify-before-delete: only `rm` the PNG after confirming the WebP exists with non-zero size and correct dimensions.
+- Source: Gemini `gemini-2.5-flash-image`, invoked via [scripts/gen-image.ts](../../../scripts/gen-image.ts). You generate the prompt and run the script — no human paste step.
+- Final format: WebP, 1920×1072, quality 82, effort 5. Target size 150–500 KB. The script handles PNG → WebP conversion via sharp in-memory.
+- Storage: Supabase Storage `listings` bucket (public-read). The script uploads as `<slug>.webp` (upsert — safe to re-run).
+- Cost: ~$0.04 per generation. Budget accordingly when looping retries.
 
-Image re-check loop (after conversion):
-1. `Read` the new WebP back (multimodal vision).
-2. Verify:
+Invocation:
+
+```bash
+npm run gen:image -- --slug <slug> --prompt "<your-prompt-text>"
+```
+
+The script prints the public URL on success. Example:
+
+```
+[gen-image] uploaded → https://<project>.supabase.co/storage/v1/object/public/listings/<slug>.webp
+```
+
+Image re-check loop (after `gen:image` returns):
+
+1. Download the WebP locally so it can be Read:
+   ```bash
+   curl -s "<public-url>" -o /tmp/<slug>.webp
+   ```
+2. `Read /tmp/<slug>.webp` (multimodal vision).
+3. Verify:
    - Subject matches the listing's content (the elephant is in the elephant picture)
    - No embedded text, logos, watermarks, or signature glyphs (Gemini sometimes adds a sparkle in the corner — flag it)
    - No AI artifacts: extra fingers, impossible anatomy, melted faces, hallucinated signage
-   - Aspect ratio 1920×1072, ~16:9
+   - Aspect ratio 1920×1072, ~16:9 (sharp enforces this; failure means the source from Gemini was unusable)
    - Natural colour grading — not over-saturated, not HDR-fake-looking
-3. If any check fails: **regenerate up to 2 more times** with a clarified prompt that addresses the specific failure ("no text in the corners", "no people in centre frame", "less saturated"). After the second retry, stop and ask the user.
+4. If any check fails: **regenerate up to 2 more times** by re-running `gen:image` with a clarified prompt that addresses the specific failure ("no text in the corners", "no people in centre frame", "less saturated"). The bucket object is overwritten in place — no need to delete first. After the second retry, stop and ask the user.
+5. After verification passes, `rm /tmp/<slug>.webp` to keep the work tree clean.
 
 ## Gemini image prompt template
 
@@ -98,16 +117,16 @@ Style: photorealistic, <focal length, e.g. 35mm>mm lens,
 <shallow|gentle|deep> depth of field, natural colours, no
 over-saturation. No text, no logos, no watermarks, no people
 centered prominently unless required by the subject.
-Output 1920x1072, landscape orientation.
+Landscape orientation, 16:9.
 ```
 
-Tune the bracketed slots based on the listing. Reference the four images we generated together (elephant, doi-inthanon, night-safari, khantoke) for tone calibration.
+Tune the bracketed slots based on the listing. Reference the four images we generated together (elephant, doi-inthanon, night-safari, khantoke) for tone calibration. The Gemini API doesn't accept explicit aspect-ratio parameters on the `gemini-2.5-flash-image` v1beta endpoint — relies on the prompt to bias toward landscape, then sharp does the authoritative resize/crop to 1920×1072 with `fit: "cover"`.
 
 ## Slug rules
 
 - kebab-case, ≤ 24 chars, ASCII only.
 - Must not collide with any existing slug in `content/experiences.ts` or `content/bundles.ts`.
-- Image file `public/images/listings/<slug>.webp` must equal the slug. If renaming, `git mv` the image.
+- Bucket object `<slug>.webp` in the Supabase Storage `listings` bucket must equal the slug. If renaming, copy the object to the new slug and delete the old one via the Supabase JS client (no `git mv` — images aren't in git anymore).
 
 ## Background gradient
 
@@ -139,10 +158,8 @@ Match the gradient to the image's dominant tones.
 9. **Append to `content/experiences.ts`** before the closing `];`. Type-check immediately.
 10. **Write ZH translation** to `content/i18n/zh.ts` under the slug key. Mirror EN structure (title, hook, description, inclusions, priceLabel, duration, distance).
 11. **Write TH translation** to `content/i18n/th.ts` (create the file if missing — mirror the ZH structure). Per PLAN.md, TH content isn't shipping until Phase 2 but write it now since the user opted in.
-12. **Generate Gemini image prompt** using the template above. Output as a fenced markdown code block for the user to copy.
-13. **Wait** for the user to paste `<slug>.png` to `public/images/listings/`.
-14. **Convert to WebP** via the inline node script (see Image conversion).
-15. **Re-check image** (see Image rules → re-check loop).
+12. **Compose a Gemini prompt** using the template above. Run `npm run gen:image -- --slug <slug> --prompt "<text>"` to generate, convert, and upload in one step.
+13. **Re-check the uploaded image** (see Image rules → re-check loop). Retry up to 2× with a refined prompt if it fails.
 16. **Type-check + build**: `npx tsc --noEmit && npm run build`. Fix anything that breaks. Don't proceed if either fails.
 17. **Affiliate URL smoke test**:
     ```bash
@@ -182,25 +199,10 @@ Match the gradient to the image's dominant tones.
 
 ## Image mode — full sequence
 
-1. Read existing listing for content context.
-2. Generate fresh Gemini prompt.
-3. Wait for user to paste new PNG.
-4. Convert + verify (image rules) + replace existing WebP.
-5. Don't touch content files.
-
-## Image conversion
-
-```js
-// .convert.mjs (gitignored; delete after run)
-import sharp from "sharp";
-const slug = "<slug>";
-await sharp(`public/images/listings/${slug}.png`)
-  .resize(1920, 1072, { fit: "cover", position: "centre" })
-  .webp({ quality: 82, effort: 5 })
-  .toFile(`public/images/listings/${slug}.webp`);
-```
-
-Run with `node .convert.mjs`. After confirming the WebP is on disk at correct dimensions, delete both `.convert.mjs` and the source PNG.
+1. Read existing listing for content context (don't modify content).
+2. Compose a fresh Gemini prompt.
+3. Run `npm run gen:image -- --slug <slug> --prompt "<text>"` — upserts `<slug>.webp` in the bucket.
+4. Re-check the image (see Image rules → re-check loop). Retry up to 2× with a refined prompt.
 
 ## Editorial draft gate (already wired)
 
