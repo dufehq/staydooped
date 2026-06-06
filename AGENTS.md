@@ -62,12 +62,13 @@ Vercel is on the Pro plan under `fernmissions projects`. Only the owner has a Ve
 
 **How to deploy without extra seats:**
 
-- The partner can create PRs and push branches freely.
-- **Only the owner or Claude (via GitHub API) should merge PRs into `main`.** When GitHub's merge mechanism triggers the push, Vercel deploys without checking team membership.
-- Direct `git push` to `main` from outside environments may be blocked by Vercel. Always use the PR → merge flow.
-- **Always merge with squash** (`merge_method: squash`) to keep the commit history clean.
-- **Never `git push --force` to `main`** — force pushes bypass GitHub's merge event and can cause Vercel to block the deployment.
-- After merging, request dhanuwat as reviewer on every PR using the GitHub MCP `update_pull_request` tool.
+- Anyone can push branches and create PRs freely.
+- **Merging is done by the owner or dhanuwat (collaborator) via GitHub UI** — GitHub's merge event triggers Vercel automatically, no Vercel seat needed.
+- Direct `git push` to `main` from Claude Code's environment may be blocked by Vercel. Always use the PR → merge flow.
+- **Always squash merge** to keep the commit history clean.
+- **Never `git push --force` to `main`** — force pushes bypass GitHub's merge event and can block Vercel deployment.
+
+**Review process:** dhanuwat reviews all PRs before merging. Either the owner or dhanuwat merges once approved.
 
 ## Tooling
 
