@@ -7,7 +7,7 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Status as of 2026-06-06:** site is fully trilingual (EN/ZH/TH) on https://staylooped.co. **Phase 2 Supabase data layer is live in production** — all 5 content getters read from Supabase (`USE_SUPABASE=true` set in Vercel Production). Editorial content now flows: edit `content/*.ts` → `npm run seed:supabase:prod` → live on prod (no deploy needed). **Listing images now also live in Supabase Storage** (`listings` bucket, both dev + prod) and `public/images/listings/` has been removed — sync can land images without a deploy.
 
-**Next focus (planned 2026-06-06):** continue automating the experience pipeline via the existing `experience-pipeline` skill (not n8n). Image generation via Gemini is wired in (PR #18); the `experience-sync` mode is being delivered as four small PRs. **PR 1.1 (foundation: archived enum + write helpers + listing CLI) shipped on 2026-06-07** — see Done section below. Remaining: PR 1.2 (flip `add` / `replace` / `image` modes to Supabase), PR 1.3 (sync orchestration), PR 1.4 (purge cron). Also still on deck: replace 2 draft listings (`doi-suthep`, `big-day-out`), restore real social proof, sitemap/SEO.
+**Next focus (planned 2026-06-06):** continue automating the experience pipeline via the existing `experience-pipeline` skill (not n8n). Image generation via Gemini is wired in (PR #18); the `experience-sync` mode is being delivered as four small PRs. **PRs 1.1 (foundation) and 1.2 (writer flip) shipped on 2026-06-07** — see Done sections below. Remaining: PR 1.3 (sync orchestration), PR 1.4 (purge cron). Also still on deck: replace 2 draft listings (`doi-suthep`, `big-day-out`), restore real social proof, sitemap/SEO.
 
 ---
 
@@ -90,6 +90,28 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Operational consequence:** content edits in `content/*.ts` no longer reach production through `git push`. Flow is now: edit TS → `npm run seed:supabase:prod` → live. Or edit directly in Supabase Studio. This is fine short-term; the long-term fix is flipping the `experience-pipeline` skill writer to Supabase (top item under Phase 3 below).
 
+### Done ✅ — Skill writer flip to Supabase (2026-06-07, branch `feat/skill-supabase-writer`)
+
+- **JSON write path**: added `ListingWriteInput` + `TranslationInput` types and `upsertListingWithTranslations(sb, input)` to [scripts/lib/listings-write.ts](scripts/lib/listings-write.ts). EN translation is required; ZH / TH fall back to EN for missing locales (same semantics as the existing TS overlay path).
+- **Light runtime validator** `validateListingInput()` surfaces helpful errors before the DB round-trip (slug / kind / category / booking shape / required translation fields). DB CHECK constraints catch the structural invariants.
+- **Round-trip read**: `getListingFull(sb, slug)` joins `listings` + `listing_translations` and returns a `ListingWriteInput`-shaped object — drop-in editable, pipeable back through `upsertListingWithTranslations` without losing fields.
+- **CLI subcommands**: `npm run listing -- get --slug X` (pretty-prints `ListingWriteInput` JSON to stdout — `> /tmp/<slug>.json` for editing) and `npm run listing -- upsert --file <path>` (validates + upserts). The legacy `upsert --slug X` (from `content/*.ts`) is still supported for quick restores.
+- **Skill modes rewritten** at [.claude/skills/experience-pipeline/SKILL.md](.claude/skills/experience-pipeline/SKILL.md):
+  - **Add**: composes a `ListingWriteInput` JSON in `/tmp/<slug>.json`, upserts via CLI, generates the image via `gen:image`, then verifies. TS overlay file edits removed.
+  - **Replace**: `get --slug X > /tmp/<slug>.json` → edit → `upsert --file`. Status stays.
+  - **Image**: `get --slug X` for context, then `gen:image`.
+  - **Check**: enumerates `productId`s via `listing list` + `listing get`, not `content/*.ts`.
+  - **Editorial gate** section rewritten to reference `listing publish/archive/draft` CLI.
+  - **Slug collision** check moved to `listing list` against live data (so the skill catches collisions with drafts and archives, not just published TS rows).
+  - **Reference reading** updated: TS overlay files (`content/i18n/{zh,th}.ts`) called out as legacy seed-only.
+- **Backward compatibility**: `scripts/seed-supabase.ts` still works via the original `upsertListing(sb, l: Listing)` helper (TS overlay → DB). Seed re-runs cleanly on dev (14/14 × 3 locales).
+- **Smoke test on dev** (all green):
+  - `get --slug elephant > /tmp/elephant.json` → 69 lines of valid JSON; round-trip `upsert --file` lands with the same id and unchanged status.
+  - Validation rejects an incomplete JSON with a specific field-level error.
+  - Fresh `_test-new-listing` slug created via `upsert --file` lands as a draft; `get --slug _test-new-listing` shows EN content propagated to TH+ZH (fallback works); cleanup via `delete --slug X --confirm` is clean.
+
+**Operational consequence:** content edits no longer touch `content/i18n/{zh,th}.ts`. The TS overlay files remain as legacy seed data but are not the write target. Any new content lands in Supabase directly; the live site reads from Supabase (USE_SUPABASE=true). Unblocks PR 1.3 (the sync mode reuses the same JSON upsert path for every drafted candidate).
+
 ### Done ✅ — Experience-sync foundation: archived status + listing CLI (2026-06-07, branch `feat/experience-sync-foundation`)
 
 - **Schema**: `archived` value added to the `listing_status` enum via [supabase/migrations/20260607000000_add_archived_status.sql](supabase/migrations/20260607000000_add_archived_status.sql). Applied to **dev** + **prod**. Purely additive — existing queries filter on `status = 'published'`, so archived rows stop rendering automatically but stay restorable for a configurable window.
@@ -147,11 +169,10 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 Pick highest-impact-per-effort first. Each item is self-contained and unblocks downstream work.
 
-**Theme: close the content-automation loop via the `experience-pipeline` skill (no n8n).** Image storage (1a, 2026-06-06), Gemini auto-gen (1b, 2026-06-07), and the experience-sync foundation (1.1, 2026-06-07) shipped — see Done sections above. Remaining `experience-sync` PRs:
+**Theme: close the content-automation loop via the `experience-pipeline` skill (no n8n).** Image storage (1a, 2026-06-06), Gemini auto-gen (1b, 2026-06-07), foundation (1.1, 2026-06-07), and the writer flip (1.2, 2026-06-07) shipped — see Done sections above. Remaining `experience-sync` PRs:
 
-1. **Flip `add` / `replace` / `image` skill modes** to Supabase. Mostly SKILL.md doc rewrite — replace "Edit `content/experiences.ts`" steps with `npm run listing -- upsert --file <json>` (or similar — the CLI can grow a JSON-driven upsert subcommand in this PR if the skill needs it). TS overlay files (`content/i18n/{zh,th}.ts`) stop being authoritative for new content; the DB is.
-2. **Sync orchestration**: Playwright scrape Klook's Chiang Mai top-rated category → for each currently-published listing hit its product page and mark `Currently unavailable` ones as `archived` → if (published count) < 20, draft new candidates from the top list (full content rewrite + translation + Gemini image gen via `npm run gen:image`) up to the cap → all new listings land as `status='draft'` for editorial review. **Dual-path UX**: also accepts a specific Klook activity URL (or list of URLs) — those bypass the popularity gate and get drafted regardless of rating/booked-count. Use case: human-curated additions below the auto-rating threshold but known to be good. Cap rule: enforce on `status='published'` only; drafts + archived don't count.
-3. **Periodic purge**: scheduled cron (Vercel Cron or GitHub Action) that runs `npm run listing:prod -- purge --older-than-days 90` weekly. The CLI already supports this — PR scope is the scheduling story + a `purge` summary report.
+1. **Sync orchestration**: Playwright scrape Klook's Chiang Mai top-rated category → for each currently-published listing hit its product page and mark `Currently unavailable` ones as `archived` → if (published count) < 20, draft new candidates from the top list (full content rewrite + translation + Gemini image gen via `npm run gen:image`) up to the cap → all new listings land as `status='draft'` for editorial review. **Dual-path UX**: also accepts a specific Klook activity URL (or list of URLs) — those bypass the popularity gate and get drafted regardless of rating/booked-count. Use case: human-curated additions below the auto-rating threshold but known to be good. Cap rule: enforce on `status='published'` only; drafts + archived don't count.
+2. **Periodic purge**: scheduled cron (Vercel Cron or GitHub Action) that runs `npm run listing:prod -- purge --older-than-days 90` weekly. The CLI already supports this — PR scope is the scheduling story + a `purge` summary report.
 
 2. **Replace the 2 draft listings** (`doi-suthep`, `big-day-out`) — Klook delisted them in late May; both sit as `status='draft'` in Supabase. Once step 1 lands, the sync run will surface fresh top-rated replacements automatically. Until then, can also run `experience-pipeline replace` for a manual swap (image generation now fully automated via `gen:image`).
 3. **Sitemap.ts + robots.ts** — small, high-SEO-value. Pulls slugs from `getAllListingSlugs()` which already works via Supabase. ~1 hour of work.

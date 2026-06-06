@@ -125,8 +125,8 @@ Tune the bracketed slots based on the listing. Reference the four images we gene
 ## Slug rules
 
 - kebab-case, ≤ 24 chars, ASCII only.
-- Must not collide with any existing slug in `content/experiences.ts` or `content/bundles.ts`.
-- Bucket object `<slug>.webp` in the Supabase Storage `listings` bucket must equal the slug. If renaming, copy the object to the new slug and delete the old one via the Supabase JS client (no `git mv` — images aren't in git anymore).
+- Must not collide with any existing slug. Check via `npm run listing -- list` (lists every status, not just published — drafts and archived rows count for collision purposes too).
+- Bucket object `<slug>.webp` in the Supabase Storage `listings` bucket must equal the slug. If renaming, regenerate the image under the new slug via `gen:image` and `npm run listing -- delete-image --slug <old-slug>`.
 
 ## Background gradient
 
@@ -147,30 +147,60 @@ Match the gradient to the image's dominant tones.
 
 ## Add mode — full sequence
 
+The writer is Supabase, not TS files. Content edits land in the `listings` + `listing_translations` tables via `npm run listing -- upsert --file <path>`. TS overlay files (`content/i18n/{zh,th}.ts`) are legacy seed-only — don't edit them in this flow.
+
 1. **Parse input** — accept `https://www.klook.com/activity/<id>/...`, bare numeric ID with assumed Klook, or vendor-prefixed (`klook:15060`, `viator:163642P94`, `gyg:524069`).
 2. **Validate productId format** for the vendor (see URL templates).
 3. **Open vendor page via Playwright** (see Vendor fetching). Capture title, rating, booked count, primary description.
-4. **Gate by quality** — refuse to add if rating < 4.3 OR booked count < 1K. Tell the user and ask for override.
+4. **Gate by quality** — refuse to add if rating < 4.3 OR booked count < 1K. Tell the user and ask for override. (The `experience-sync` mode bypasses this gate when a specific URL is provided — see PLAN.md.)
 5. **Pick category** from `food | culture | nature | wellness | adventure | nimman`. If ambiguous, ask.
-6. **Propose slug** (kebab-case derived from product name). Validate uniqueness against current `content/experiences.ts` + `content/bundles.ts`. If a collision exists, propose an alternative and confirm with user.
+6. **Propose slug** (kebab-case derived from product name). Validate uniqueness via `npm run listing -- list` — slug must not match any existing row (any status). If a collision exists, propose an alternative and confirm with user.
 7. **Pick background gradient** (see Background gradient).
-8. **Write EN content** following Voice & content rules. Fields: `slug`, `emoji`, `category`, `title`, `hook`, `price`, `priceMax` (when multi-tier), `priceLabel`, `duration`, `distance`, `description`, `inclusions`, `booking`, `background`, `status: 'draft'`.
-9. **Append to `content/experiences.ts`** before the closing `];`. Type-check immediately.
-10. **Write ZH translation** to `content/i18n/zh.ts` under the slug key. Mirror EN structure (title, hook, description, inclusions, priceLabel, duration, distance).
-11. **Write TH translation** to `content/i18n/th.ts` (create the file if missing — mirror the ZH structure). Per PLAN.md, TH content isn't shipping until Phase 2 but write it now since the user opted in.
-12. **Compose a Gemini prompt** using the template above. Run `npm run gen:image -- --slug <slug> --prompt "<text>"` to generate, convert, and upload in one step.
-13. **Re-check the uploaded image** (see Image rules → re-check loop). Retry up to 2× with a refined prompt if it fails.
-16. **Type-check + build**: `npx tsc --noEmit && npm run build`. Fix anything that breaks. Don't proceed if either fails.
-17. **Affiliate URL smoke test**:
+8. **Compose the listing JSON** as a `ListingWriteInput` (see schema below). Write it to `/tmp/<slug>.json`. The shape:
+    ```jsonc
+    {
+      "slug": "<slug>",
+      "kind": "experience",
+      "category": "<one of food/culture/nature/wellness/adventure/nimman>",
+      "emoji": "<single emoji>",
+      "price": 1200,                    // lowest tier, integer THB
+      "priceMax": 1950,                 // omit if single-tier
+      "background": "from-... to-...",
+      "booking": { "type": "klook", "productId": "<id>" },
+      "status": "draft",                // always draft for new listings
+      "translations": {
+        "en": {
+          "title": "...",
+          "hook": "...",
+          "description": "...",
+          "inclusions": ["...", "..."],
+          "priceLabel": "฿1,200 – ฿1,950 / person",
+          "duration": "5 hours",
+          "distance": "1 hr drive north"
+        },
+        "zh": { /* same shape, in 中文 */ },
+        "th": { /* same shape, in ไทย */ }
+      }
+    }
+    ```
+    For bundles: `"kind": "bundle"`, include `"emojis": [...]` at top level, and put `"badge"` (and optional `"saveBadge"`) inside each translation. Both fields are per-locale.
+    EN is required. If you skip ZH or TH the row falls back to EN for that locale — fine for testing, never ship a listing without all three.
+9. **Upsert**: `npm run listing -- upsert --file /tmp/<slug>.json`. The CLI validates the JSON, upserts the `listings` row, and writes all three translation rows. Reports the listing id and status on success.
+10. **Compose a Gemini prompt** using the template above. Run `npm run gen:image -- --slug <slug> --prompt "<text>"` to generate, convert, and upload in one step.
+11. **Re-check the uploaded image** (see Image rules → re-check loop). Retry up to 2× with a refined prompt if it fails.
+12. **Build sanity check**: `npx tsc --noEmit && npm run build`. The new listing is in the DB, not in TS — these checks just confirm nothing else broke.
+13. **Affiliate URL smoke test**:
     ```bash
     curl -s -o /dev/null -w "%{redirect_url}\n" "http://localhost:3000/api/go/<slug>?locale=en"
     ```
     Expected: `<vendor-domain>/.../?aid=121431&aff_adid=en-<slug>` (or vendor's equivalent affiliate params). If `aid=` is missing → `KLOOK_AFF_ID` not set in `.env.local`.
-18. **Report** to user: listing summary, image confirmation, smoke-test result, and **a clear next step**: "Flip `status: 'draft'` → `'published'` in `content/experiences.ts` when you're ready to ship."
+14. **Verify** at `http://localhost:3000/e/<slug>` — drafts resolve for preview.
+15. **Cleanup**: `rm /tmp/<slug>.json` once the listing is verified.
+16. **Report** to user: listing summary, image confirmation, smoke-test result, and **a clear next step**: "Run `npm run listing -- publish --slug <slug>` when you're ready to ship (use `listing:prod` for production)."
 
 ## Check mode — full sequence
 
-1. Enumerate `productId`s from `content/experiences.ts` + `content/bundles.ts`.
+1. Enumerate `productId`s from Supabase: `npm run listing -- list` for slugs + statuses, then `npm run listing -- get --slug <slug>` for each to read `booking.productId`. (Skip listings whose status is `archived` — they're already known dead.)
 2. For each: navigate via Playwright (with ~2s delay between requests — be polite). Capture Page Title.
 3. Flag as dead if Page Title is `404 Not Found`, contains `not found`, or is the bare vendor domain (e.g. `klook.com`) with no resolved product slug.
 4. From the screenshot, OCR-read the rating + booked count (best-effort). Compare to any baseline you have in commit history if useful.
@@ -190,27 +220,33 @@ Match the gradient to the image's dominant tones.
 
 ## Replace mode — full sequence
 
-1. Read the existing listing from `content/experiences.ts`.
-2. Verify the new vendor URL via Playwright (rating, booked, title).
-3. If new title is materially different (e.g. operator changed) → trigger a rewrite of `title`, `hook`, `description`, `inclusions`. Otherwise just swap the `booking.productId`.
-4. Mirror changes to `content/i18n/zh.ts` (and `th.ts`) under the same slug key.
-5. Keep `status` unchanged (replace doesn't re-draft an already-published listing).
-6. Smoke test + report.
+1. **Fetch current state**: `npm run listing -- get --slug <slug> > /tmp/<slug>.json`. This is a complete `ListingWriteInput` — every field the upsert will accept back.
+2. **Verify the new vendor URL** via Playwright (rating, booked, title).
+3. **Decide scope of edit**:
+   - Title materially different (e.g. operator changed) → rewrite `translations.en.title`, `translations.en.hook`, `translations.en.description`, `translations.en.inclusions`. Re-translate ZH + TH.
+   - Otherwise just swap `booking.productId` in the JSON. Translations stay.
+4. **Keep `status` unchanged** — replace doesn't re-draft an already-published listing.
+5. **Edit the JSON** in place (using Edit on `/tmp/<slug>.json`).
+6. **Upsert**: `npm run listing -- upsert --file /tmp/<slug>.json`.
+7. If the rewrite was material (new title / hero subject), regenerate the image: see Image mode.
+8. **Affiliate URL smoke test** + verify at `/e/<slug>`, then `rm /tmp/<slug>.json`.
 
 ## Image mode — full sequence
 
-1. Read existing listing for content context (don't modify content).
-2. Compose a fresh Gemini prompt.
-3. Run `npm run gen:image -- --slug <slug> --prompt "<text>"` — upserts `<slug>.webp` in the bucket.
-4. Re-check the image (see Image rules → re-check loop). Retry up to 2× with a refined prompt.
+1. **Fetch listing context**: `npm run listing -- get --slug <slug>` (read-only; the JSON shows category, title, inclusions — enough to compose a prompt).
+2. **Compose a fresh Gemini prompt**.
+3. **Run** `npm run gen:image -- --slug <slug> --prompt "<text>"` — upserts `<slug>.webp` in the bucket.
+4. **Re-check the image** (see Image rules → re-check loop). Retry up to 2× with a refined prompt.
 
 ## Editorial draft gate (already wired)
 
-- `content/types.ts` ListingBase has `status?: "draft" | "published"`.
-- `getFeaturedExperience` and `getNonFeaturedExperiences` filter out drafts.
-- `getAllListingSlugs` excludes drafts → no static page generated → 404 in production export.
-- `getListing(slug)` still resolves drafts → direct preview works in dev at `/e/<slug>`.
-- To publish: manually flip `status: 'draft'` → `'published'` (or delete the field — missing = published).
+- `content/types.ts` `ListingBase` has `status?: "draft" | "published" | "archived"`. DB enum mirrors this.
+- `getFeaturedExperience` and `getNonFeaturedExperiences` filter to `status = 'published'`.
+- `getAllListingSlugs` excludes drafts + archived → no static page generated → 404 in production export.
+- `getListing(slug)` still resolves drafts + archived → direct preview works in dev at `/e/<slug>`.
+- **To publish**: `npm run listing -- publish --slug <slug>` (use `listing:prod` for production Supabase).
+- **To archive a stale listing**: `npm run listing -- archive --slug <slug>` — hides it everywhere but keeps the row for ~90 days. `experience-sync` mode uses this for delisted vendor products.
+- **To restore an archive**: `npm run listing -- publish --slug <slug>` (same command — `publish` works from any status).
 
 ## Affiliate env-var checklist (surface this when adding the first listing of a new vendor)
 
@@ -225,15 +261,15 @@ If the user is adding a listing for a vendor whose env var isn't in `.env.local`
 
 Also remind them: these env vars must be set in Vercel's environment-variables UI for production deploys. `.env.local` is gitignored and never deploys.
 
-## Tone audit (run before committing content)
+## Tone audit (run before upserting)
 
-Auto-flag in EN content:
+Auto-flag in EN content (the `translations.en` block of the JSON before you upsert):
 - Exclamation marks: `!`
 - Superlatives: `\b(best|ultimate|amazing|most|only|must|world-class|unforgettable|magical|stunning|breathtaking)\b`
 - Award claims not present in the vendor's title: any of `Michelin|TripAdvisor|Lonely Planet|UNESCO|Bib Gourmand|Plate-listed` should match the vendor's product title verbatim.
 - Welfare claims: `ethical|rescued|sanctuary|certified` — flag for human review.
 
-If any flag triggers, surface to the user before writing the file.
+If any flag triggers, surface to the user before upserting.
 
 ## Out of scope
 
@@ -249,7 +285,8 @@ If any flag triggers, surface to the user before writing the file.
 
 - [AGENTS.md](../../../AGENTS.md) — voice, conventions, Playwright cleanup rules
 - [PLAN.md](../../../PLAN.md) — Phase 3 motivation
-- [content/types.ts](../../../content/types.ts) — `Experience`, `Bundle`, `BookingMethod`
-- [content/experiences.ts](../../../content/experiences.ts) — example shape and voice
-- [content/i18n/zh.ts](../../../content/i18n/zh.ts) — ZH overlay shape
+- [content/types.ts](../../../content/types.ts) — `Experience`, `Bundle`, `BookingMethod` (still the TS source of truth for the runtime read-path's reshape layer)
+- [scripts/lib/listings-write.ts](../../../scripts/lib/listings-write.ts) — `ListingWriteInput` shape, validator, all write helpers
+- [scripts/listing.ts](../../../scripts/listing.ts) — the CLI dispatch (handy reference for which flags each subcommand accepts)
+- [content/experiences.ts](../../../content/experiences.ts) — legacy seed data; useful for tone calibration but not the write target
 - [app/api/go/[id]/route.ts](../../../app/api/go/[id]/route.ts) — affiliate URL builder
