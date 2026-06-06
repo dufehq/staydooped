@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Experience } from "@/content/types";
+import { getListingImageUrl } from "@/lib/images";
 
 type Props = {
   experiences: Experience[];
@@ -20,7 +21,7 @@ export function ListingGrid({ experiences, locale }: Props) {
             className={`relative h-[90px] overflow-hidden bg-gradient-to-br ${e.background} md:h-[140px] lg:h-[180px]`}
           >
             <Image
-              src={`/images/listings/${e.slug}.webp`}
+              src={getListingImageUrl(e.slug)}
               alt={e.title}
               fill
               sizes="(min-width: 1024px) 320px, (min-width: 768px) 253px, 50vw"
