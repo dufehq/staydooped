@@ -34,15 +34,34 @@ If invoked without a mode, ask the user which mode they want.
 **Klook, Viator, and GetYourGuide all bot-block `curl` and `WebFetch` with 403.** Always use Playwright MCP for vendor pages.
 
 Workflow:
-1. `browser_navigate(url)` — Klook redirects `/activity/<id>/` to `/activity/<id>-<slug>/`. The resolved Page Title is the product title.
+1. `browser_navigate(url)` — Klook redirects `/activity/<id>/` to `/activity/<id>-<slug>/`. The resolved Page Title is the product title. **Cold-start caveat**: the very first navigate of a session often returns Page Title `klook.com` with a snapshot containing only `- iframe`. That's a transient loading state, **not** a delisting — take a `browser_take_screenshot` (or re-snapshot) to let the redirect resolve, then read the real title. Only treat it as dead if the title is still unresolved after the page has visibly loaded.
 2. `browser_take_screenshot` — to read rating + booked-count badges that aren't in the accessibility snapshot.
-3. To find candidate productIds from a search page, parse the YAML snapshot: `grep -oE "/activity/[0-9]+-[a-z0-9-]+" .playwright-mcp/page-*.yml | sort -u`.
-4. **Always** `browser_close` at end of session AND `rm -rf .playwright-mcp <screenshots>.png` (per [AGENTS.md](../../../AGENTS.md)). Leaving the browser open leaks cookies into the next run.
+3. To find candidate productIds from a search page: the navigate-time auto-snapshot (`.playwright-mcp/page-*.yml`) is captured before results lazy-load, so it's usually incomplete. Take an explicit post-load snapshot **into the artifact dir** so cleanup catches it: `browser_snapshot(filename: ".playwright-mcp/search.yml")`, then parse it. **Klook search results now link with bare-numeric `/activity/<id>` (no `-slug` suffix)**, so the productId grep is:
+   ```bash
+   grep -ohE "/activity/[0-9]+" .playwright-mcp/*.yml | grep -oE "[0-9]+" | sort -u
+   ```
+   (The older `/activity/[0-9]+-[a-z0-9-]+` pattern matches nothing on the current search page — it only matched the old slugged links.)
+4. **Always** `browser_close` at end of session AND clean up artifacts (per [AGENTS.md](../../../AGENTS.md)): `rm -rf .playwright-mcp` plus any snapshot/screenshot you saved **outside** that dir. A `browser_snapshot`/`browser_take_screenshot` filename without a `.playwright-mcp/` prefix lands in the **repo root** — always prefix artifact filenames with `.playwright-mcp/`, and double-check `git status` is clean before finishing. Leaving the browser open leaks cookies into the next run.
 
 URL templates (productId verification):
 - Klook: `https://www.klook.com/activity/<id>/`
 - Viator: `https://www.viator.com/tours/Chiang-Mai/d5267-<id>` (`<id>` format: digits-P-digits, e.g. `163642P94`)
 - GetYourGuide: `https://www.getyourguide.com/chiang-mai-l271/-t<id>`
+
+### Anti-bot pacing policy (Klook) — enforce on every multi-page run
+
+Klook runs an active anti-bot layer. It serves a **slider captcha** ("complete the security verification… browsing faster than expected of a human being… your IP might be a bot") once a single IP crosses a volume/frequency threshold with machine-uniform timing. A 2026-06-14 dry-run tripped it after ~18 navigations in ~2 min (≈6.7s/page, fixed cadence). The fix is human-like pacing — **randomized** delays + periodic long breaks + a per-run cap. The old "~2s polite delay" was well under the safe floor; don't use it.
+
+1. **Per-page delay:** after each navigation, wait for page `load` (not raw `networkidle`, which can hang on analytics polling), then pause a **random 12–20s** (uniform, sampled per page). **Never a fixed delay** — uniform timing is itself the bot tell. (Research baseline was 6–12s; we pad it because total run time doesn't matter when a human runs it locally, and extra margin keeps us further under the rate-limit radar.)
+2. **Coffee break:** every **8 navigations**, add an extra **90–150s** randomized pause.
+3. **Per-run hard cap: 30 navigations.** Our catalog (~20–25 product pages + 1 search page) fits inside this with headroom. If a run would exceed it, split across runs.
+4. **Hourly ceiling:** never exceed ~120 navigations/hour (the cap makes this automatic).
+5. **On the first captcha mid-run:** stop navigating, `browser_close` (drops the flagged session), **cool down 15 min**, then resume from the last successfully-scraped slug — don't restart from the top.
+6. **On a second captcha in the same run:** abort, report partial results + which slugs are missing, leave the rest for the next run. Don't retry harder — the IP is flagged and grinding worsens it.
+7. **Respect `Retry-After`** if a response carries one — honor the stated wait exactly.
+8. **Session:** one warmed Chromium session for the whole run (persist cookies); concurrency stays at 1.
+
+**MCP enforcement caveat:** the Playwright MCP has no built-in inter-call sleep, and this harness **blocks foreground `sleep`**. Enforce the per-page delay deliberately — run the pause as a *backgrounded* `sleep` (via `run_in_background`) and continue when it completes, or use the Monitor until-loop pattern. The per-page screenshot+parse work also consumes a few seconds of real wall-clock between navigations, but don't rely on that alone — it's nowhere near 6–12s.
 
 ## Voice & content rules (enforce on every write)
 
@@ -202,7 +221,7 @@ The writer is Supabase, not TS files. Content edits land in the `listings` + `li
 ## Check mode — full sequence
 
 1. Enumerate `productId`s from Supabase: `npm run listing -- list` for slugs + statuses, then `npm run listing -- get --slug <slug>` for each to read `booking.productId`. (Skip listings whose status is `archived` — they're already known dead.)
-2. For each: navigate via Playwright (with ~2s delay between requests — be polite). Capture Page Title.
+2. For each: navigate via Playwright, pacing per the **Anti-bot pacing policy (Klook)** above (random 12–20s/page, coffee break every 8, 30-nav cap). Capture Page Title.
 3. Flag as dead if Page Title is `404 Not Found`, contains `not found`, or is the bare vendor domain (e.g. `klook.com`) with no resolved product slug.
 4. From the screenshot, OCR-read the rating + booked count (best-effort). Compare to any baseline you have in commit history if useful.
 5. **Walk every tier** (click each `.desktop-attr-btn` in `.js-activity-package-options`; for the `js-package-option-section` and `booking-options` variants, collect inline prices). Derive `live_min` and `live_max` in THB (convert at ~33.5 if Klook serves USD). Compare against stored `price` (floor) and `priceMax ?? price` (ceiling). Flag drift > 15% on either bound.
@@ -235,7 +254,7 @@ The two paths can be combined: `/experience-pipeline sync --url <one>` runs the 
      - Page Title is `404`, contains `Not Found`, or resolves to the bare vendor domain
      - Body contains "Currently unavailable" (Klook's canonical delisting language)
    - For each dead listing: `npm run listing -- archive --slug <slug>` (skip in `--dry-run`).
-   - Respect ~2s polite delay between requests.
+   - Pace navigations per the **Anti-bot pacing policy (Klook)** above (random 12–20s/page, coffee break every 8, 30-nav cap, cool down on captcha).
    - Update `current` in memory to reflect new statuses.
 
 3. **Recompute cap**:
@@ -253,7 +272,7 @@ The two paths can be combined: `/experience-pipeline sync --url <one>` runs the 
 
    **Auto mode** (when `slots > 0` after manual URLs are processed, OR no `--url` flags were given):
    - `browser_navigate('https://www.klook.com/en-US/search/result/?query=chiang+mai&sort=BEST_SELLER')` (Klook surfaces top-rated under this URL; `top` mode uses the same pattern).
-   - Parse the YAML snapshot for activity links: `grep -oE "/activity/[0-9]+-[a-z0-9-]+" .playwright-mcp/page-*.yml | sort -u`.
+   - Take an explicit post-load snapshot into the artifact dir (`browser_snapshot(filename: ".playwright-mcp/search.yml")`) and parse it for activity links (see Vendor fetching §3 — links are bare-numeric now): `grep -ohE "/activity/[0-9]+" .playwright-mcp/*.yml | grep -oE "[0-9]+" | sort -u`.
    - For each candidate up to `~3× slots` (over-fetch to allow filtering):
      - Skip if `productId ∈ knownProductIds`.
      - Navigate the activity page, capture rating + booked + title.
@@ -331,7 +350,7 @@ If the run crashes mid-loop:
 
 1. Navigate Klook search: `https://www.klook.com/en-US/search/result/?query=<keyword>+chiang+mai`.
 2. Take fullPage screenshot.
-3. Parse the YAML snapshot for activity links: `grep -oE "/activity/[0-9]+-[a-z0-9-]+" .playwright-mcp/page-*.yml | sort -u`.
+3. Take an explicit post-load snapshot into the artifact dir (`browser_snapshot(filename: ".playwright-mcp/search.yml")`) and parse it for activity links (links are bare-numeric — see Vendor fetching §3): `grep -ohE "/activity/[0-9]+" .playwright-mcp/*.yml | grep -oE "[0-9]+" | sort -u`.
 4. For each candidate (up to N): navigate the activity page and capture rating + booked count.
 5. Filter by rating ≥ 4.5 and booked ≥ 5K.
 6. Output: markdown table — `productId | title | rating | booked | category fit`.
