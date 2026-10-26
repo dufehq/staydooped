@@ -1,17 +1,11 @@
-/** Public URL for a listing image stored in Supabase Storage.
+/** Public URL for a listing image, served statically from
+ *  `public/images/listings/<slug>.webp`.
  *
- *  Bucket: `listings` (public-read, image/webp only).
- *  Filename convention: `<slug>.webp` — keyed by `listings.slug`, set by
- *  the `experience-pipeline` skill on upload.
+ *  Images were briefly hosted in Supabase Storage (`listings` bucket);
+ *  reverted to static files while the Supabase project is paused. The
+ *  helper is kept so the source can be switched back in one place.
  *
- *  Safe to call from both server and client components — reads only the
- *  public env var `NEXT_PUBLIC_SUPABASE_URL`. */
+ *  Safe to call from both server and client components. */
 export function getListingImageUrl(slug: string): string {
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!base) {
-    throw new Error(
-      "getListingImageUrl: NEXT_PUBLIC_SUPABASE_URL is not set",
-    );
-  }
-  return `${base}/storage/v1/object/public/listings/${slug}.webp`;
+  return `/images/listings/${slug}.webp`;
 }

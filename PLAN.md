@@ -5,13 +5,25 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 **Primary users:** Guests on their phones — mix of EN and ZH speakers (ZH guests are majority; many speak little English, so losing them at the first English screen is a real conversion risk).
 
-**Status as of 2026-06-06:** site is fully trilingual (EN/ZH/TH) on https://staylooped.co. **Phase 2 Supabase data layer is live in production** — all 5 content getters read from Supabase (`USE_SUPABASE=true` set in Vercel Production). Editorial content now flows: edit `content/*.ts` → `npm run seed:supabase:prod` → live on prod (no deploy needed). **Listing images now also live in Supabase Storage** (`listings` bucket, both dev + prod) and `public/images/listings/` has been removed — sync can land images without a deploy.
+**Status as of 2026-10-26:** the Supabase project was paused by Supabase for inactivity, so the site is **back on static content** — listings read from `content/*.ts` and images from `public/images/listings/` (see "Done — Revert to static content" below). The Supabase-era notes that follow are kept for when we re-enable it.
+
+**Previous status (2026-06-06):** site is fully trilingual (EN/ZH/TH) on https://staylooped.co. **Phase 2 Supabase data layer is live in production** — all 5 content getters read from Supabase (`USE_SUPABASE=true` set in Vercel Production). Editorial content now flows: edit `content/*.ts` → `npm run seed:supabase:prod` → live on prod (no deploy needed). **Listing images now also live in Supabase Storage** (`listings` bucket, both dev + prod) and `public/images/listings/` has been removed — sync can land images without a deploy.
 
 **Next focus (planned 2026-06-06):** continue automating the experience pipeline via the existing `experience-pipeline` skill (not n8n). Image generation via Gemini is wired in (PR #18); the `experience-sync` mode shipped as four small PRs. **PRs 1.1 (foundation), 1.2 (writer flip), 1.3 (sync mode), and 1.4 (purge cron) all shipped on 2026-06-07** — see Done sections below. The whole `experience-sync` sequence is now complete; the headline mode is ready to run for real (will retire `doi-suthep` + `big-day-out` and add two top-rated replacements). Also still on deck: restore real social proof, sitemap/SEO.
 
 ---
 
 ## Status
+
+### Done ✅ — Revert to static content while Supabase is paused (2026-10-26, branch `fix/static-content-fallback`, PR #TBD)
+
+Supabase pauses free projects after a stretch of inactivity, and ours (prod `smavaoullkcwebksspta`) was paused. Production had `USE_SUPABASE=true`, so both listing data and listing images depended on it.
+
+- **Content getters are static-only again** — removed the `USE_SUPABASE` branches from `getListing` / `getAllListingSlugs` ([content/index.ts](content/index.ts)), `getFeaturedExperience` / `getNonFeaturedExperiences` ([content/experiences.ts](content/experiences.ts)), and `getAllBundles` ([content/bundles.ts](content/bundles.ts)). They're hard-wired to `content/*.ts`, so the stale `USE_SUPABASE=true` in Vercel Production no longer matters.
+- **Images back in the repo** — restored the 14 WebPs to `public/images/listings/` from the commit before #15. [lib/images.ts](lib/images.ts) `getListingImageUrl(slug)` now returns `/images/listings/<slug>.webp`. All 6 call sites are unchanged because they already go through the helper.
+- **Left in place, now unused**: [content/db.ts](content/db.ts), [lib/supabase.ts](lib/supabase.ts), the `listing` / `seed` / `gen:image` scripts, migrations, and the `images.remotePatterns` rule in `next.config.ts`. To re-enable, restore the branches and point the image helper back at the bucket.
+- **Known caveats**: (a) the `purge-archived` cron in `vercel.json` still targets Supabase and will error weekly until it's removed or the DB is unpaused; (b) the `experience-pipeline` skill writes to Supabase, so its output won't reach the site; (c) `doi-inthanon` was flagged as delisted on Klook in the 2026-06-14 dev dry-run but is still `published` in `content/experiences.ts`.
+- **Verified**: `tsc` is clean, and `next build` with `USE_SUPABASE=true` and no Supabase URL prerenders 36 detail pages. Under `next start`: `/`, `/zh`, `/th`, `/e/elephant`, `/zh/e/khantoke`, and the draft preview `/e/doi-suthep` all return 200; `/zh` renders 12 local listing images with 0 `supabase.co` refs; `/api/go/elephant?locale=zh` returns 302 to Klook with `aid=121431&aff_adid=zh-elephant`.
 
 ### Done ✅ — Foundation
 - Next.js 16 app, `en`/`th`/`zh` locales, locale auto-detect + path-preserving switch
