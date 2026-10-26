@@ -15,7 +15,7 @@ Two houses in Thapae Soi 4, Chiang Mai. Print QR codes, place them in the houses
 
 ## Status
 
-### Done ✅ — Revert to static content while Supabase is paused (2026-10-26, branch `fix/static-content-fallback`, PR #TBD)
+### Done ✅ — Revert to static content while Supabase is paused (2026-10-26, branch `fix/static-content-fallback`, PR #28)
 
 Supabase pauses free projects after a stretch of inactivity, and ours (prod `smavaoullkcwebksspta`) was paused. Production had `USE_SUPABASE=true`, so both listing data and listing images depended on it.
 
