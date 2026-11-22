@@ -90,5 +90,11 @@
     "lineP1": "LINE is the messaging app that runs Thailand. Locals, restaurants, tour operators, drivers — everyone's on it. If you're staying for more than a week or planning to come back, it's worth setting up.",
     "lineP2": "Practically: some local restaurants only take bookings via LINE. Small tour operators and private drivers prefer it. A few market vendors use LINE Pay. Think of it less as a chat app and more as the national communication layer.",
     "closing": "You're looped in. With these on your phone, you're already travelling more like a local than most tourists ever will. Go explore like you actually live here."
+  },
+  "MonthGuide": {
+    "tipEye": "Tip for this month",
+    "readMore": "Read the full guide →",
+    "prev": "Previous month",
+    "next": "Next month"
   }
 }
