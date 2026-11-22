@@ -90,3 +90,23 @@ body::after {
   opacity: 0.6;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
 }
+
+/* Hero dusk-scene lanterns — drift upward; still at rest when motion is reduced */
+@keyframes sl-drift {
+  0% { transform: translateY(8px); opacity: 0.25; }
+  15% { opacity: 0.95; }
+  85% { opacity: 0.95; }
+  100% { transform: translateY(-46px); opacity: 0; }
+}
+.sl-lantern { animation: sl-drift linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .sl-lantern { animation: none; opacity: 0.9; }
+}
+
+/* Locale-aware hero typography: serif for Latin, native faces for ZH/TH */
+.hero-title { font-family: var(--font-serif); }
+.hero-sub { font-family: var(--font-serif); font-style: italic; }
+:lang(zh) .hero-title { font-family: var(--font-zh); }
+:lang(th) .hero-title { font-family: var(--font-thai); }
+:lang(zh) .hero-sub { font-family: var(--font-zh); font-style: normal; }
+:lang(th) .hero-sub { font-family: var(--font-thai); font-style: normal; }
