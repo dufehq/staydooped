@@ -8,6 +8,9 @@ import { ListingList } from "@/components/ListingList";
 import { Manifesto } from "@/components/Manifesto";
 import { Footer } from "@/components/Footer";
 import { CarCallout } from "@/components/CarCallout";
+import { MonthTip } from "@/components/MonthTip";
+import { HowBooking } from "@/components/HowBooking";
+import { ArrivalPopup } from "@/components/ArrivalPopup";
 import {
   getFeaturedExperience,
   getNonFeaturedExperiences,
@@ -29,27 +32,35 @@ export default async function Home({
 
   return (
     <main className="mx-auto max-w-[430px] md:max-w-[760px] lg:max-w-[1280px]">
+      <ArrivalPopup />
+
       <Hero featuredSlug={featured.slug} />
+
+      <MonthTip />
 
       <CarCallout />
 
-      <SectionHeader
-        label={t("communityTopPick")}
-        title={t("mostLooped")}
-        paddingClassName="px-[18px] pt-6 pb-2.5 md:px-12 md:pt-10 lg:px-16 lg:pt-14"
-      />
-      <FeaturedCard experience={featured} locale={locale} />
+      <div className="lanna-bg">
+        <SectionHeader
+          label={t("communityTopPick")}
+          title={t("mostLooped")}
+          paddingClassName="px-[18px] pt-6 pb-2.5 md:px-12 md:pt-10 lg:px-16 lg:pt-14"
+        />
+        <FeaturedCard experience={featured} locale={locale} />
 
-      <BundleScroll locale={locale} />
+        <BundleScroll locale={locale} />
 
-      <SectionHeader title={t("aroundTheLoop")} />
-      <ListingGrid experiences={grid} locale={locale} />
+        <SectionHeader title={t("aroundTheLoop")} />
+        <ListingGrid experiences={grid} locale={locale} />
 
-      <SectionHeader
-        title={t("moreLoops")}
-        paddingClassName="px-[18px] pt-7 pb-3.5 mt-3 md:px-12 md:pt-12 lg:px-16 lg:pt-16"
-      />
-      <ListingList experiences={list} locale={locale} />
+        <SectionHeader
+          title={t("moreLoops")}
+          paddingClassName="px-[18px] pt-7 pb-3.5 mt-3 md:px-12 md:pt-12 lg:px-16 lg:pt-16"
+        />
+        <ListingList experiences={list} locale={locale} />
+      </div>
+
+      <HowBooking />
 
       <Manifesto />
       <Footer />

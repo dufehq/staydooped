@@ -8,7 +8,13 @@
     "taglineSuffix": "Hand-picked tours from operators we'd send a friend to.",
     "ctaLabel": "See this week's top pick →",
     "appsPillLabel": "Useful apps for your trip",
-    "appsGuideLink": "why these?"
+    "appsGuideLink": "why these?",
+    "hostChip": "Looped by <b>Chiang Mai people</b>",
+    "headline": "Stay and do in <hl>Chiang Mai</hl>",
+    "heroSub": "A local's guide — see Chiang Mai like you live here",
+    "heroLede": "The trips and tables we'd send a friend to — elephants in the valley, khao soi from scratch, a massage on the walk to the temple.",
+    "verified": "Verified operators",
+    "fromLabel": "Experiences from"
   },
   "Common": {
     "skipToContent": "Skip to content",
@@ -45,6 +51,9 @@
   "Footer": {
     "tagline": "Hand-picked things to do in Chiang Mai.",
     "about": "About",
+    "trust1": "Local-vetted operators",
+    "trust2": "Instant confirmation via partner",
+    "trust3": "Booked through trusted platforms",
     "smallPrint": "Affiliate disclosure: we earn a small commission on bookings made through links on this site — at no extra cost to you. Prices, availability, and inclusions are set by the operator and may change."
   },
   "Detail": {
@@ -84,5 +93,38 @@
     "lineP1": "LINE is the messaging app that runs Thailand. Locals, restaurants, tour operators, drivers — everyone's on it. If you're staying for more than a week or planning to come back, it's worth setting up.",
     "lineP2": "Practically: some local restaurants only take bookings via LINE. Small tour operators and private drivers prefer it. A few market vendors use LINE Pay. Think of it less as a chat app and more as the national communication layer.",
     "closing": "You're looped in. With these on your phone, you're already travelling more like a local than most tourists ever will. Go explore like you actually live here."
+  },
+  "MonthGuide": {
+    "tipEye": "Tip for this month",
+    "readMore": "Read the full guide →",
+    "prev": "Previous month",
+    "next": "Next month",
+    "kicker": "Chiang Mai · Month guide",
+    "pageTitle": "{month} in Chiang Mai",
+    "relatedTitle": "Experiences to book",
+    "comingSoon": "A fuller guide for this month is on the way. In the meantime, here's the quick version — and ask your host for more."
+  },
+  "HowBooking": {
+    "eyebrow": "Safe & simple",
+    "title": "How booking works",
+    "step1Title": "Pick a local's recommendation",
+    "step1Body": "Every experience is one a host or Chiang Mai resident actually sends guests on — no filler, no algorithm.",
+    "step2Title": "Book with the operator",
+    "step2Body": "You're taken straight to the operator's own page for instant confirmation, clear pickup details, and their refund policy.",
+    "step3Title": "Show up and enjoy",
+    "step3Body": "Vouchers and pickup times come from the operator, in your language where possible. Same price as booking direct."
+  },
+  "ArrivalPopup": {
+    "title": "Sorted before you explore",
+    "subtitle": "Two things worth setting up on day one.",
+    "esimTitle": "Stay connected — eSIM",
+    "esimDesc": "Get data the moment you land. Install before you fly, no SIM swap.",
+    "esimCta": "Get an eSIM",
+    "transferTitle": "Airport transfer",
+    "transferDesc": "Skip the taxi queue — book a private pickup to where you're staying.",
+    "transferCta": "Book a transfer",
+    "dontShowAgain": "Don't show this again",
+    "close": "Close",
+    "footnote": "We may earn a small commission — at no extra cost to you."
   }
 }

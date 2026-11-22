@@ -1,0 +1,621 @@
+<title>StayLooped Redesign</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=DM+Sans:wght@400;500;600;700&family=Bebas+Neue&family=Noto+Serif+Thai:wght@400;600&display=swap">
+<style>
+  /* Layout: minimal warm editorial — centered column, split hero (copy + dusk illustration),
+     card grid of local picks, booking steps, trust footer. Chiang Mai dusk palette. */
+  :root {
+    --paper: #f9f5ee;
+    --warm: #f2ead6;
+    --sand: #e5d9c0;
+    --cream: #fffdf8;
+    --ink: #1c1710;
+    --night: #0e0b07;
+    --muted: #8c7d65;
+    --loop: #e07b2a;
+    --loop-2: #f5a94e;
+    --gold: #f3c86a;
+    --jade: #2e6b50;
+    --jade-2: #4a9970;
+    --sky: #3d6b8c;
+    --border: rgba(28, 23, 16, 0.12);
+    --border-soft: rgba(28, 23, 16, 0.07);
+    --card: #fffdf8;
+    --pattern: rgba(28,23,16,0.55);
+    --shadow: 0 24px 60px rgba(14,11,7,0.10), 0 10px 26px rgba(14,11,7,0.06), 0 0 0 1px rgba(28,23,16,0.06);
+    --shadow-sm: 0 10px 28px rgba(14,11,7,0.10), 0 0 0 1px rgba(28,23,16,0.07);
+    --font-serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --font-sans: "DM Sans", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --font-display: "Bebas Neue", var(--font-sans);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #16110b;
+      --warm: #1e1710;
+      --sand: #2a2016;
+      --cream: #211a11;
+      --ink: #f4ece0;
+      --night: #f4ece0;
+      --muted: #ac9c84;
+      --border: rgba(245, 236, 224, 0.14);
+      --border-soft: rgba(245, 236, 224, 0.08);
+      --card: #201911;
+      --shadow: 0 24px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(245,236,224,0.08);
+      --shadow-sm: 0 10px 28px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,236,224,0.08);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #16110b;
+    --warm: #1e1710;
+    --sand: #2a2016;
+    --cream: #211a11;
+    --ink: #f4ece0;
+    --night: #f4ece0;
+    --muted: #ac9c84;
+    --border: rgba(245, 236, 224, 0.14);
+    --border-soft: rgba(245, 236, 224, 0.08);
+    --card: #201911;
+    --shadow: 0 24px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(245,236,224,0.08);
+    --shadow-sm: 0 10px 28px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,236,224,0.08);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&family=Bebas+Neue&display=swap");
+
+  .wrap { max-width: 1120px; margin: 0 auto;
+    padding-left: max(18px, env(safe-area-inset-left, 0px));
+    padding-right: max(18px, env(safe-area-inset-right, 0px)); }
+
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 600; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+
+  /* NAV */
+  nav { display: flex; align-items: center; justify-content: space-between; gap: 28px; padding-block: 20px; }
+  .logo { display: flex; align-items: center; gap: 9px; font-family: var(--font-display); font-size: 25px; letter-spacing: 0.04em; }
+  .logo .mark { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(145deg, var(--loop), var(--loop-2)); display: grid; place-items: center; font-size: 15px; box-shadow: 0 4px 12px rgba(224,123,42,0.35); }
+  .logo b { color: var(--loop); font-weight: 400; }
+  .nav-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
+  .nav-right .help { border: 1px solid var(--border); border-radius: 999px; padding: 8px 18px; font-weight: 600; }
+  .nav-link { color: var(--muted); font-weight: 500; white-space: nowrap; }
+  .locale { display: inline-flex; gap: 2px; background: var(--warm); border: 1px solid var(--border); border-radius: 999px; padding: 3px; }
+  .loc { border: none; background: none; border-radius: 999px; padding: 6px 12px; font: inherit; font-family: var(--font-sans); font-weight: 600; font-size: 13px; color: var(--muted); cursor: pointer; }
+  .loc.active { background: var(--night); color: var(--paper); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pattern: rgba(245,236,224,0.5); } }
+  :root[data-theme="dark"] { --pattern: rgba(245,236,224,0.5); }
+  #experiences { position: relative; isolation: isolate; }
+  #experiences > * { position: relative; z-index: 1; }
+  #experiences::before { content: ""; position: absolute; inset: -6px 0; z-index: 0; pointer-events: none; opacity: 0.15;
+    background-color: var(--pattern);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='175' viewBox='0 0 130 175'%3E%3Cg fill='none' stroke='white' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg transform='translate(36 24)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3Cg transform='translate(95 96)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='175' viewBox='0 0 130 175'%3E%3Cg fill='none' stroke='white' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg transform='translate(36 24)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3Cg transform='translate(95 96)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    -webkit-mask-size: 132px 178px; mask-size: 132px 178px; -webkit-mask-repeat: repeat; mask-repeat: repeat; }
+
+  /* HERO */
+  .hero { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: 44px; align-items: center; padding-block: 28px 56px; }
+  .host-chip { display: inline-flex; align-items: center; gap: 9px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px 6px 6px; font-size: 13px; box-shadow: var(--shadow-sm); }
+  .host-chip .ava { width: 24px; height: 24px; border-radius: 999px; background: linear-gradient(145deg,var(--jade),var(--jade-2,#4a9970)); display: grid; place-items: center; font-size: 12px; }
+  .host-chip b { font-weight: 600; }
+  .host-chip span { color: var(--muted); }
+  h1.title { font-size: clamp(38px, 6vw, 62px); line-height: 1.02; margin-top: 20px; }
+  h1.title em { font-style: normal; color: var(--loop); }
+  .thai { font-family: "Noto Serif Thai", serif; color: var(--muted); font-size: 15px; letter-spacing: 0.04em; margin-top: 12px; }
+  .lede { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 15px 17px; margin-top: 22px; font-size: 15px; color: var(--ink); box-shadow: var(--shadow-sm); max-width: 440px; }
+
+  /* SEARCH */
+  .search { margin-top: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px; box-shadow: var(--shadow); max-width: 480px; }
+  .search-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+  .field { flex: 1 1 130px; min-width: 0; }
+  .field label { display: block; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 5px; }
+  .field select { width: 100%; border: 1px solid var(--border); background: var(--paper); color: var(--ink); border-radius: 9px; padding: 10px 11px; font: inherit; font-size: 14px; font-family: var(--font-sans); appearance: none; cursor: pointer; }
+  .btn-show { flex: 0 0 auto; border: none; background: var(--loop); color: #fff; border-radius: 10px; padding: 11px 20px; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; box-shadow: 0 6px 16px rgba(224,123,42,0.3); transition: background .15s; }
+  .btn-show:hover { background: #cf6c1f; }
+  .instant { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--muted); cursor: pointer; }
+  .instant input { accent-color: var(--loop); width: 15px; height: 15px; }
+
+  /* ILLUSTRATION */
+  .scene-card { position: relative; border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); aspect-ratio: 440 / 360; background: #1a1430; }
+  .scene-card svg { display: block; width: 100%; height: 100%; }
+  .badge { position: absolute; background: var(--card); border: 1px solid var(--border); border-radius: 13px; box-shadow: var(--shadow-sm); font-size: 12.5px; }
+  .badge.curated { top: 16px; left: 16px; padding: 10px 13px; display: flex; align-items: center; gap: 10px; }
+  .badge.curated .avis { display: flex; }
+  .badge.curated .avis span { width: 24px; height: 24px; border-radius: 999px; display: grid; place-items: center; font-size: 12px; margin-left: -7px; border: 2px solid var(--card); background: var(--sand); }
+  .badge.curated .avis span:first-child { margin-left: 0; }
+  .badge.curated b { font-weight: 600; display:block; }
+  .badge.curated small { color: var(--muted); font-size: 11px; }
+  .badge.verified { top: 16px; right: 16px; padding: 8px 12px; display: flex; align-items: center; gap: 7px; font-weight: 600; }
+  .badge.verified .tick { color: var(--jade); }
+  .badge.from { bottom: 16px; left: 16px; padding: 9px 13px; }
+  .badge.from small { color: var(--muted); display: block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .badge.from b { font-size: 16px; font-family: var(--font-serif); }
+
+  /* MONTH GUIDE */
+  .monthstrip { padding-block: 6px; }
+  .month-card { display: flex; gap: 18px; align-items: flex-start; background: linear-gradient(135deg, var(--warm), var(--card)); border: 1px solid var(--border); border-radius: 18px; padding: 18px 20px; box-shadow: var(--shadow-sm); }
+  .month-emoji { font-size: 32px; line-height: 1; flex: 0 0 auto; margin-top: 2px; }
+  .month-body { flex: 1; min-width: 0; }
+  .month-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .month-nav { display: inline-flex; align-items: center; gap: 10px; }
+  .month-name { font-family: var(--font-serif); font-size: 18px; color: var(--loop); min-width: 96px; text-align: center; }
+  .mbtn { border: 1px solid var(--border); background: var(--card); color: var(--ink); width: 28px; height: 28px; border-radius: 999px; cursor: pointer; font-size: 16px; line-height: 1; display: grid; place-items: center; padding: 0; }
+  .mbtn:hover { border-color: var(--loop); color: var(--loop); }
+  .month-tip { margin: 9px 0 10px; font-size: 15px; color: var(--ink); line-height: 1.55; }
+  .month-more { font-size: 13px; font-weight: 600; color: var(--loop); }
+  .month-more:hover { text-decoration: underline; }
+
+  /* SECTION */
+  section.block { padding-block: 40px; }
+  .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+  .sec-head h2 { font-size: clamp(26px, 4vw, 36px); }
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .tab { border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); font-family: var(--font-sans); transition: all .15s; }
+  .tab.active { background: var(--night); color: var(--paper); border-color: var(--night); }
+
+  /* CARDS */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; transition: transform .18s, box-shadow .18s; }
+  .card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+  .card .top { aspect-ratio: 16 / 10; position: relative; display: grid; place-items: center; }
+  .card .top .glyph { font-size: 44px; opacity: 0.9; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25)); }
+  .card .top .chips { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; }
+  .card .top .chip { background: rgba(255,253,248,0.92); color: var(--ink); border-radius: 999px; padding: 4px 10px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .card .top .price { position: absolute; bottom: 12px; left: 12px; background: rgba(14,11,7,0.82); color: #fff; border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 600; }
+  .card .body { padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .card .loc { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+  .card h3 { font-size: 18px; line-height: 1.2; }
+  .card .quote { font-family: var(--font-serif); font-style: italic; font-size: 13.5px; color: var(--muted); border-left: 2px solid var(--loop-2); padding-left: 10px; }
+  .card .meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); }
+  .card .meta span { display: flex; align-items: center; gap: 4px; }
+  .card .foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 4px; }
+  .card .looped { display: flex; align-items: center; gap: 7px; font-size: 12.5px; }
+  .card .looped .a { width: 22px; height: 22px; border-radius: 999px; background: var(--sand); display: grid; place-items: center; font-size: 11px; }
+  .card .looped b { font-weight: 600; }
+  .card .book { border: none; background: var(--loop); color: #fff; border-radius: 9px; padding: 9px 16px; font: inherit; font-weight: 700; font-size: 13px; cursor: pointer; transition: background .15s; }
+  .card .book:hover { background: #cf6c1f; }
+
+  /* HOW */
+  .how { background: var(--warm); border-radius: 24px; padding: 40px clamp(20px, 4vw, 44px); margin-block: 24px; }
+  .how .eyebrow { color: var(--jade); }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 24px; }
+  .step { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; box-shadow: var(--shadow-sm); position: relative; }
+  .step .n { position: absolute; top: 18px; right: 20px; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .step .ic { width: 42px; height: 42px; border-radius: 12px; background: var(--warm); display: grid; place-items: center; font-size: 20px; margin-bottom: 14px; }
+  .step h3 { font-size: 17px; margin-bottom: 7px; }
+  .step p { margin: 0; font-size: 13.5px; color: var(--muted); }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--border); margin-top: 24px; padding-block: 36px 48px; }
+  .trust { display: flex; flex-wrap: wrap; gap: 14px 28px; margin-bottom: 28px; }
+  .trust div { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .trust .tick { color: var(--jade); }
+  .foot-grid { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+  .help-box { background: var(--warm); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; max-width: 320px; font-size: 13.5px; }
+  .help-box b { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 6px; }
+  .help-box a { color: var(--loop); font-weight: 600; }
+  .disclosure { font-size: 12px; color: var(--muted); margin-top: 24px; max-width: 640px; line-height: 1.6; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 28px; }
+    .scene-card { order: -1; }
+    .grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .lantern { animation: drift linear infinite; }
+    @keyframes drift { 0% { transform: translateY(8px); opacity: .25; } 15% { opacity: .95; } 85% { opacity: .95; } 100% { transform: translateY(-46px); opacity: 0; } }
+  }
+</style>
+
+<div class="wrap">
+  <nav>
+    <div class="logo"><span class="mark">🪷</span>STAY<b>LOOPED</b></div>
+    <div class="nav-right">
+      <a class="nav-link" data-k="navHow" href="#how">How booking works</a>
+      <div class="locale" role="group" aria-label="Language">
+        <button class="loc active" data-loc="en">EN</button>
+        <button class="loc" data-loc="zh">中文</button>
+        <button class="loc" data-loc="th">ไทย</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-copy">
+      <div class="host-chip"><span class="ava">🏠</span><span data-k="host"><b>Looped by Pom</b> · your host in the Old City</span></div>
+      <h1 class="title" data-k="title">Stay and do in <em>Chiang&nbsp;Mai</em></h1>
+      <p class="thai" data-k="sub">คู่มือท้องถิ่น — เที่ยวเชียงใหม่เหมือนคนที่นี่</p>
+      <p class="lede" data-k="lede">The trips and tables we'd send a friend to — elephants in the valley, khao soi from scratch, a massage on the walk to the temple.</p>
+
+      <div class="search" role="group" aria-label="Find an experience">
+        <div class="search-row">
+          <div class="field">
+            <label for="what" data-k="labWhat">What</label>
+            <select id="what">
+              <option>All experiences</option>
+              <option>Nature &amp; sanctuaries</option>
+              <option>Food &amp; workshops</option>
+              <option>Wellness</option>
+              <option>Culture</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="guests" data-k="labGuests">Guests</label>
+            <select id="guests">
+              <option>1 guest</option>
+              <option>2 guests</option>
+              <option>3 guests</option>
+              <option>4+ guests</option>
+            </select>
+          </div>
+          <button class="btn-show" id="show"><span data-k="showWord">Show</span> <span id="count">12</span></button>
+        </div>
+        <label class="instant"><input type="checkbox" id="instant"> <span data-k="instant">Instant confirmation only</span></label>
+      </div>
+    </div>
+
+    <div class="scene-card">
+      <svg id="scene" viewBox="0 0 440 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Thapae Gate at dusk with an elephant and floating Yi Peng lanterns">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#241a44"/>
+            <stop offset="0.45" stop-color="#5e2f63"/>
+            <stop offset="0.72" stop-color="#b8532f"/>
+            <stop offset="1" stop-color="#e8853a"/>
+          </linearGradient>
+          <radialGradient id="moonGlow" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="#ffe9b8" stop-opacity="0.9"/>
+            <stop offset="1" stop-color="#ffe9b8" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="lglow" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="#ffd27a" stop-opacity="0.8"/>
+            <stop offset="1" stop-color="#ffd27a" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="gate" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#7c3a26"/>
+            <stop offset="1" stop-color="#5a271a"/>
+          </linearGradient>
+        </defs>
+
+        <rect width="440" height="360" fill="url(#sky)"/>
+        <!-- moon -->
+        <circle cx="348" cy="78" r="60" fill="url(#moonGlow)"/>
+        <circle cx="348" cy="78" r="26" fill="#ffeec2"/>
+        <!-- Doi Suthep, with the golden chedi of Wat Phra That on the summit -->
+        <path d="M-10 360 L-10 252 Q40 224 92 194 Q126 170 150 146 Q182 178 218 210 Q264 250 304 286 L304 360 Z" fill="#342349"/>
+        <path d="M150 146 Q182 178 218 210 L206 214 Q176 184 150 160 Z" fill="#4a3566" opacity="0.55"/>
+        <circle cx="150" cy="139" r="10" fill="url(#lglow)"/>
+        <path d="M150 130 L154.5 147 L145.5 147 Z" fill="#f3c86a"/>
+        <rect x="147" y="147" width="6" height="3" rx="1" fill="#e3a94e"/>
+        <circle cx="150" cy="129" r="1.7" fill="#fff1c0"/>
+        <!-- distant hills -->
+        <path d="M0 232 Q90 196 180 224 Q300 258 440 214 L440 360 L0 360 Z" fill="#4a2f5a" opacity="0.65"/>
+        <path d="M0 258 Q120 232 240 256 Q350 278 440 250 L440 360 L0 360 Z" fill="#3b2742" opacity="0.8"/>
+
+        <g id="lanternLayer"></g>
+
+        <!-- Thapae Gate -->
+        <g>
+          <!-- towers -->
+          <rect x="150" y="196" width="26" height="86" fill="url(#gate)"/>
+          <rect x="300" y="196" width="26" height="86" fill="url(#gate)"/>
+          <!-- main wall -->
+          <rect x="176" y="210" width="124" height="72" fill="url(#gate)"/>
+          <!-- crenellations (battlements) -->
+          <g fill="#7c3a26">
+            <rect x="150" y="188" width="8" height="10"/><rect x="164" y="188" width="8" height="10"/>
+            <rect x="302" y="188" width="8" height="10"/><rect x="316" y="188" width="8" height="10"/>
+            <rect x="182" y="202" width="9" height="9"/><rect x="198" y="202" width="9" height="9"/>
+            <rect x="214" y="202" width="9" height="9"/><rect x="230" y="202" width="9" height="9"/>
+            <rect x="246" y="202" width="9" height="9"/><rect x="262" y="202" width="9" height="9"/>
+            <rect x="278" y="202" width="9" height="9"/>
+          </g>
+          <!-- arch -->
+          <path d="M214 282 L214 246 Q238 224 262 246 L262 282 Z" fill="#2a1420"/>
+          <!-- warm window glow -->
+          <rect x="230" y="256" width="16" height="22" rx="3" fill="#f0a94e" opacity="0.5"/>
+        </g>
+
+        <!-- elephant (friendly, rounded; trunk raised toward a lantern) -->
+        <g>
+          <g fill="#2e1d14">
+            <rect x="82" y="262" width="15" height="26" rx="7"/>
+            <rect x="102" y="264" width="15" height="24" rx="7"/>
+            <rect x="122" y="262" width="15" height="26" rx="7"/>
+            <rect x="140" y="264" width="13" height="24" rx="7"/>
+          </g>
+          <path d="M76 250 q-7 6 -4 15" stroke="#2e1d14" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <rect x="74" y="232" width="78" height="46" rx="23" fill="#2e1d14"/>
+          <ellipse cx="151" cy="250" rx="23" ry="22" fill="#2e1d14"/>
+          <!-- trunk curving up toward the little lantern -->
+          <path d="M157 244 Q183 242 192 229 Q197 223 192 220 Q186 217 183 224 Q179 233 164 239 Q158 242 155 251 Z" fill="#2e1d14"/>
+          <ellipse cx="139" cy="248" rx="13" ry="16" fill="#241610"/>
+          <circle cx="158" cy="245" r="2.4" fill="#f6d388"/>
+          <!-- the lantern the trunk reaches for -->
+          <circle cx="197" cy="213" r="13" fill="url(#lglow)"/>
+          <path d="M192 209 Q192 205 197 205 Q202 205 202 209 L201 217 Q201 219 199 219 L195 219 Q193 219 193 217 Z" fill="#ffd480"/>
+          <rect x="195" y="219" width="4" height="1.6" fill="#e0843a"/>
+        </g>
+        <!-- ground -->
+        <rect x="0" y="290" width="440" height="70" fill="#1d1226"/>
+      </svg>
+
+      <div class="badge verified"><span class="tick">✓</span> Verified operators</div>
+      <div class="badge from"><small>Experiences from</small><b>฿250</b></div>
+    </div>
+  </header>
+
+  <section class="monthstrip" aria-label="Chiang Mai month guide">
+    <div class="month-card">
+      <div class="month-emoji" id="monthEmoji" aria-hidden="true">🏵️</div>
+      <div class="month-body">
+        <div class="month-top">
+          <span class="eyebrow" data-k="tipEye">Tip for this month</span>
+          <div class="month-nav">
+            <button class="mbtn" id="mprev" type="button" aria-label="Previous month">‹</button>
+            <strong class="month-name" id="monthName">November</strong>
+            <button class="mbtn" id="mnext" type="button" aria-label="Next month">›</button>
+          </div>
+        </div>
+        <p class="month-tip" id="monthTip">The best month: cool, clear, and the Yi Peng lantern festival lights the sky.</p>
+        <a class="month-more" id="monthMore" href="#" data-k="readMore">Read the full guide →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="experiences">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow" data-k="secEye">Recommended near you</p>
+        <h2 data-k="secTitle">This week's local picks</h2>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active">All</button>
+      <button class="tab">Nature</button>
+      <button class="tab">Food</button>
+      <button class="tab">Wellness</button>
+      <button class="tab">Culture</button>
+    </div>
+
+    <div class="grid">
+      <!-- Elephant -->
+      <article class="card">
+        <div class="top" style="background:linear-gradient(150deg,#1a3a1a,#2e6b50)">
+          <span class="glyph">🐘</span>
+          <div class="chips"><span class="chip">🌿 No-riding</span></div>
+          <span class="price">฿1,200–1,950</span>
+        </div>
+        <div class="body">
+          <div class="loc">📍 Mae Taeng · 1 hr drive north</div>
+          <h3>Kerchor Elephant Eco Park — Half Day</h3>
+          <p class="quote">"No riding, no tricks — just elephants being elephants."</p>
+          <div class="meta"><span>⏱ 5 hrs</span><span>👥 Small group</span><span>🗣 EN · 中文</span></div>
+          <div class="foot">
+            <div class="looped"><span class="a">🏠</span><span>Looped by <b>Pom</b></span></div>
+            <button class="book">Book →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Cooking -->
+      <article class="card">
+        <div class="top" style="background:linear-gradient(150deg,#7a3a0a,#e07b2a)">
+          <span class="glyph">🍳</span>
+          <div class="chips"><span class="chip">⚡ Instant</span></div>
+          <span class="price">from ฿1,000</span>
+        </div>
+        <div class="body">
+          <div class="loc">📍 Old City · meet at the market</div>
+          <h3>Half-Day Thai Cooking Class</h3>
+          <p class="quote">"Their khao soi paste is the closest to my grandma's."</p>
+          <div class="meta"><span>⏱ 4 hrs</span><span>👥 Up to 10</span><span>🗣 EN · 中文</span></div>
+          <div class="foot">
+            <div class="looped"><span class="a">🍜</span><span>Looped by <b>Malee</b></span></div>
+            <button class="book">Book →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Massage -->
+      <article class="card">
+        <div class="top" style="background:linear-gradient(150deg,#2a1a4a,#5a3a8a)">
+          <span class="glyph">🧘</span>
+          <div class="chips"><span class="chip">⚡ Instant</span></div>
+          <span class="price">฿400–1,200</span>
+        </div>
+        <div class="body">
+          <div class="loc">📍 Ratchadamnoen · 5 min walk</div>
+          <h3>Lila Thai Massage — Old City</h3>
+          <p class="quote">"Day one, every time. Proper pressure, proper story."</p>
+          <div class="meta"><span>⏱ 60 min</span><span>👥 Walk-in</span><span>🗣 EN</span></div>
+          <div class="foot">
+            <div class="looped"><span class="a">🧘</span><span>Looped by <b>Noi</b></span></div>
+            <button class="book">Book →</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <p class="eyebrow" data-k="howEye">Safe &amp; simple</p>
+    <h2 data-k="howTitle">How booking works</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="n">Step 1</span>
+        <div class="ic">🧭</div>
+        <h3 data-k="step1">Pick a local's recommendation</h3>
+        <p>Every experience is one a host or Chiang Mai resident actually sends guests on — no filler, no algorithm.</p>
+      </div>
+      <div class="step">
+        <span class="n">Step 2</span>
+        <div class="ic">🎫</div>
+        <h3 data-k="step2">Book with the operator</h3>
+        <p>You're taken straight to the operator's own page for instant confirmation, clear pickup details, and their refund policy.</p>
+      </div>
+      <div class="step">
+        <span class="n">Step 3</span>
+        <div class="ic">🌏</div>
+        <h3 data-k="step3">Show up and enjoy</h3>
+        <p>Vouchers and pickup times come from the operator, in your language where possible. Same price as booking direct.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer id="help">
+    <div class="trust">
+      <div><span class="tick">✓</span> Local-vetted operators</div>
+      <div><span class="tick">✓</span> Instant confirmation via partner</div>
+      <div><span class="tick">✓</span> Booked through trusted platforms</div>
+    </div>
+    <div class="foot-grid">
+      <div class="logo"><span class="mark">🪷</span>STAY<b>LOOPED</b></div>
+    </div>
+    <p class="disclosure">Disclosure: we may earn a small commission when you book through a link on this site. It never changes your price. Prices, availability, and inclusions are set by the operator and may change. Recommendations are our hosts' own.</p>
+  </footer>
+</div>
+
+<script>
+  // Floating Yi Peng lanterns — generated, with gentle upward drift
+  (function () {
+    var layer = document.getElementById("lanternLayer");
+    if (!layer) return;
+    var svgns = "http://www.w3.org/2000/svg";
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var N = 22;
+    for (var i = 0; i < N; i++) {
+      var x = 18 + Math.random() * 404;
+      var y = 44 + Math.random() * 170;
+      var s = 0.65 + Math.random() * 0.85;
+      var outer = document.createElementNS(svgns, "g");   // holds position only
+      outer.setAttribute("transform", "translate(" + x.toFixed(1) + " " + y.toFixed(1) + ") scale(" + s.toFixed(2) + ")");
+      var inner = document.createElementNS(svgns, "g");    // CSS drift lives here, so it can't override the position
+      if (!reduce) {
+        inner.setAttribute("class", "lantern");
+        inner.style.animationDuration = (8 + Math.random() * 10).toFixed(1) + "s";
+        inner.style.animationDelay = (-Math.random() * 16).toFixed(1) + "s";
+      }
+      inner.innerHTML =
+        '<circle r="14" fill="url(#lglow)"></circle>' +
+        '<path d="M-5 -6 Q-5 -11 0 -11 Q5 -11 5 -6 L4 4 Q4 6 2 6 L-2 6 Q-4 6 -4 4 Z" fill="#ffd57e"></path>' +
+        '<ellipse cx="0" cy="-3" rx="3" ry="4.5" fill="#fff3c8" opacity="0.9"></ellipse>' +
+        '<rect x="-2" y="6" width="4" height="1.6" fill="#e0843a"></rect>' +
+        '<circle cx="0" cy="4.6" r="1.4" fill="#fff2b0"></circle>';
+      outer.appendChild(inner);
+      layer.appendChild(outer);
+    }
+  })();
+
+  // tiny interactivity so the prototype feels live
+  (function () {
+    var what = document.getElementById("what"), guests = document.getElementById("guests"),
+        instant = document.getElementById("instant"), count = document.getElementById("count");
+    var map = { "All experiences": 12, "Nature & sanctuaries": 4, "Food & workshops": 3, "Wellness": 2, "Culture": 3 };
+    function upd() {
+      var n = map[what.value] || 12;
+      if (instant.checked) n = Math.max(1, n - 1);
+      count.textContent = n;
+    }
+    [what, guests, instant].forEach(function (el) { el && el.addEventListener("change", upd); });
+    document.querySelectorAll(".tab").forEach(function (t) {
+      t.addEventListener("click", function () {
+        document.querySelectorAll(".tab").forEach(function (x) { x.classList.remove("active"); });
+        t.classList.add("active");
+      });
+    });
+  })();
+
+  // Language switcher — swaps the key strings live (EN · 中文 · ไทย)
+  (function () {
+    var dict = {
+      en: {
+        navHow: "How booking works", navHelp: "Help",
+        host: "<b>Looped by Pom</b> · your host in the Old City",
+        title: "Stay and do in <em>Chiang&nbsp;Mai</em>",
+        sub: "A local's guide — see Chiang Mai like you live here",
+        lede: "The trips and tables we'd send a friend to — elephants in the valley, khao soi from scratch, a massage on the walk to the temple.",
+        labWhat: "What", labGuests: "Guests", showWord: "Show", instant: "Instant confirmation only",
+        secEye: "Recommended near you", secTitle: "This week's local picks",
+        howEye: "Safe &amp; simple", howTitle: "How booking works",
+        tipEye: "Tip for this month", readMore: "Read the full guide →",
+        step1: "Pick a local's recommendation", step2: "Book with the operator", step3: "Show up and enjoy"
+      },
+      zh: {
+        navHow: "预订流程", navHelp: "帮助",
+        host: "<b>Pom 推荐</b> · 你的古城房东",
+        title: "在<em>清迈</em>，住下来玩起来",
+        sub: "本地人的清迈指南 — 像住在这里一样去玩",
+        lede: "我们会推荐给朋友的行程与美食——山谷里的大象、从头熬煮的泰北咖喱面、去寺庙路上的按摩。",
+        labWhat: "体验类型", labGuests: "人数", showWord: "显示", instant: "仅限即时确认",
+        secEye: "为你推荐", secTitle: "本周本地精选",
+        howEye: "安全又简单", howTitle: "预订流程",
+        tipEye: "本月小贴士", readMore: "阅读完整指南 →",
+        step1: "选择本地推荐", step2: "向运营商预订", step3: "出发去享受"
+      },
+      th: {
+        navHow: "วิธีการจอง", navHelp: "ช่วยเหลือ",
+        host: "<b>แนะนำโดย Pom</b> · เจ้าบ้านย่านเมืองเก่า",
+        title: "พักและเที่ยวใน<em>เชียงใหม่</em>",
+        sub: "คู่มือท้องถิ่น — เที่ยวเชียงใหม่เหมือนคนที่นี่",
+        lede: "ทริปและร้านที่เราจะแนะนำให้เพื่อน — ช้างในหุบเขา ข้าวซอยทำเอง นวดระหว่างทางไปวัด",
+        labWhat: "ประเภท", labGuests: "จำนวนคน", showWord: "ดู", instant: "เฉพาะยืนยันทันที",
+        secEye: "แนะนำใกล้คุณ", secTitle: "คัดสรรประจำสัปดาห์โดยคนท้องถิ่น",
+        howEye: "ปลอดภัยและง่าย", howTitle: "วิธีการจอง",
+        tipEye: "ทิปประจำเดือนนี้", readMore: "อ่านคู่มือฉบับเต็ม →",
+        step1: "เลือกคำแนะนำจากคนท้องถิ่น", step2: "จองกับผู้ให้บริการ", step3: "ไปสนุกได้เลย"
+      }
+    };
+    var MONTHS = [
+      { emoji: "🌸", en: { name: "January", tip: "Peak cool season: crisp mornings, clear skies, and wild Himalayan cherry blossoms on the high ridges. Ideal for Doi Inthanon and tea up at altitude." }, zh: { name: "一月", tip: "凉季最佳：清晨微凉、天空澄澈，高山脊线上野生喜马拉雅樱花盛开。适合登因他农山、在高海拔品茶。" }, th: { name: "มกราคม", tip: "ช่วงหนาวที่ดีที่สุด เช้าเย็นสบาย ฟ้าใส และซากุระดอยบานบนสันเขาสูง เหมาะไปดอยอินทนนท์และจิบชาบนที่สูง" } },
+      { emoji: "🌼", en: { name: "February", tip: "Warm, sunny days and the Chiang Mai Flower Festival in the first week. Great for the Old City, markets, and easy day trips." }, zh: { name: "二月", tip: "温暖晴朗，月初有清迈花卉节。适合逛古城、夜市和轻松的一日游。" }, th: { name: "กุมภาพันธ์", tip: "แดดอุ่นสบาย มีงานไม้ดอกไม้ประดับเชียงใหม่ต้นเดือน เหมาะเดินเมืองเก่า ตลาด และทริปวันเดียว" } },
+      { emoji: "🛕", en: { name: "March", tip: "Warm, unhurried days — perfect for cooking classes, massage, cafés and temple-hopping in the Old City. On hazier days it's worth a quick air-quality check before big outdoor plans." }, zh: { name: "三月", tip: "温暖悠闲的日子——适合烹饪课、按摩、咖啡馆和在古城逛寺庙。遇到雾霾较重的日子，安排户外行程前先查一下空气质量会更安心。" }, th: { name: "มีนาคม", tip: "วันอุ่นสบายไม่รีบเร่ง เหมาะกับคลาสทำอาหาร นวด คาเฟ่ และเที่ยววัดในเมืองเก่า วันไหนหมอกควันเยอะ ลองเช็กคุณภาพอากาศก่อนวางแผนกิจกรรมกลางแจ้งสักนิด" } },
+      { emoji: "💦", en: { name: "April", tip: "Songkran (13–15 Apr) turns the whole city into a joyful water fight — the highlight of the month. It's hot, so plan water-friendly days and stay hydrated; on hazier days, a quick air-quality check before heading outdoors helps." }, zh: { name: "四月", tip: "泼水节（4月13–15日）全城变成欢乐水仗，是本月最大亮点。天气炎热，安排亲水行程、多补水；遇到雾霾较重的日子，出门前先看看空气质量。" }, th: { name: "เมษายน", tip: "สงกรานต์ (13–15 เม.ย.) ทั้งเมืองสนุกกับการเล่นน้ำ ไฮไลต์ของเดือน อากาศร้อน วางแผนกิจกรรมเล่นน้ำและดื่มน้ำเยอะ ๆ วันไหนหมอกควันเยอะ เช็กคุณภาพอากาศก่อนออกไปข้างนอกสักนิด" } },
+      { emoji: "🌧️", en: { name: "May", tip: "The first rains green everything up. Afternoon showers, lush hills, and far fewer crowds — waterfalls start to run full." }, zh: { name: "五月", tip: "初雨让万物转绿，午后阵雨、山峦葱郁、人潮大减，瀑布开始丰沛。" }, th: { name: "พฤษภาคม", tip: "ฝนแรกทำให้ทุกอย่างเขียวขจี ฝนตกบ่าย เขาเขียวชอุ่ม คนน้อยลง น้ำตกเริ่มเต็ม" } },
+      { emoji: "⛅", en: { name: "June", tip: "Green season proper: short heavy showers, then sun. Mornings are best for elephants and the hills; keep afternoons flexible." }, zh: { name: "六月", tip: "正式进入绿季：短时强阵雨后又放晴。上午最适合看大象和上山，午后灵活安排。" }, th: { name: "มิถุนายน", tip: "เข้าหน้าฝนเต็มตัว ฝนตกหนักสั้น ๆ แล้วแดดออก เช้าเหมาะดูช้างและขึ้นเขา บ่ายยืดหยุ่นไว้" } },
+      { emoji: "☕", en: { name: "July", tip: "Lush and quiet. Rain comes and goes — a good month for waterfalls, coffee farms, and unhurried Old City days." }, zh: { name: "七月", tip: "葱郁而宁静。雨时下时停——适合瀑布、咖啡庄园和悠闲的古城时光。" }, th: { name: "กรกฎาคม", tip: "เขียวขจีและเงียบสงบ ฝนมาเป็นพัก ๆ เหมาะไปน้ำตก ไร่กาแฟ และเดินเมืองเก่าแบบชิล ๆ" } },
+      { emoji: "🌾", en: { name: "August", tip: "Deep green, dramatic skies, low-season prices. The rice terraces look their best — pack a light rain layer." }, zh: { name: "八月", tip: "满眼浓绿、云天壮丽、淡季价格。梯田最美，记得带件轻便雨衣。" }, th: { name: "สิงหาคม", tip: "เขียวเข้ม ท้องฟ้าดราม่า ราคาโลว์ซีซั่น นาขั้นบันไดสวยที่สุด พกเสื้อกันฝนบาง ๆ ไว้" } },
+      { emoji: "💧", en: { name: "September", tip: "The wettest stretch, and the most beautiful green. Waterfalls are thundering — time outdoor trips around the morning." }, zh: { name: "九月", tip: "最多雨、却也最翠绿的时节。瀑布气势磅礴，户外行程尽量安排在上午。" }, th: { name: "กันยายน", tip: "ฝนชุกที่สุดแต่เขียวที่สุด น้ำตกไหลแรง จัดทริปกลางแจ้งช่วงเช้า" } },
+      { emoji: "🍃", en: { name: "October", tip: "Rains taper off and the air turns fresh and clear. The hills are emerald — a lovely, underrated month to visit." }, zh: { name: "十月", tip: "雨势渐收，空气清新通透。山峦如翡翠——被低估的好时节。" }, th: { name: "ตุลาคม", tip: "ฝนเริ่มซา อากาศสดใส เขาเขียวมรกต—เดือนที่ดีแบบที่หลายคนมองข้าม" } },
+      { emoji: "🏵️", en: { name: "November", tip: "The best month: cool, clear, and the Yi Peng lantern festival lights the sky. Head up the mountains — Doi Suthep and Doi Inthanon are glorious." }, zh: { name: "十一月", tip: "最佳月份：凉爽澄澈，水灯节（Yi Peng）点亮夜空。上山吧——素贴山与因他农山美不胜收。" }, th: { name: "พฤศจิกายน", tip: "เดือนที่ดีที่สุด อากาศเย็นฟ้าใส และยี่เป็งประดับท้องฟ้า ขึ้นเขาเลย—ดอยสุเทพและดอยอินทนนท์งดงามมาก" } },
+      { emoji: "⛰️", en: { name: "December", tip: "Cool, dry, and golden. Go up the mountains; bamboo rafting still runs by day if you don't mind the cooler water. Warm up with a pot of local Monsoon Tea." }, zh: { name: "十二月", tip: "凉爽干燥、满目金黄。上山正好；若不介意水偏凉，白天仍可玩竹筏漂流。来壶本地 Monsoon Tea 暖暖身。" }, th: { name: "ธันวาคม", tip: "เย็นสบาย แห้ง และเป็นสีทอง ขึ้นเขากำลังดี ล่องแพไม้ไผ่กลางวันยังเล่นได้ถ้าไม่ซีเรียสเรื่องน้ำเย็น อุ่นเครื่องด้วยชา Monsoon Tea ท้องถิ่นสักกา" } }
+    ];
+    var curLoc = "en";
+    var monthIdx = (new Date()).getMonth();
+    function renderMonth() {
+      var m = MONTHS[monthIdx], L = m[curLoc] || m.en;
+      var n = document.getElementById("monthName"); if (n) n.textContent = L.name;
+      var tp = document.getElementById("monthTip"); if (tp) tp.textContent = L.tip;
+      var e = document.getElementById("monthEmoji"); if (e) e.textContent = m.emoji;
+    }
+    function apply(loc) {
+      curLoc = loc;
+      var d = dict[loc] || dict.en;
+      document.querySelectorAll("[data-k]").forEach(function (el) {
+        var k = el.getAttribute("data-k");
+        if (d[k] != null) el.innerHTML = d[k];
+      });
+      try { document.documentElement.setAttribute("lang", loc); } catch (e) {}
+      document.querySelectorAll(".loc").forEach(function (b) {
+        b.classList.toggle("active", b.getAttribute("data-loc") === loc);
+      });
+      renderMonth();
+    }
+    document.querySelectorAll(".loc").forEach(function (b) {
+      b.addEventListener("click", function () { apply(b.getAttribute("data-loc")); });
+    });
+    var mp = document.getElementById("mprev"), mn = document.getElementById("mnext");
+    if (mp) mp.addEventListener("click", function () { monthIdx = (monthIdx + 11) % 12; renderMonth(); });
+    if (mn) mn.addEventListener("click", function () { monthIdx = (monthIdx + 1) % 12; renderMonth(); });
+    apply("en"); // start consistent with the active locale
+  })();
+</script>

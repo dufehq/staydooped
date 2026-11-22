@@ -1,16 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./LocaleSwitcher";
-
-const QUICK_LINKS = [
-  {
-    icon: "🎫",
-    label: "Klook",
-    href: "https://www.klook.com/city/165-chiang-mai-things-to-do/?aid=121431",
-  },
-  { icon: "🛒", label: "Lazada", href: "https://s.lazada.co.th/s.Z6DXTU?c=a&t=ntv-t1_alp-native" },
-  { icon: "🚗", label: "Grab", href: "https://www.grab.com/th/" },
-];
+import { HeroScene } from "./HeroScene";
 
 type Props = {
   featuredSlug?: string;
@@ -20,67 +11,64 @@ export function Hero({ featuredSlug }: Props = {}) {
   const t = useTranslations("Hero");
 
   return (
-    <section className="relative overflow-hidden bg-night">
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-[radial-gradient(circle_at_15%_85%,rgba(224,123,42,0.4),transparent_45%),radial-gradient(circle_at_85%_20%,rgba(46,107,80,0.35),transparent_45%),radial-gradient(circle_at_50%_50%,rgba(14,11,7,0.6),transparent_70%)]"
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 opacity-[0.06] [background:repeating-linear-gradient(0deg,transparent_0_28px,rgba(255,255,255,0.6)_28px_29px)]"
-      />
-      <div className="relative z-10 px-[22px] pt-5 pb-9 md:px-12 md:pt-8 md:pb-20 lg:px-16 lg:pt-10 lg:pb-28">
-        <div className="mb-7 flex justify-center md:mb-12 lg:mb-16">
-          <LocaleSwitcher size="prominent" />
-        </div>
-        <p className="mb-3.5 flex items-center gap-2 text-[9px] font-medium uppercase tracking-[0.4em] text-loop-2 md:mb-5 md:text-xs lg:text-sm">
-          <span className="h-px w-5 bg-loop md:w-8 lg:w-12" />
-          {t("kicker")}
-        </p>
-        <h1 className="mb-0.5 font-display text-[72px] leading-[0.92] tracking-wide text-paper md:text-[120px] md:leading-[0.9] lg:text-[180px]">
-          {t("wordmarkA")}
-          <span className="text-loop">{t("wordmarkB")}</span>
-        </h1>
-        <p className="mb-4 font-thai text-xs tracking-[0.18em] text-paper/35 md:mb-6 md:text-base lg:text-lg">
-          {t("thaiSubtitle")}
-        </p>
-        <p className="max-w-[260px] font-serif text-base font-light italic leading-[1.5] text-paper/70 md:max-w-md md:text-2xl lg:max-w-2xl lg:text-3xl">
-          <strong className="font-semibold not-italic text-paper">
-            {t("tagline")}
-          </strong>{" "}
-          {t("taglineSuffix")}
-        </p>
-        {featuredSlug ? (
-          <Link
-            href={`/e/${featuredSlug}`}
-            className="mt-5 inline-flex items-center gap-2 rounded-pill bg-loop px-5 py-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-night transition-colors hover:bg-loop-2 active:bg-loop-2 md:mt-7 md:px-7 md:py-3.5 md:text-sm lg:mt-9 lg:px-8 lg:py-4 lg:text-base"
-          >
-            {t("ctaLabel")}
-          </Link>
-        ) : null}
-        <div className="mt-[18px] md:mt-8 lg:mt-10">
-          <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.2em] text-paper/40 md:mb-3 md:text-xs">
-            {t("appsPillLabel")}
+    <section className="px-[18px] md:px-12 lg:px-16">
+      <nav className="flex items-center justify-between gap-7 py-5">
+        <span className="flex items-center gap-2 font-display text-[25px] tracking-[0.04em]">
+          <span className="grid h-[30px] w-[30px] place-items-center rounded-[9px] bg-gradient-to-br from-loop to-loop-2 text-[15px]">
+            🪷
+          </span>
+          STAY<span className="font-normal text-loop">LOOPED</span>
+        </span>
+        <LocaleSwitcher />
+      </nav>
+
+      <div className="grid items-center gap-8 pb-12 md:pb-16 lg:grid-cols-[1.02fr_0.98fr] lg:gap-11">
+        <div className="order-2 lg:order-1">
+          <div className="inline-flex items-center gap-2 rounded-pill border border-border bg-white-cream py-1.5 pl-1.5 pr-3.5 text-[13px] shadow-card">
+            <span className="grid h-6 w-6 place-items-center rounded-pill bg-jade text-xs">
+              🏠
+            </span>
+            {t.rich("hostChip", {
+              b: (chunks) => <b className="font-semibold">{chunks}</b>,
+            })}
+          </div>
+
+          <h1 className="hero-title mt-5 text-[clamp(38px,6vw,62px)] font-semibold leading-[1.02] tracking-tight">
+            {t.rich("headline", {
+              hl: (chunks) => <span className="text-loop">{chunks}</span>,
+            })}
+          </h1>
+
+          <p className="hero-sub mt-3 text-[15px] tracking-[0.02em] text-muted">
+            {t("heroSub")}
           </p>
-          <div className="flex flex-wrap items-center gap-1.5 md:gap-2 lg:gap-3">
-            {QUICK_LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-pill border border-paper/20 px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-paper/60 transition-colors hover:border-loop hover:text-loop md:px-4 md:py-1.5 md:text-xs lg:px-5 lg:py-2 lg:text-sm"
-              >
-                <span>{link.icon}</span>
-                {link.label}
-              </a>
-            ))}
+
+          <p className="mt-5 max-w-[440px] rounded-[14px] border border-border bg-white-cream px-4 py-3.5 text-[15px] leading-relaxed shadow-card">
+            {t("heroLede")}
+          </p>
+
+          {featuredSlug ? (
             <Link
-              href="/guide"
-              className="text-[9px] font-medium tracking-wide text-paper/30 underline underline-offset-2 hover:text-paper/60 md:text-xs"
+              href={`/e/${featuredSlug}`}
+              className="mt-5 inline-flex items-center gap-2 rounded-pill bg-loop px-5 py-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-loop-2 active:bg-loop-2"
             >
-              {t("appsGuideLink")}
+              {t("ctaLabel")}
             </Link>
+          ) : null}
+        </div>
+
+        <div className="order-1 lg:order-2">
+          <div className="relative aspect-[440/360] overflow-hidden rounded-[22px] border border-border bg-[#1a1430] shadow-card">
+            <HeroScene />
+            <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-xl border border-border bg-white-cream px-3 py-2 text-[12.5px] font-semibold shadow-card">
+              <span className="text-jade">✓</span> {t("verified")}
+            </div>
+            <div className="absolute bottom-4 left-4 rounded-xl border border-border bg-white-cream px-3.5 py-2 shadow-card">
+              <div className="text-[10px] uppercase tracking-[0.08em] text-muted">
+                {t("fromLabel")}
+              </div>
+              <div className="font-serif text-base font-semibold">฿250</div>
+            </div>
           </div>
         </div>
       </div>

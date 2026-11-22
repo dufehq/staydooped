@@ -1,0 +1,209 @@
+<title>November in Chiang Mai</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@400;500;600;700&family=Bebas+Neue&display=swap">
+<style>
+  /* Layout: editorial long-form month guide — warm header band, at-a-glance stats,
+     readable single-column prose with pull sections, related experiences, month nav. */
+  :root {
+    --paper: #f9f5ee; --warm: #f2ead6; --sand: #e5d9c0; --cream: #fffdf8;
+    --ink: #1c1710; --night: #0e0b07; --muted: #8c7d65;
+    --loop: #e07b2a; --loop-2: #f5a94e; --jade: #2e6b50; --sky: #3d6b8c;
+    --border: rgba(28,23,16,0.12); --border-soft: rgba(28,23,16,0.07);
+    --card: #fffdf8; --pattern: rgba(28,23,16,0.5);
+    --shadow: 0 24px 60px rgba(14,11,7,0.10), 0 10px 26px rgba(14,11,7,0.06), 0 0 0 1px rgba(28,23,16,0.06);
+    --shadow-sm: 0 10px 28px rgba(14,11,7,0.09), 0 0 0 1px rgba(28,23,16,0.06);
+    --font-serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --font-sans: "DM Sans", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --font-display: "Bebas Neue", var(--font-sans);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #16110b; --warm: #1e1710; --sand: #2a2016; --cream: #211a11;
+      --ink: #f4ece0; --night: #f4ece0; --muted: #ac9c84;
+      --border: rgba(245,236,224,0.14); --border-soft: rgba(245,236,224,0.08);
+      --card: #201911; --pattern: rgba(245,236,224,0.5);
+      --shadow: 0 24px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(245,236,224,0.08);
+      --shadow-sm: 0 10px 28px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,236,224,0.08);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #16110b; --warm: #1e1710; --sand: #2a2016; --cream: #211a11;
+    --ink: #f4ece0; --night: #f4ece0; --muted: #ac9c84;
+    --border: rgba(245,236,224,0.14); --border-soft: rgba(245,236,224,0.08);
+    --card: #201911; --pattern: rgba(245,236,224,0.5);
+    --shadow: 0 24px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(245,236,224,0.08);
+    --shadow-sm: 0 10px 28px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,236,224,0.08);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 760px; margin: 0 auto;
+    padding-left: max(18px, env(safe-area-inset-left, 0px));
+    padding-right: max(18px, env(safe-area-inset-right, 0px)); }
+  a { color: inherit; }
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 600; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+
+  /* top bar */
+  nav { display: flex; align-items: center; justify-content: space-between; padding-block: 18px; gap: 16px; }
+  .back { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--muted); }
+  .back:hover { color: var(--loop); }
+  .logo { font-family: var(--font-display); font-size: 20px; letter-spacing: 0.04em; }
+  .logo b { color: var(--loop); font-weight: 400; }
+
+  /* header band */
+  header.band { background: linear-gradient(140deg, var(--warm), var(--card)); border: 1px solid var(--border); border-radius: 22px; padding: clamp(24px, 5vw, 40px); box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+  header.band::after { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.1;
+    background-color: var(--pattern);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='175' viewBox='0 0 130 175'%3E%3Cg fill='none' stroke='white' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg transform='translate(36 24)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3Cg transform='translate(95 96)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='175' viewBox='0 0 130 175'%3E%3Cg fill='none' stroke='white' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg transform='translate(36 24)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3Cg transform='translate(95 96)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    -webkit-mask-size: 132px 178px; mask-size: 132px 178px; -webkit-mask-repeat: repeat; mask-repeat: repeat; }
+  header.band > * { position: relative; z-index: 1; }
+  .flower { font-size: 40px; line-height: 1; }
+  header.band h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.02; margin: 12px 0 0; }
+  header.band .sub { margin-top: 12px; font-size: 17px; color: var(--ink); max-width: 52ch; }
+
+  /* at a glance */
+  .glance { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 22px; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 13px; padding: 12px; text-align: center; }
+  .stat .k { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .stat .v { font-family: var(--font-serif); font-size: 19px; font-weight: 600; margin-top: 4px; }
+
+  /* month nav */
+  .mnav { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; padding-block: 22px; }
+  .mnav a { border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .mnav a.cur { background: var(--night); color: var(--paper); border-color: var(--night); }
+  .mnav a:hover:not(.cur) { border-color: var(--loop); color: var(--loop); }
+  .mnav .all { color: var(--loop); border-color: transparent; background: none; }
+
+  /* prose */
+  article { padding-block: 10px 8px; }
+  article section { margin-top: 34px; }
+  article h2 { font-size: clamp(22px, 3.4vw, 28px); margin-bottom: 10px; }
+  article h2 .ic { margin-right: 8px; }
+  article p { margin: 0 0 14px; font-size: 16.5px; color: var(--ink); }
+  article p.first { font-size: 18px; }
+  article strong { font-weight: 600; }
+  .callout { background: var(--warm); border: 1px solid var(--border); border-left: 3px solid var(--loop); border-radius: 12px; padding: 16px 18px; margin: 18px 0; }
+  .callout b { display: block; font-family: var(--font-serif); font-size: 16px; margin-bottom: 6px; }
+  .callout p { font-size: 15px; margin: 0; color: var(--muted); }
+  ul.ticks { list-style: none; padding: 0; margin: 14px 0; display: grid; gap: 10px; }
+  ul.ticks li { display: flex; gap: 10px; font-size: 16px; }
+  ul.ticks li::before { content: "🌾"; flex: 0 0 auto; }
+
+  /* related experiences */
+  .rel { margin-top: 40px; }
+  .rel h2 { font-size: 22px; margin-bottom: 14px; }
+  .relgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .rc { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+  .rc .top { aspect-ratio: 16/10; display: grid; place-items: center; font-size: 34px; }
+  .rc .b { padding: 13px 14px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+  .rc h3 { font-size: 15px; line-height: 1.25; }
+  .rc .meta { font-size: 12px; color: var(--muted); margin-top: auto; }
+  .rc .price { font-size: 13px; font-weight: 600; }
+
+  footer { border-top: 1px solid var(--border); margin-top: 44px; padding-block: 28px 48px; }
+  .disc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  @media (max-width: 640px) {
+    .glance { grid-template-columns: repeat(2, 1fr); }
+    .relgrid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="wrap">
+  <nav>
+    <a class="back" href="#">← StayLooped</a>
+    <span class="logo">STAY<b>LOOPED</b></span>
+  </nav>
+
+  <header class="band">
+    <span class="flower">🏵️</span>
+    <p class="eyebrow" style="margin-top:12px">Chiang Mai · Month guide</p>
+    <h1>November in Chiang Mai</h1>
+    <p class="sub">The month everyone hopes to catch — cool, clear skies, the sky full of lanterns, and the mountains at their finest. If you only get one month, this is the one.</p>
+
+    <div class="glance">
+      <div class="stat"><div class="k">Days</div><div class="v">~30°C</div></div>
+      <div class="stat"><div class="k">Nights</div><div class="v">~16°C</div></div>
+      <div class="stat"><div class="k">Rain</div><div class="v">Rare</div></div>
+      <div class="stat"><div class="k">Air</div><div class="v">Clear</div></div>
+      <div class="stat"><div class="k">Crowds</div><div class="v">Peak</div></div>
+    </div>
+  </header>
+
+  <div class="mnav">
+    <a href="#">‹ October</a>
+    <a class="cur" href="#">November</a>
+    <a href="#">December ›</a>
+    <a class="all" href="#">All months →</a>
+  </div>
+
+  <article>
+    <p class="first">After the rains clear out in late October, Chiang Mai slips into its best stretch of the year. The humidity drops, the skies go a deep clean blue, and the hills — green from six months of rain — are still lush before the dry season browns them off. Mornings are genuinely cool, especially up the mountains, and the air is clear before the burning season haze arrives in the new year.</p>
+
+    <section>
+      <h2><span class="ic">🏵️</span>The festival of lights: Yi Peng &amp; Loy Krathong</h2>
+      <p>November is when Chiang Mai lights up — literally. Two festivals overlap around the November full moon: <strong>Loy Krathong</strong>, when people float little flower-and-candle rafts (krathong) down the Ping River, and <strong>Yi Peng</strong>, the Lanna tradition of releasing glowing paper sky lanterns (khom loi) into the night.</p>
+      <p>The dates move each year with the lunar calendar, so they don't land on the same days every November. Around the city, the Ping River, Tha Phae Gate, and the Old City temples are the heart of it. Some large lantern-release events are ticketed and sell out months ahead.</p>
+      <div class="callout">
+        <b>Good to know</b>
+        <p>Floating lanterns are restricted near the airport on safety grounds, and flight schedules shift around the festival — check your dates. If you want the big mass-release experience, book the ticketed event early; the free riverside releases are more spontaneous and just as lovely.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="ic">⛰️</span>Go up the mountains</h2>
+      <p>This is the month the mountains pay off. <strong>Doi Suthep</strong> is an easy half-day — the golden chedi of Wat Phra That is a short ride up, and clear November air means you can actually see the city laid out below. For the full day, <strong>Doi Inthanon</strong> — Thailand's highest peak — is cold enough at the summit for a jacket in the morning, with the twin royal pagodas, the Kew Mae Pan nature trail, and a waterfall on the way down.</p>
+      <p>If you'd rather not drive the switchbacks yourself, this is the time to let a local guide handle it and just enjoy the view.</p>
+    </section>
+
+    <section>
+      <h2><span class="ic">💦</span>Still good: the warm-weather things</h2>
+      <p>You don't have to give up the water just because it's cooler. <strong>Bamboo rafting</strong> on the rivers north of the city still runs through the day — the water's a touch cooler than in the hot season, so go midday when the sun is up if you feel the chill. Bua Tong "sticky" waterfall, the no-riding elephant camps in the Mae Taeng valley, and the coffee farms in the hills are all at their best with the trails dry and the greenery still in.</p>
+    </section>
+
+    <section>
+      <h2><span class="ic">☕</span>Eat &amp; drink</h2>
+      <p>Cool evenings make November the perfect month for the night markets — you can actually sit and eat without melting. It's peak <strong>khao soi</strong> weather, and the Sunday Walking Street is at its liveliest. For something quieter, warm up with a pot of local highland tea — <strong>Monsoon Tea</strong> grows theirs in the forests of Northern Thailand and has a calm teahouse in town, a nice counterpoint to a cold mountain morning.</p>
+    </section>
+
+    <section>
+      <h2><span class="ic">🎒</span>Before you go</h2>
+      <ul class="ticks">
+        <li><strong>Pack a light layer.</strong> It's shorts-and-t-shirt by day, but mornings and mountain tops genuinely need a fleece or jacket.</li>
+        <li><strong>Book ahead.</strong> November is peak season, and festival week especially — rooms, tours, and the ticketed lantern events fill up early.</li>
+        <li><strong>Float responsibly.</strong> If you make a krathong, choose the biodegradable banana-leaf kind over styrofoam — the river thanks you.</li>
+      </ul>
+    </section>
+
+    <div class="rel">
+      <h2>Experiences for November</h2>
+      <div class="relgrid">
+        <a class="rc" href="#">
+          <div class="top" style="background:linear-gradient(150deg,#0a2a4a,#3d6b8c)">🌄</div>
+          <div class="b"><h3>Doi Inthanon — Full-Day Small Group</h3><div class="meta">Full day · EN · 中文</div><div class="price">from ฿1,950</div></div>
+        </a>
+        <a class="rc" href="#">
+          <div class="top" style="background:linear-gradient(150deg,#1a3a1a,#2e6b50)">🐘</div>
+          <div class="b"><h3>Kerchor Elephant Eco Park — Half Day</h3><div class="meta">5 hrs · no-riding</div><div class="price">฿1,200–1,950</div></div>
+        </a>
+        <a class="rc" href="#">
+          <div class="top" style="background:linear-gradient(150deg,#7a3a0a,#e07b2a)">🍳</div>
+          <div class="b"><h3>Half-Day Thai Cooking Class</h3><div class="meta">4 hrs · Old City</div><div class="price">from ฿1,000</div></div>
+        </a>
+      </div>
+    </div>
+  </article>
+
+  <div class="mnav">
+    <a href="#">‹ October</a>
+    <a href="#">December ›</a>
+    <a class="all" href="#">Browse all 12 months →</a>
+  </div>
+
+  <footer>
+    <p class="disc">Weather figures are typical averages — check a forecast close to your trip. Festival dates follow the lunar calendar and change each year. We may earn a small commission when you book an experience through a link on this site, at no extra cost to you.</p>
+  </footer>
+</div>
