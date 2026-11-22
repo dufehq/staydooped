@@ -113,5 +113,18 @@
     "step2Body": "直接跳转到运营商官方页面，即时确认、清晰的接送信息和退改政策。",
     "step3Title": "出发去享受",
     "step3Body": "凭证和接送时间由运营商提供，尽可能用你的语言。价格与直接预订相同。"
+  },
+  "ArrivalPopup": {
+    "title": "出发探索前先搞定",
+    "subtitle": "抵达第一天值得先准备好的两件事。",
+    "esimTitle": "保持联网 — eSIM",
+    "esimDesc": "落地即有网络。出发前安装，无需换卡。",
+    "esimCta": "获取 eSIM",
+    "transferTitle": "机场接送",
+    "transferDesc": "免去排队打车 — 预订专车直达住处。",
+    "transferCta": "预订接送",
+    "dontShowAgain": "不再显示",
+    "close": "关闭",
+    "footnote": "我们可能获得少量佣金 — 您无需额外付费。"
   }
 }

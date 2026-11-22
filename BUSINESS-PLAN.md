@@ -52,11 +52,17 @@ Conservative per-placement numbers:
 | Priority | Item | Why it earns | Status |
 |---|---|---|---|
 | **P0** | Finish Day-2: domain, `KLOOK_AFF_ID` in Vercel prod, QR, smoke test | **No commission is tracked until prod env vars are set** | open |
-| **P0** | Arrival popup: eSIM + airport transfer | Highest-conversion arrival-intent products | rebuilding |
+| **P1** | Arrival popup: eSIM + airport transfer | Highest-conversion arrival-intent products | **shipped (Option A)** |
 | **P1** | Per-placement QR sub-IDs (`?h=`) into `aff_adid` | Attribute revenue per location → proves model to new hosts | planned |
 | **P1** | Apply to GetYourGuide program | 1 listing earns ฿0 today | open |
 | **P1** | Fix `doi-inthanon` (flagged delisted on Klook, still published) | A dead affiliate link earns nothing and erodes trust | open |
 | **P2** | UI redesign (warm/minimal Chiang Mai) | Lifts scan → click conversion | prototype |
+
+> **Arrival popup (live).** A dismissible first-visit popup promoting a Klook eSIM +
+> a Chiang Mai airport transfer, with a "don't show again" toggle (localStorage) so it
+> never nags repeat scanners. Ships with Klook search links (`thailand esim` /
+> `chiang mai airport transfer`, `aid=121431`, same pattern as `CarCallout`); upgrade
+> to specific products later for cleaner landing + per-product attribution.
 
 ## 6. Costs
 

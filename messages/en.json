@@ -113,5 +113,18 @@
     "step2Body": "You're taken straight to the operator's own page for instant confirmation, clear pickup details, and their refund policy.",
     "step3Title": "Show up and enjoy",
     "step3Body": "Vouchers and pickup times come from the operator, in your language where possible. Same price as booking direct."
+  },
+  "ArrivalPopup": {
+    "title": "Sorted before you explore",
+    "subtitle": "Two things worth setting up on day one.",
+    "esimTitle": "Stay connected — eSIM",
+    "esimDesc": "Get data the moment you land. Install before you fly, no SIM swap.",
+    "esimCta": "Get an eSIM",
+    "transferTitle": "Airport transfer",
+    "transferDesc": "Skip the taxi queue — book a private pickup to where you're staying.",
+    "transferCta": "Book a transfer",
+    "dontShowAgain": "Don't show this again",
+    "close": "Close",
+    "footnote": "We may earn a small commission — at no extra cost to you."
   }
 }

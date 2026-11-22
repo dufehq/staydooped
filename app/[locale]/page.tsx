@@ -10,6 +10,7 @@ import { Footer } from "@/components/Footer";
 import { CarCallout } from "@/components/CarCallout";
 import { MonthTip } from "@/components/MonthTip";
 import { HowBooking } from "@/components/HowBooking";
+import { ArrivalPopup } from "@/components/ArrivalPopup";
 import {
   getFeaturedExperience,
   getNonFeaturedExperiences,
@@ -31,6 +32,8 @@ export default async function Home({
 
   return (
     <main className="mx-auto max-w-[430px] md:max-w-[760px] lg:max-w-[1280px]">
+      <ArrivalPopup />
+
       <Hero featuredSlug={featured.slug} />
 
       <MonthTip />
