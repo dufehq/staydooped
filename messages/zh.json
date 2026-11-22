@@ -98,7 +98,11 @@
     "tipEye": "本月小贴士",
     "readMore": "阅读完整指南 →",
     "prev": "上个月",
-    "next": "下个月"
+    "next": "下个月",
+    "kicker": "清迈 · 每月指南",
+    "pageTitle": "{month}·游清迈",
+    "relatedTitle": "值得预订的体验",
+    "comingSoon": "本月的完整指南正在撰写中。先看看精简版，更多细节欢迎问你的房东。"
   },
   "HowBooking": {
     "eyebrow": "安全又简单",

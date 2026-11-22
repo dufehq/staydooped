@@ -98,7 +98,11 @@
     "tipEye": "Tip for this month",
     "readMore": "Read the full guide →",
     "prev": "Previous month",
-    "next": "Next month"
+    "next": "Next month",
+    "kicker": "Chiang Mai · Month guide",
+    "pageTitle": "{month} in Chiang Mai",
+    "relatedTitle": "Experiences to book",
+    "comingSoon": "A fuller guide for this month is on the way. In the meantime, here's the quick version — and ask your host for more."
   },
   "HowBooking": {
     "eyebrow": "Safe & simple",
