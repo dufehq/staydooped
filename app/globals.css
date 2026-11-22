@@ -110,3 +110,22 @@ body::after {
 :lang(th) .hero-title { font-family: var(--font-thai); }
 :lang(zh) .hero-sub { font-family: var(--font-zh); font-style: normal; }
 :lang(th) .hero-sub { font-family: var(--font-thai); font-style: normal; }
+
+/* Faint Lanna-lantern texture behind the listings (crown + chevron tails) */
+.lanna-bg { position: relative; isolation: isolate; }
+.lanna-bg > * { position: relative; z-index: 1; }
+.lanna-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  background-color: var(--color-ink);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='175' viewBox='0 0 130 175'%3E%3Cg fill='none' stroke='white' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg transform='translate(36 24)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3Cg transform='translate(95 96)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='175' viewBox='0 0 130 175'%3E%3Cg fill='none' stroke='white' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg transform='translate(36 24)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3Cg transform='translate(95 96)'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cpath d='M0 -12 L0 2'/%3E%3Cpath d='M-3 2 C-10 0 -12 -9 -6 -12 C-8 -7 -5 -3 -3 2 Z'/%3E%3Cpath d='M3 2 C10 0 12 -9 6 -12 C8 -7 5 -3 3 2 Z'/%3E%3Cpath d='M0 2 L11 10 L10 26 L0 34 L-10 26 L-11 10 Z'/%3E%3Cline x1='0' y1='2' x2='0' y2='34'/%3E%3Cline x1='-11' y1='10' x2='11' y2='10'/%3E%3Cline x1='-10' y1='26' x2='10' y2='26'/%3E%3Cpath d='M0 13 L5 18 L0 23 L-5 18 Z'/%3E%3Cpath d='M-6 35 L-2 35 L-3 58 L-4 62 L-5 58 Z'/%3E%3Cpath d='M2 35 L6 35 L5 58 L4 62 L3 58 Z'/%3E%3Cpath d='M-6 41 L-4 43 L-2 41 M-6 47 L-4 49 L-2 47 M-6 53 L-4 55 L-2 53'/%3E%3Cpath d='M2 41 L4 43 L6 41 M2 47 L4 49 L6 47 M2 53 L4 55 L6 53'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask-size: 132px 178px;
+  mask-size: 132px 178px;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}

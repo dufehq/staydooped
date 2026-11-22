@@ -51,6 +51,9 @@
   "Footer": {
     "tagline": "Hand-picked things to do in Chiang Mai.",
     "about": "About",
+    "trust1": "Local-vetted operators",
+    "trust2": "Instant confirmation via partner",
+    "trust3": "Booked through trusted platforms",
     "smallPrint": "Affiliate disclosure: we earn a small commission on bookings made through links on this site — at no extra cost to you. Prices, availability, and inclusions are set by the operator and may change."
   },
   "Detail": {
@@ -96,5 +99,15 @@
     "readMore": "Read the full guide →",
     "prev": "Previous month",
     "next": "Next month"
+  },
+  "HowBooking": {
+    "eyebrow": "Safe & simple",
+    "title": "How booking works",
+    "step1Title": "Pick a local's recommendation",
+    "step1Body": "Every experience is one a host or Chiang Mai resident actually sends guests on — no filler, no algorithm.",
+    "step2Title": "Book with the operator",
+    "step2Body": "You're taken straight to the operator's own page for instant confirmation, clear pickup details, and their refund policy.",
+    "step3Title": "Show up and enjoy",
+    "step3Body": "Vouchers and pickup times come from the operator, in your language where possible. Same price as booking direct."
   }
 }
